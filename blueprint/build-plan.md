@@ -15,7 +15,7 @@ before feature 9 so contact validation ships behind a real gate, and `/ci` befor
   with lookup helpers, seeded with clearly flagged placeholder content
 - [x] 3. **Hero and about** - dual-track positioning with the Figma track first, availability
   status, credibility strip, and the about narrative
-- [ ] 4. **Services** - the two engagement tracks with scope, deliverables, timeline, and
+- [x] 4. **Services** - the two engagement tracks with scope, deliverables, timeline, and
   how a project actually runs
 - [ ] 5. **Skills and experience** - technology stack grouped by role with usage context,
   and the dated experience timeline
