@@ -6,6 +6,7 @@ import {
   type Role,
   type Service,
   type ServiceSlug,
+  type Skill,
   type SkillGroup,
 } from "@/types/content";
 import { roles } from "./experience";
@@ -194,6 +195,40 @@ export function getAdjacentProjects(slug: string): AdjacentProjects {
     previous: index > 0 ? projects[index - 1] : undefined,
     next: index < projects.length - 1 ? projects[index + 1] : undefined,
   };
+}
+
+/* Groups whose skills are technologies someone scans a stack row for.
+   Practices belong in the skills section, not in a row read in two seconds. */
+const TECHNOLOGY_GROUP_IDS: readonly string[] = [
+  "front-end",
+  "back-end",
+  "data",
+  "tooling",
+];
+
+/** Deduplicated skills by name, first occurrence wins, in first-appearance
+ *  order. Split out so the ordering and dedup rules are testable against
+ *  fixtures rather than against seed content that will be replaced. */
+export function uniqueSkills(groups: readonly SkillGroup[]): readonly Skill[] {
+  const byName = new Map<string, Skill>();
+  for (const group of groups) {
+    for (const skill of group.skills) {
+      if (!byName.has(skill.name)) {
+        byName.set(skill.name, skill);
+      }
+    }
+  }
+  return [...byName.values()];
+}
+
+/** Branded technologies for the hero row, in content order. Entries without an
+ *  `icon` are capabilities such as "REST APIs" rather than products with a
+ *  logo; they belong in the skills section, not in a row of marks. */
+export function getTechnologyMarks(limit?: number): readonly Skill[] {
+  const all = uniqueSkills(
+    skillGroups.filter((group) => TECHNOLOGY_GROUP_IDS.includes(group.id)),
+  ).filter((skill) => skill.icon !== undefined);
+  return typeof limit === "number" ? all.slice(0, limit) : all;
 }
 
 /** What feature 12's honesty gate asserts on before deploying. */

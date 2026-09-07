@@ -13,7 +13,7 @@ before feature 9 so contact validation ships behind a real gate, and `/ci` befor
   header with navigation, mobile menu, footer, theme toggle, and the animation provider
 - [x] 2. **Content layer** - typed profile, services, skills, experience, and project data
   with lookup helpers, seeded with clearly flagged placeholder content
-- [ ] 3. **Hero and about** - dual-track positioning with the Figma track first, availability
+- [x] 3. **Hero and about** - dual-track positioning with the Figma track first, availability
   status, credibility strip, and the about narrative
 - [ ] 4. **Services** - the two engagement tracks with scope, deliverables, timeline, and
   how a project actually runs

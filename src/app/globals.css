@@ -12,6 +12,7 @@
   --font-heading: var(--font-space-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
   --color-brand: var(--brand);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-marquee: marquee 48s linear infinite;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -154,6 +155,17 @@
        targets need clearance or they land under it. */
     scroll-behavior: smooth;
     scroll-padding-top: 5.5rem;
+  }
+}
+
+/* The hero technology row scrolls one full copy of its list, then repeats.
+   The markup renders exactly two copies, so -50% is a seamless loop. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 

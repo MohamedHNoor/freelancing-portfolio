@@ -9,13 +9,12 @@ import type { Profile } from "@/types/content";
 export const profile = {
   name: "Mohamed Noor",
 
-  headline:
-    "I turn Figma files into fast, accessible Next.js sites, and build React and Node platforms for healthcare and fintech teams.",
+  headline: "Figma files in. Production Next.js out.",
 
   specialisms: ["figma-to-nextjs", "saas-platforms"],
 
   shortBio:
-    "Freelance developer working in two tracks: pixel-accurate Figma to Next.js builds, and React, Node, and Postgres platforms for regulated products.",
+    "Front ends that match the design file, hold their performance budget, and pass a keyboard test before handover. And React, Node, and Postgres platforms for teams in healthcare and fintech.",
 
   longBio: [
     "I build web products end to end, and I care most about the part clients usually cannot see: whether the thing is fast on a mid-range phone, whether it works with a keyboard, and whether the next developer can read it.",

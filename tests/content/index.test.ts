@@ -11,10 +11,19 @@ import {
   getRoles,
   getServiceBySlug,
   getServices,
+  getSkillGroups,
+  getTechnologyMarks,
   sortRolesByStartDesc,
+  uniqueSkills,
   type ContentInput,
 } from "@/content";
-import type { CaseStudySection, Project, Role, Service } from "@/types/content";
+import type {
+  CaseStudySection,
+  Project,
+  Role,
+  Service,
+  SkillGroup,
+} from "@/types/content";
 
 /* Fixtures rather than seed content for anything order- or failure-related.
    The seeded projects are placeholders that will be replaced with real work, and
@@ -335,5 +344,86 @@ describe("assertContentInvariants", () => {
     expect(() =>
       assertContentInvariants(content({ roles: [role("bad", "2024-01", "ongoing")] })),
     ).toThrow(/expected YYYY-MM or "present"/);
+  });
+});
+
+function group(id: string, names: readonly string[]): SkillGroup {
+  return {
+    id,
+    label: id,
+    skills: names.map((name) => ({ name, context: "", icon: name.toLowerCase() })),
+  };
+}
+
+describe("uniqueSkills", () => {
+  it("deduplicates by name across groups, keeping first-appearance order", () => {
+    const skills = uniqueSkills([
+      group("a", ["React", "TypeScript"]),
+      group("b", ["Node.js", "React"]),
+      group("c", ["TypeScript", "Docker"]),
+    ]);
+    // Explicit expected sequence, not re-derived with the same logic.
+    expect(skills.map((s) => s.name)).toEqual([
+      "React",
+      "TypeScript",
+      "Node.js",
+      "Docker",
+    ]);
+  });
+
+  it("keeps the first occurrence when a name repeats", () => {
+    const first = { name: "React", context: "first", icon: "react" };
+    const second = { name: "React", context: "second", icon: "react" };
+    const skills = uniqueSkills([
+      { id: "a", label: "a", skills: [first] },
+      { id: "b", label: "b", skills: [second] },
+    ]);
+    expect(skills).toHaveLength(1);
+    expect(skills[0].context).toBe("first");
+  });
+
+  it("returns an empty list for no groups", () => {
+    expect(uniqueSkills([])).toEqual([]);
+  });
+});
+
+describe("getTechnologyMarks", () => {
+  const marks = getTechnologyMarks();
+
+  it("returns only skills that carry an icon", () => {
+    expect(marks.length).toBeGreaterThan(0);
+    for (const skill of marks) {
+      expect(skill.icon).toBeTruthy();
+    }
+  });
+
+  it("includes the branded technologies and excludes practices", () => {
+    const names = marks.map((skill) => skill.name);
+    expect(names).toContain("React");
+    expect(names).toContain("Express.js");
+    expect(names).toContain("PostgreSQL");
+    expect(names).toContain("MongoDB");
+    expect(names).toContain("Docker");
+    // Capabilities have no logo, and practices are not technologies at all.
+    expect(names).not.toContain("REST APIs");
+    expect(names).not.toContain("Performance budgets");
+  });
+
+  it("contains no duplicate names", () => {
+    const names = marks.map((skill) => skill.name);
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  it("only lists skills a group actually declares", () => {
+    const declared = new Set(
+      getSkillGroups().flatMap((entry) => entry.skills.map((s) => s.name)),
+    );
+    for (const skill of marks) {
+      expect(declared.has(skill.name)).toBe(true);
+    }
+  });
+
+  it("truncates to the limit and keeps the leading order", () => {
+    expect(getTechnologyMarks(4)).toEqual(marks.slice(0, 4));
   });
 });
