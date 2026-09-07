@@ -50,7 +50,10 @@ const MARKS: Record<string, { title: string; path: string }> = {
   zod: siZod,
 };
 
-export function hasTechIcon(icon: string | undefined): boolean {
+/** A type predicate, not a plain boolean: the whole point of the check is to
+ *  establish that `icon` is a key this registry can draw, so callers should not
+ *  have to assert it again. */
+export function hasTechIcon(icon: string | undefined): icon is string {
   return icon !== undefined && icon in MARKS;
 }
 
