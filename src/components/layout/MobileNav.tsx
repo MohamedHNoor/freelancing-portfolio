@@ -12,9 +12,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { NAV_ITEMS, SITE } from "@/lib/site";
+import { NAV_ITEMS } from "@/lib/site";
 
-export function MobileNav() {
+/* `name` is passed in rather than read from `@/content` here: this is a
+   client component, and importing the content layer would ship every case
+   study to the browser just to label the sheet. */
+export function MobileNav({ name }: { name: string }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -36,7 +39,7 @@ export function MobileNav() {
             <Logo className="size-10" id="logo-mobile" />
             {/* Radix needs a real title; the mark alone would leave the dialog
                 without an accessible name. */}
-            <span className="sr-only">{SITE.name}</span>
+            <span className="sr-only">{name}</span>
           </SheetTitle>
         </SheetHeader>
         <nav aria-label="Mobile" className="p-3">

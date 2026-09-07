@@ -3,13 +3,10 @@ export type NavItem = {
   href: string;
 };
 
+/* Site-level only. Person-level facts (name, bio, links, availability) live in
+   the content layer; read them with `getProfile()` from `@/content`.
+   Feature 10 owns metadata properly and may replace this. */
 export const SITE = {
-  /* Not rendered as a visible wordmark: the header and footer show the MHN
-     mark alone, by design. This value still has three jobs, so it must never be
-     blank: the browser tab and metadata title, the footer copyright line, and
-     the accessible name of the logo link, which is a bare SVG and would
-     otherwise announce as "link" with no destination. */
-  name: "Mohamed Noor",
   description:
     "Freelance developer turning Figma designs into fast, accessible Next.js sites, and building React and Node platforms for healthcare and fintech teams.",
 } as const;

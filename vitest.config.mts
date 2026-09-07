@@ -1,0 +1,16 @@
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    /* Pure logic only. No jsdom: components and layout are verified in a real
+       browser instead, per the browser verification rule in the standards. */
+    environment: "node",
+    include: ["tests/**/*.test.ts", "tests/**/*.test.tsx"],
+  },
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
+});

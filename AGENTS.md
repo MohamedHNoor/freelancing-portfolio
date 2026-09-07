@@ -253,12 +253,16 @@ Package manager: **npm** (`package-lock.json`).
 - Production server: `npm run start`
 - Lint: `npm run lint`
 - Typecheck: `npx tsc --noEmit`
+- Tests: `npm test` (Vitest, single run)
+- Tests (watch): `npm run test:watch`
 - Add a shadcn/ui component: `npx shadcn@latest add <component>`
 
-**No test command is configured, so there is no test gate yet.** Logic-bearing
-steps are verified with the build, the running app, and browser evidence. Run
-`/tests` or `$tests` to add a runner, then record the real command here; only
-then does the testing gate in `coding-standards.md` apply.
+**The test gate is on.** `npm test` runs Vitest once and exits non-zero, and an
+empty suite fails rather than passing. A build step that adds in-scope logic
+(parsers, formatters, validators, id or slug builders, server actions) must ship
+a passing test in the same reviewable diff. UI and layout are exempt and ride on
+browser evidence instead. Tests live in `tests/`, mirroring the `src/` path of
+the module under test.
 
 **No browser test command is configured.** Run `/browser-tests` or
 `$browser-tests` to add a harness and document its exact command as `Browser

@@ -47,6 +47,7 @@
 - Types: `src/types/[feature].ts`
 - Content: `src/content/[collection].ts`
 - Lib/Utils: `src/lib/[utility].ts`
+- Tests: `tests/[mirrored src path].test.ts`
 
 ## Naming
 
@@ -158,7 +159,9 @@ of the switch; the skills and `ai-interaction.md` only point back here.
   `/implement` writes the test with the step, and if a step surfaces logic the spec
   didn't foresee, add a focused test then.
 - An empty suite should fail, not pass, so "no tests ran" never looks like "passed".
-- Test files live next to source files (for example `feature.test.ts`).
+- Test files live in `tests/`, mirroring the `src/` path of the module under
+  test, so `tests/lib/theme.test.ts` covers `src/lib/theme.ts`. Import the
+  module under test through the `@/` alias, not a relative path.
 - Run them via the project's test command (see Commands in `AGENTS.md`), not a
   hardcoded tool name.
 

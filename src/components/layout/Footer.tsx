@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Logo } from "@/components/icons/Logo";
-import { NAV_ITEMS, SITE } from "@/lib/site";
+import { getProfile } from "@/content";
+import { NAV_ITEMS } from "@/lib/site";
 
 export function Footer() {
+  const profile = getProfile();
   const year = new Date().getFullYear();
 
   return (
@@ -14,9 +16,9 @@ export function Footer() {
             className="inline-flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
           >
             <Logo className="size-10" id="logo-footer" />
-            <span className="sr-only">{SITE.name}</span>
+            <span className="sr-only">{profile.name}</span>
           </Link>
-          <p className="text-sm text-muted-foreground">{SITE.description}</p>
+          <p className="text-sm text-muted-foreground">{profile.shortBio}</p>
         </div>
 
         <nav aria-label="Footer">
@@ -37,7 +39,7 @@ export function Footer() {
 
       <div className="border-t border-border">
         <p className="mx-auto w-full max-w-6xl px-4 py-5 text-xs text-muted-foreground sm:px-6 lg:px-8">
-          &copy; {year} {SITE.name}. Built with Next.js and Tailwind CSS.
+          &copy; {year} {profile.name}. Built with Next.js and Tailwind CSS.
         </p>
       </div>
     </footer>
