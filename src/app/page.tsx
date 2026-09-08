@@ -12,7 +12,13 @@ import { Skills } from "@/components/sections/Skills";
    reviews to read. Contact arrives with feature 9. */
 export default function Home() {
   return (
-    <>
+    /* One root element, not a fragment. On a client navigation Next picks the
+       first DOM node of the changed segment as its scroll target, and a
+       fragment of seven sections gave it seven candidates: arriving from
+       `/projects` it settled on the credibility strip and smoothly scrolled
+       past the hero, which is the one thing a first-time visitor must see.
+       `/projects` never had the bug because it already returned a single root. */
+    <div>
       <Hero />
       <CredibilityStrip />
       <About />
@@ -20,6 +26,6 @@ export default function Home() {
       <Projects />
       <Skills />
       <Experience />
-    </>
+    </div>
   );
 }

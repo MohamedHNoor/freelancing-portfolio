@@ -19,10 +19,20 @@ export function Hero() {
   const profile = getProfile();
   const marks = getTechnologyMarks();
 
-  /* The bottom padding matches `Section`'s so the hero joins the page rhythm;
-     the top is its own, because nothing sits above it. */
+  /* Fills the screen below the sticky header, with the content centred in what
+     is left. `svh` rather than `vh` or `dvh`: `vh` ignores mobile browser
+     chrome and pushes the call to action under it, and `dvh` makes the hero
+     resize while the URL bar hides, which moves the headline as you scroll.
+     `4rem` is the header's `h-16`.
+
+     It is a minimum, not a fixed height. On a phone the stacked headline, bio,
+     buttons, marquee and code card are taller than the screen anyway, so the
+     rule simply stops applying rather than clipping anything.
+
+     The bottom padding still matches `Section`'s so the hero joins the page
+     rhythm; the top is its own, because nothing sits above it. */
   return (
-    <section className="relative isolate overflow-hidden pt-14 pb-12 sm:pt-20 sm:pb-14 lg:pb-16">
+    <section className="relative isolate flex min-h-[calc(100svh-4rem)] items-center overflow-hidden pt-14 pb-12 sm:pt-20 sm:pb-14 lg:pb-16">
       {/* Anchors the right column the way the reference uses a glow behind the
           portrait. Clipped by the section, so it cannot widen the page. */}
       <div
