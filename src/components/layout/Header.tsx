@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/icons/Logo";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { NavLink } from "@/components/layout/NavLink";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { getProfile } from "@/content";
 import { NAV_ITEMS } from "@/lib/site";
@@ -25,12 +26,12 @@ export function Header() {
           <ul className="flex items-center gap-0.5">
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>
-                <Link
+                <NavLink
                   href={item.href}
                   className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {item.label}
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>

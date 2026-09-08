@@ -19,7 +19,7 @@ before feature 9 so contact validation ships behind a real gate, and `/ci` befor
   how a project actually runs
 - [x] 5. **Skills and experience** - technology stack grouped by role with usage context,
   and the dated experience timeline
-- [ ] 6. **Selected projects and index** - outcome-framed project cards on the home page
+- [x] 6. **Selected projects and index** - outcome-framed project cards on the home page
   plus a filterable project index route
 - [ ] 7. **Case study pages** - a static page per project covering problem, approach,
   architecture, stack, and outcome, with previous and next navigation

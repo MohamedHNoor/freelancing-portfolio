@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { MenuIcon } from "lucide-react";
 import { Logo } from "@/components/icons/Logo";
+import { NavLink } from "@/components/layout/NavLink";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -46,13 +46,13 @@ export function MobileNav({ name }: { name: string }) {
           <ul className="flex flex-col">
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>
-                <Link
+                <NavLink
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className="block rounded-md px-3 py-3 text-base text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {item.label}
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>
