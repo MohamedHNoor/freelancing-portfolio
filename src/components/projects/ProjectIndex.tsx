@@ -77,9 +77,17 @@ export function ProjectIndex({
         /* Not wrapped in `Reveal`: re-animating the list on every filter press
            is noise, and it delays the result the press asked for. */
         <ul role="list" className="mt-8 space-y-8">
-          {visible.map((project) => (
+          {visible.map((project, index) => (
             <li key={project.slug}>
-              <ProjectCard project={project} titleAs="h2" />
+              {/* Only the first card preloads its cover. Next reported it as
+                  the Largest Contentful Paint element on this route. On the
+                  first paint no filter is active, so the first visible card is
+                  the first card. */}
+              <ProjectCard
+                project={project}
+                titleAs="h2"
+                priority={index === 0}
+              />
             </li>
           ))}
         </ul>

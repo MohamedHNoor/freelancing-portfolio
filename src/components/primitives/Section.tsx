@@ -35,7 +35,14 @@ export function Section({
          of content rather than as breathing room. Anything that changes here
          must change in the hero and on `/projects` too, which set their own
          padding to sit in this same rhythm. */
-      className={cn("scroll-mt-24 py-12 sm:py-14 lg:py-16", className)}
+      /* No `scroll-mt` here. `html` already sets `scroll-padding-top: 5.5rem`
+         to clear the sticky header, and the two offsets stack rather than
+         overlap: the browser lines the element's scroll margin box up with the
+         container's scroll padding edge, so 96px plus 88px landed every anchor
+         184px down instead of 88px. `scroll-padding-top` is the one that stays,
+         because it is set once and also covers `#main-content` and any anchor a
+         later feature adds. */
+      className={cn("py-12 sm:py-14 lg:py-16", className)}
     >
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand">

@@ -10,6 +10,11 @@ type ProjectCardProps = {
    *  heading on `/projects`. Passed in rather than fixed so neither surface
    *  skips a heading level. */
   titleAs: "h2" | "h3";
+  /** Opt in for the one card that is the Largest Contentful Paint element,
+   *  which is the first on `/projects`. Never on the home page, where the
+   *  section sits far below the fold and preloading it would compete with the
+   *  hero for bandwidth. */
+  priority?: boolean;
 };
 
 /* No `"use client"`: this renders on the server inside the home section and
@@ -24,7 +29,11 @@ type ProjectCardProps = {
    interactive, so nothing is trapped underneath the overlay. The trade is that
    text selection across the card is largely lost, which is the right trade for
    a card whose purpose is to be opened. */
-export function ProjectCard({ project, titleAs }: ProjectCardProps) {
+export function ProjectCard({
+  project,
+  titleAs,
+  priority = false,
+}: ProjectCardProps) {
   const Title = titleAs;
   const metricsLabelId = `${project.slug}-metrics`;
 
@@ -56,6 +65,7 @@ export function ProjectCard({ project, titleAs }: ProjectCardProps) {
                it back to the box width fetches 640w and looks soft on any
                retina screen. */
             sizes="(min-width: 1024px) 42rem, 100vw"
+            priority={priority}
             className="w-full rounded-lg border border-border lg:h-full lg:object-cover lg:object-top"
           />
         </CardContent>
