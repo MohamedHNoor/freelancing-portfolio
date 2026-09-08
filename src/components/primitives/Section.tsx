@@ -28,7 +28,14 @@ export function Section({
     <section
       id={id}
       aria-labelledby={headingId}
-      className={cn("scroll-mt-24 py-20 sm:py-28", className)}
+      /* Vertical rhythm for the whole page. Two adjacent sections each
+         contribute their own padding, so the gap a reader sees is double these
+         numbers: 96px on a phone, 128px on a desktop. The original
+         `py-20 sm:py-28` made that 224px, which read as the page having run out
+         of content rather than as breathing room. Anything that changes here
+         must change in the hero and on `/projects` too, which set their own
+         padding to sit in this same rhythm. */
+      className={cn("scroll-mt-24 py-12 sm:py-14 lg:py-16", className)}
     >
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand">

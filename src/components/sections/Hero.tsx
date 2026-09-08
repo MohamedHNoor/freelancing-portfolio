@@ -19,8 +19,10 @@ export function Hero() {
   const profile = getProfile();
   const marks = getTechnologyMarks();
 
+  /* The bottom padding matches `Section`'s so the hero joins the page rhythm;
+     the top is its own, because nothing sits above it. */
   return (
-    <section className="relative isolate overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28">
+    <section className="relative isolate overflow-hidden pt-14 pb-12 sm:pt-20 sm:pb-14 lg:pb-16">
       {/* Anchors the right column the way the reference uses a glow behind the
           portrait. Clipped by the section, so it cannot widen the page. */}
       <div

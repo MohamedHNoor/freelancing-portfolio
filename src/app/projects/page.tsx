@@ -21,7 +21,7 @@ export default function ProjectsPage() {
   return (
     <section
       aria-labelledby="projects-heading"
-      className="py-16 sm:py-20 lg:py-24"
+      className="py-12 sm:py-14 lg:py-16"
     >
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand">
