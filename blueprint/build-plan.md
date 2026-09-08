@@ -3,9 +3,9 @@
 The features that make up this project, in build order. Detail lives in each feature spec,
 not here. Completed items get checked off, so this doubles as the progress tracker.
 
-Two setup steps sit between features rather than being features themselves: run `/tests`
-before feature 9 so contact validation ships behind a real gate, and `/ci` before feature
-12 so a `Verify` command exists for automatic checks.
+Two setup steps sit between features rather than being features themselves. `/tests` is
+done: Vitest runs from feature 5 onward and the gate is on. `/ci` still needs running
+before feature 13, so a `Verify` command exists for automatic checks.
 
 ## MVP
 
@@ -25,13 +25,17 @@ before feature 9 so contact validation ships behind a real gate, and `/ci` befor
   architecture, stack, and outcome, with previous and next navigation
 - [ ] 8. **Resume** - print-optimized resume route rendered from the content layer, plus a
   downloadable CV
-- [ ] 9. **Contact** - qualifying enquiry form with shared client and server validation,
+- [ ] 9. **Section detail pages** - /about, /services, /skills and /experience as
+  standalone routes carrying the full content, with each home section reduced to a
+  scannable summary that links to its page, and primary navigation pointing at the
+  routes rather than at home page anchors
+- [ ] 10. **Contact** - qualifying enquiry form with shared client and server validation,
   Server Action, Resend delivery, and a mailto fallback
-- [ ] 10. **SEO and social sharing** - per-route metadata and canonicals, sitemap, robots,
+- [ ] 11. **SEO and social sharing** - per-route metadata and canonicals, sitemap, robots,
   generated social images, and structured data
-- [ ] 11. **Accessibility and performance pass** - keyboard and screen reader pass, axe
+- [ ] 12. **Accessibility and performance pass** - keyboard and screen reader pass, axe
   clean, reduced-motion pass, Lighthouse at or above 95, bundle and image budget
-- [ ] 12. **Deployment readiness** - Vercel configuration, environment variables, production
+- [ ] 13. **Deployment readiness** - Vercel configuration, environment variables, production
   build verification, and a smoke test list
 
 ## Post-MVP

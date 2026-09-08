@@ -1,6 +1,6 @@
 # Freelance Portfolio - Project Overview
 
-<!-- blueprint:source-hash 8941c01de22bae0235a49e5248971392ab7fb8994b9b772362a292b6f28e13f6 -->
+<!-- blueprint:source-hash a298a1b64c6770b250c149d16e71fb2161564e6cad3af730d7cf718e4339c0bc -->
 
 > A portfolio site that converts cold traffic into qualified freelance enquiries in
 > two niches, for a developer with no reviews yet.
@@ -54,13 +54,17 @@ In build-plan order. One line of purpose each; the spec is `/feature`'s job.
    template portfolio, and the main thing a client reads before enquiring.
 8. **Resume** - print-optimized resume route from the content layer, plus a
    downloadable CV.
-9. **Contact** - qualifying enquiry form with shared client and server validation,
-   Server Action, Resend delivery, mailto fallback.
-10. **SEO and social sharing** - per-route metadata and canonicals, sitemap, robots,
+9. **Section detail pages** - `/about`, `/services`, `/skills` and `/experience`
+   as standalone routes carrying the full content, each home section reduced to a
+   scannable summary linking to its page, and primary navigation pointed at the
+   routes. This is the shape feature 6 already gave projects.
+10. **Contact** - qualifying enquiry form with shared client and server validation,
+    Server Action, Resend delivery, mailto fallback.
+11. **SEO and social sharing** - per-route metadata and canonicals, sitemap, robots,
     generated social images, structured data.
-11. **Accessibility and performance pass** - keyboard and screen reader pass, axe
+12. **Accessibility and performance pass** - keyboard and screen reader pass, axe
     clean, reduced-motion pass, Lighthouse at or above 95, bundle and image budget.
-12. **Deployment readiness** - Vercel config, env vars, production build
+13. **Deployment readiness** - Vercel config, env vars, production build
     verification, smoke tests.
 
 Out of scope for the MVP: blog, CMS, analytics dashboards, testimonials (none
@@ -72,9 +76,9 @@ exist yet to publish), and any pricing display.
 imported at build time so every route can be statically generated. Types live in
 `src/types/content.ts`.
 
-> `Project` and `CaseStudySection` are locked shapes. Features 6, 7, and 10 all
-> read them, including for social image generation and structured data. Change
-> them before feature 6 or not at all.
+> `Project` and `CaseStudySection` are locked shapes, now shipped and read by the
+> home section, the index, and the case study route. Feature 11 reads them again
+> for social images and structured data. Treat changes as breaking.
 
 ### Profile (single record, `profile.ts`)
 
@@ -133,7 +137,7 @@ imported at build time so every route can be statically generated. Types live in
 - `caseStudy` (CaseStudySection[])
 
 > `isPlaceholder: true` marks fictional seeded content. No project may reach
-> production with it set; feature 12 blocks on this.
+> production with it set; feature 13 blocks on this.
 
 ### CaseStudySection
 
@@ -163,9 +167,10 @@ the Server Action. Submissions are forwarded by email and never persisted.
 - **Motion** - animation, code split via LazyMotion, reduced-motion aware
 - **react-hook-form + Zod** - contact form, one schema for client and server
 - **Resend** - transactional email from the Server Action
-- **Vitest** - logic tests, to be added before feature 9
+- **Vitest** - logic tests; configured and gating from feature 5 onward
 - **Playwright MCP** - browser verification during the build
-- **Git and GitHub** - with a Verify command wired to checks via `/ci`
+- **Git and GitHub** - a Verify command is still to be wired via `/ci` before
+  feature 13
 
 ## Monetization
 
@@ -192,6 +197,11 @@ Deliberately changed from the reference:
 - Blog navigation removed - an empty blog is a negative signal
 - Services section, experience timeline, and case study pages added - the reference
   has none, and all three are load-bearing for these buyers
+- Navigation targets routes rather than same-page anchors. The home page stays one
+  scroll that earns attention section by section, but each section has a page
+  behind it, so a proposal can link straight to the relevant depth instead of to a
+  hash the reader has to scroll away from. It also stops the home page growing
+  without limit as real content replaces the seeded placeholders
 
 Typography moves off the scaffold default to a display, body, and monospace trio.
 Motion is used for staged entrances and scroll reveals, on transform and opacity
@@ -204,13 +214,21 @@ wired to their inputs.
 
 ### Routes
 
-- `/` - hero, credibility strip, about, services, selected projects, skills,
-  experience, contact. Projects sit above skills: proof of delivery outranks a
-  technology list for a buyer with no reviews to read
+- `/` - hero, credibility strip, then a scannable summary of about, services,
+  selected projects, skills and experience, each linking to its own page. Projects
+  sit above skills: proof of delivery outranks a technology list for a buyer with
+  no reviews to read
+- `/about` - the full narrative, location, availability
+- `/services` - both engagement tracks in full, including how a project runs
 - `/projects` - full index, filterable by category and stack
 - `/projects/[slug]` - case study, one static page per project
+- `/skills` - the full stack grouped by role, with usage context
+- `/experience` - the full dated timeline with impact and stack per role
 - `/resume` - print-optimized CV
 - `/sitemap.xml`, `/robots.txt`, generated `opengraph-image`, and a 404 page
+
+Every item in the primary navigation is one of these routes. Feature 9 owns the
+switch from anchors to routes.
 
 ## Deployment
 
@@ -230,14 +248,18 @@ wired to their inputs.
 
 > Resolve in the plans, then re-run `/overview`.
 
+- **Where contact lives is now undecided.** `project-plan.md` §3 still calls it a
+  "Contact section", but feature 9 makes every navigation item a route. Feature 10
+  has to choose: a `/contact` page, a home section with the nav item left as an
+  anchor, or both. Until then the nav item stays `/#contact`, which is the dead
+  anchor it already is.
 - **Custom domain undecided.** `NEXT_PUBLIC_SITE_URL` must match the final origin
   or canonical URLs, sitemap entries, and social images will resolve wrong. Needed
-  by feature 10, blocking for feature 12.
+  by feature 11, blocking for feature 13.
 - **Real identity and content not supplied.** Every content module ships seeded and
-  flagged. Real profile copy, projects, experience, and the CV file are needed
-  before launch, not before the build starts.
+  flagged: three fictional projects, invented roles, and placeholder usage context
+  for all thirty skills. Real profile copy, projects, experience, and the CV file
+  are needed before launch. Feature 13 blocks on the projects; nothing mechanically
+  guards the roles or the skill context.
 - **Resend sender domain not verified.** Free account plus DNS verification, and
-  DNS propagation is the slow part. Worth starting well before feature 9.
-- **No test runner configured yet.** `AGENTS.md` declares no test command, so there
-  is no test gate. The plan adds Vitest before feature 9; until then logic is
-  verified by build and browser evidence.
+  DNS propagation is the slow part. Worth starting well before feature 10.

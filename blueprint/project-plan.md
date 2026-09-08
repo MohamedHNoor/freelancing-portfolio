@@ -56,6 +56,11 @@ one is browsing. Every section has to earn the next scroll.
 - Case study pages covering problem, approach, architecture, stack, and outcome
 - Technical skills grouped by role in the stack, with the context each was used in
 - Professional experience as a dated timeline
+- A detail route for each of about, services, skills and experience, carrying the full
+  content while the matching home section carries a scannable summary and a link to it.
+  This is the shape projects already has: a featured subset on the home page, everything
+  at `/projects`. Primary navigation points at these routes rather than at home page
+  anchors, so every item in the header is a page a proposal can link to directly
 - Print-optimized resume page plus a downloadable CV
 - Contact section with a qualifying enquiry form that emails the developer, plus GitHub,
   LinkedIn, and a direct mailto fallback
@@ -129,6 +134,11 @@ Deliberately changed:
 - The blog navigation item is removed. An empty blog is a negative signal.
 - A services section, an experience timeline, and case study pages are added. The reference
   has none of them, and all three are load-bearing for these buyers.
+- Navigation targets routes rather than same-page anchors. The home page stays a single
+  scroll that has to earn attention section by section, but each section also has a page
+  behind it, so a proposal can link straight to the relevant depth instead of to a hash
+  the reader has to scroll away from. It also keeps the home page from growing without
+  limit as real content replaces the seeded placeholders.
 
 Typography moves off the scaffold default to a display, body, and monospace trio so the
 site does not read as an untouched template. Motion is used for staged entrances and scroll
