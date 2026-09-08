@@ -31,6 +31,31 @@ export type CategoryFacet = {
   label: string;
 };
 
+export type ProjectLinkKey = "live" | "repo";
+
+export type ProjectLink = {
+  key: ProjectLinkKey;
+  href: string;
+};
+
+/** Explicit rather than derived from `Object.keys`, so the buttons never swap
+ *  order between two projects that declared their links in a different order.
+ *  `content/index.ts` uses the same approach for the profile links. */
+const PROJECT_LINK_KEYS = ["live", "repo"] as const satisfies readonly ProjectLinkKey[];
+
+/** Only the links a project actually supplies.
+ *
+ *  `ProjectLinks` marks both fields optional, so absent is `undefined` here
+ *  rather than the empty string `ProfileLinks` uses. A whitespace-only value
+ *  counts as absent too: a link that goes nowhere is worse than no link, which
+ *  is the same rule the cards followed while `/projects/[slug]` did not exist. */
+export function getProjectLinks(project: Project): readonly ProjectLink[] {
+  return PROJECT_LINK_KEYS.flatMap((key) => {
+    const href = project.links[key];
+    return href !== undefined && href.trim() !== "" ? [{ key, href }] : [];
+  });
+}
+
 /** `null` means "any" in both fields. */
 export type ProjectFilterState = {
   category: ServiceSlug | null;

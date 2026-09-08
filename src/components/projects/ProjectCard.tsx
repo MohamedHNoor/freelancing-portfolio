@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { ProjectCardData } from "@/lib/projects";
@@ -16,15 +17,24 @@ type ProjectCardProps = {
    both work, and the projection it takes carries no case study text into the
    browser.
 
-   It also carries no link. `/projects/[slug]` does not exist until feature 7,
-   and a card that navigates to a 404 is worse than a card that does not
-   navigate. Feature 7 adds the link when the route is there to receive it. */
+   The whole card opens the case study, but only the title is a link. The link's
+   `::after` is stretched over the card, which keeps the accessible name to the
+   project title instead of the several hundred characters an anchor wrapped
+   around the entire card would announce. Nothing else inside the card is
+   interactive, so nothing is trapped underneath the overlay. The trade is that
+   text selection across the card is largely lost, which is the right trade for
+   a card whose purpose is to be opened. */
 export function ProjectCard({ project, titleAs }: ProjectCardProps) {
   const Title = titleAs;
   const metricsLabelId = `${project.slug}-metrics`;
 
   return (
-    <Card className="[--card-spacing:--spacing(6)] sm:[--card-spacing:--spacing(8)]">
+    <Card
+      /* `relative` anchors the stretched link below. The focus ring is on the
+         card rather than the title, so keyboard focus outlines the thing that
+         is actually clickable. */
+      className="relative transition-shadow [--card-spacing:--spacing(6)] hover:ring-foreground/25 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-ring sm:[--card-spacing:--spacing(8)]"
+    >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-2">
         <CardContent className="min-w-0 lg:h-full">
           {/* Natural aspect ratio while stacked, and filling the column beside
@@ -61,7 +71,12 @@ export function ProjectCard({ project, titleAs }: ProjectCardProps) {
           </div>
 
           <Title className="mt-4 font-heading text-xl font-semibold tracking-tight sm:text-2xl">
-            {project.title}
+            <Link
+              href={`/projects/${project.slug}`}
+              className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none"
+            >
+              {project.title}
+            </Link>
           </Title>
 
           <p className="mt-3 text-base leading-relaxed text-muted-foreground">

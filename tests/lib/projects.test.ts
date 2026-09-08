@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   filterProjects,
   getCategoryFacets,
+  getProjectLinks,
   getStackFacets,
   toProjectCardData,
   type ProjectCardData,
 } from "@/lib/projects";
+import { getProjects } from "@/content";
 import type { Project, Service, ServiceSlug } from "@/types/content";
 
 /* Fixtures rather than seed content: every project in `src/content/projects.ts`
@@ -264,5 +266,62 @@ describe("filterProjects", () => {
     filterProjects(cards, { category: "saas-platforms", stack: "PostgreSQL" });
 
     expect(JSON.stringify(cards)).toBe(before);
+  });
+});
+
+describe("getProjectLinks", () => {
+  it("returns both links with live first when both are supplied", () => {
+    const project: Project = {
+      ...BASE_PROJECT,
+      links: { repo: "https://example.com/repo", live: "https://example.com" },
+    };
+
+    expect(getProjectLinks(project)).toEqual([
+      { key: "live", href: "https://example.com" },
+      { key: "repo", href: "https://example.com/repo" },
+    ]);
+  });
+
+  it("returns only the live link when the repository is not supplied", () => {
+    const project: Project = {
+      ...BASE_PROJECT,
+      links: { live: "https://example.com" },
+    };
+
+    expect(getProjectLinks(project)).toEqual([
+      { key: "live", href: "https://example.com" },
+    ]);
+  });
+
+  it("returns only the repository link when the live site is not supplied", () => {
+    const project: Project = {
+      ...BASE_PROJECT,
+      links: { repo: "https://example.com/repo" },
+    };
+
+    expect(getProjectLinks(project)).toEqual([
+      { key: "repo", href: "https://example.com/repo" },
+    ]);
+  });
+
+  it("returns an empty array when neither is supplied", () => {
+    expect(getProjectLinks({ ...BASE_PROJECT, links: {} })).toEqual([]);
+  });
+
+  /* The seeded content is the empty case, so this is the state every project
+     renders today. Worth asserting directly rather than only by fixture. */
+  it("returns an empty array for every seeded project", () => {
+    for (const project of getProjects()) {
+      expect(getProjectLinks(project)).toEqual([]);
+    }
+  });
+
+  it("treats an empty or whitespace-only value as absent", () => {
+    const project: Project = {
+      ...BASE_PROJECT,
+      links: { live: "", repo: "   " },
+    };
+
+    expect(getProjectLinks(project)).toEqual([]);
   });
 });
