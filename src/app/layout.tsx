@@ -33,10 +33,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     /* Ships with `dark` so the default theme is correct before any script runs,
        including with JavaScript disabled. suppressHydrationWarning covers the
-       pre-paint script rewriting this class for a stored light preference. */
+       pre-paint script rewriting this class for a stored light preference.
+
+       `data-scroll-behavior="smooth"` is required because `globals.css` sets
+       `scroll-behavior: smooth` on `html` for the in-page anchors. Next 16
+       stopped overriding that during route transitions by default, and without
+       the attribute a client navigation animates its way down the new page
+       instead of starting at the top, which is a bug this project has already
+       hit once. The attribute restores the override: instant on navigation,
+       smooth for the anchors the declaration exists for. */
     <html
       lang="en"
       className={`dark ${inter.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <head>
