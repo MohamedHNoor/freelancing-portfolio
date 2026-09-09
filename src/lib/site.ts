@@ -11,9 +11,8 @@ export const SITE = {
     "Freelance developer turning Figma designs into fast, accessible Next.js sites, and building React and Node platforms for healthcare and fintech teams.",
 } as const;
 
-/* Every item is a route except Contact, which stays `/#contact` until feature 10
-   builds the section or the page and decides which it is. It is the one anchor
-   left, and it still scrolls nowhere, exactly as it has since feature 1.
+/* Every item is a route. Contact was the last anchor and the last dead link;
+   feature 10 gave it a page.
 
    Each of these has a home section too, reachable by scrolling. The nav points
    at the pages because that is what a proposal links to directly, and because
@@ -28,5 +27,5 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { label: "Skills", href: "/skills" },
   { label: "Experience", href: "/experience" },
   { label: "Resume", href: "/resume" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Contact", href: "/contact" },
 ];

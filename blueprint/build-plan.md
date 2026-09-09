@@ -29,7 +29,7 @@ before feature 13, so a `Verify` command exists for automatic checks.
   standalone routes carrying the full content, with each home section reduced to a
   scannable summary that links to its page, and primary navigation pointing at the
   routes rather than at home page anchors
-- [ ] 10. **Contact** - qualifying enquiry form with shared client and server validation,
+- [x] 10. **Contact** - qualifying enquiry form with shared client and server validation,
   Server Action, Resend delivery, and a mailto fallback
 - [ ] 11. **SEO and social sharing** - per-route metadata and canonicals, sitemap, robots,
   generated social images, and structured data

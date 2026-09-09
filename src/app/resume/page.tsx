@@ -28,9 +28,9 @@ export default function ResumePage() {
   const projects = getFeaturedProjects();
 
   /* `cv` drives the download rather than the contact line, so it is filtered
-     out here. `getProfileLinks()` has already dropped anything unsupplied,
-     which is why this is empty today: every value in `profile.links` is the
-     empty string. */
+     out here. `getProfileLinks()` has already dropped anything unsupplied, so
+     this carries whatever is set: email, GitHub and LinkedIn today, with `cv`
+     still empty until a PDF exists in `public/`. */
   const profileLinks = getProfileLinks();
   const contactLinks = profileLinks
     .filter((link) => link.key !== "cv")

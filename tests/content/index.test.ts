@@ -4,18 +4,19 @@ import {
   getAdjacentProjects,
   getFeaturedProjects,
   getPlaceholderProjects,
+  getProfile,
   getProfileLinks,
   getProjectBySlug,
-  getProjects,
   getProjectSlugs,
+  getProjects,
   getRoles,
   getServiceBySlug,
   getServices,
   getSkillGroups,
   getTechnologyMarks,
   sortRolesByStartDesc,
-  uniqueSkills,
   type ContentInput,
+  uniqueSkills,
 } from "@/content";
 import type {
   CaseStudySection,
@@ -217,9 +218,35 @@ describe("getFeaturedProjects", () => {
 });
 
 describe("getProfileLinks", () => {
-  it("omits links that were never supplied", () => {
-    // Every seeded link is an empty string until real handles are supplied.
-    expect(getProfileLinks()).toEqual([]);
+  /* This asserted `[]` while every seeded link was an empty string, which made
+     it a test of the placeholder content rather than of the function. Real
+     links broke it. It now checks the contract: supplied links come back in a
+     fixed order, unsupplied ones are dropped. */
+  it("returns only the links that carry a value", () => {
+    const links = getProfileLinks();
+    for (const link of links) {
+      expect(link.href).not.toBe("");
+    }
+  });
+
+  it("keeps a stable order rather than object literal order", () => {
+    const order = getProfileLinks().map((link) => link.key);
+    const expected = ["email", "github", "linkedin", "cv"].filter((key) =>
+      order.includes(key as (typeof order)[number]),
+    );
+    expect(order).toEqual(expected);
+  });
+
+  it("omits a key whose value is the empty string", () => {
+    const keys = getProfileLinks().map((link) => link.key);
+    const profile = getProfile();
+    for (const key of ["email", "github", "linkedin", "cv"] as const) {
+      if (profile.links[key] === "") {
+        expect(keys).not.toContain(key);
+      } else {
+        expect(keys).toContain(key);
+      }
+    }
   });
 });
 

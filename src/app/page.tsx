@@ -1,4 +1,5 @@
 import { About } from "@/components/sections/About";
+import { Contact } from "@/components/sections/Contact";
 import { CredibilityStrip } from "@/components/sections/CredibilityStrip";
 import { Experience } from "@/components/sections/Experience";
 import { Hero } from "@/components/sections/Hero";
@@ -9,7 +10,7 @@ import { Skills } from "@/components/sections/Skills";
 /* Order is fixed by the overview: hero, credibility strip, about, services,
    projects, skills, experience, contact. Projects sits above skills on purpose,
    because proof of delivery outranks a technology list for a buyer with no
-   reviews to read. Contact arrives with feature 9. */
+   reviews to read. */
 export default function Home() {
   return (
     /* One root element, not a fragment. On a client navigation Next picks the
@@ -26,6 +27,7 @@ export default function Home() {
       <Projects />
       <Skills />
       <Experience />
+      <Contact />
     </div>
   );
 }

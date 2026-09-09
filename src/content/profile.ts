@@ -29,12 +29,20 @@ export const profile = {
 
   location: "Remote",
 
-  /* Empty means not supplied. Read these through getProfileLinks() so an
-     unsupplied link renders as nothing rather than as a dead link. */
+  /* Public content, deliberately here rather than in `.env`. These render on
+     the site, so they belong in version control where a fresh clone and a
+     deploy both have them; an environment variable would leave the links
+     missing anywhere the variable was not set.
+
+     Empty means not supplied. Read these through `getProfileLinks()` so an
+     unsupplied link renders as nothing rather than as a dead link. The scheme
+     is optional: `toContactLink` adds `mailto:` or `https://` when absent. */
   links: {
-    email: "",
-    github: "",
-    linkedin: "",
+    email: "info@mohamedhnoor.com",
+    github: "https://github.com/MohamedHNoor",
+    linkedin: "https://www.linkedin.com/in/mohamedhnoor",
+    /* Set to a path such as `/mohamed-noor-cv.pdf` once a file exists in
+       `public/`. The download button on `/resume` appears when it does. */
     cv: "",
   },
 

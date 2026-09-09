@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { toContactLink } from "@/lib/links";
+import { formatFromHeader, toContactLink } from "@/lib/links";
 import type { ProfileLink } from "@/content";
 
 const email = (href: string): ProfileLink => ({ key: "email", href });
@@ -88,5 +88,57 @@ describe("toContactLink labels", () => {
 
   it("carries the key through unchanged", () => {
     expect(toContactLink(github("github.com/x")).key).toBe("github");
+  });
+});
+
+describe("formatFromHeader", () => {
+  it("shows the name while keeping the controlled address", () => {
+    expect(formatFromHeader("Ada Lovelace", "hi@example.com")).toBe(
+      '"Ada Lovelace" <hi@example.com>',
+    );
+  });
+
+  /* The whole point: the visitor's address never becomes the sender. */
+  it("never substitutes the name for the address", () => {
+    expect(formatFromHeader("ada@gmail.com", "hi@example.com")).toContain(
+      "<hi@example.com>",
+    );
+  });
+
+  it.each([
+    ['a quote', 'Ada "The First" Lovelace', '"Ada The First Lovelace" <hi@example.com>'],
+    ["a backslash", "Ada\\Lovelace", '"Ada Lovelace" <hi@example.com>'],
+    ["angle brackets", "Ada <evil@attacker.test>", '"Ada evil@attacker.test" <hi@example.com>'],
+    ["a newline", "Ada\r\nBcc: evil@attacker.test", '"Ada Bcc: evil@attacker.test" <hi@example.com>'],
+  ])("strips %s from the display name", (_label, input, expected) => {
+    expect(formatFromHeader(input, "hi@example.com")).toBe(expected);
+  });
+
+  /* Counting `<` was the original bug in this test, and it let a real defect
+     through for a whole feature. `Lovelace, Ada <hi@example.com>` has exactly
+     one pair of angle brackets and two mailboxes, because a `From` is a
+     `mailbox-list` and `,` is its separator. So the assertion has to be that the
+     entire value is one mailbox, not that one address appears somewhere in it. */
+  const ONE_MAILBOX = /^"[^"\\]*" <[^<>@\s]+@[^<>@\s]+>$/;
+
+  it.each([
+    ["stacked angle brackets", "Ada <a@b.test> <c@d.test>"],
+    ["a surname-first name", "Lovelace, Ada"],
+    ["an injected leading address", "x@attacker.test, Ada"],
+    ["a trailing separator", "Ada,"],
+    ["a semicolon and colon", "Ada; Bcc: evil@attacker.test"],
+  ])("leaves exactly one mailbox in the header given %s", (_label, input) => {
+    expect(formatFromHeader(input, "hi@example.com")).toMatch(ONE_MAILBOX);
+  });
+
+  it("keeps a comma inside the display name rather than dropping it", () => {
+    expect(formatFromHeader("Lovelace, Ada", "hi@example.com")).toBe(
+      '"Lovelace, Ada" <hi@example.com>',
+    );
+  });
+
+  it("falls back to the bare address when nothing survives sanitising", () => {
+    expect(formatFromHeader('"""', "hi@example.com")).toBe("hi@example.com");
+    expect(formatFromHeader("   ", "hi@example.com")).toBe("hi@example.com");
   });
 });

@@ -74,7 +74,7 @@ export function Hero() {
 
             <div className="mt-9 flex flex-wrap gap-3">
               <Button asChild className="h-11 gap-2 px-5 text-[0.95rem]">
-                <Link href="#contact">
+                <Link href="/contact">
                   Start a project
                   <ArrowUpRightIcon className="size-4" aria-hidden="true" />
                 </Link>
