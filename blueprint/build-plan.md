@@ -23,7 +23,7 @@ before feature 13, so a `Verify` command exists for automatic checks.
   plus a filterable project index route
 - [x] 7. **Case study pages** - a static page per project covering problem, approach,
   architecture, stack, and outcome, with previous and next navigation
-- [ ] 8. **Resume** - print-optimized resume route rendered from the content layer, plus a
+- [x] 8. **Resume** - print-optimized resume route rendered from the content layer, plus a
   downloadable CV
 - [ ] 9. **Section detail pages** - /about, /services, /skills and /experience as
   standalone routes carrying the full content, with each home section reduced to a

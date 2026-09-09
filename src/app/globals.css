@@ -184,3 +184,71 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Print. Site-wide rather than scoped to `/resume`: any page of this site
+   prints better without the sticky header, the footer and the skip link, and a
+   case study printed for a client benefits from the same treatment.
+
+   Colours are forced rather than inherited. The `dark` class stays on `html`
+   when a visitor prints from the default theme, so without this the sheet is
+   either near-black ink edge to edge or invisible text on white. */
+@media print {
+  html,
+  :root,
+  :root.dark {
+    --background: white;
+    --foreground: black;
+    --card: white;
+    --card-foreground: black;
+    --muted-foreground: color-mix(in srgb, black 65%, white);
+    --border: color-mix(in srgb, black 25%, white);
+    --brand: black;
+    --primary: black;
+    background: white;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  /* Chrome that means nothing on paper. Everything opts out through
+     `data-print-hidden`, which the site header, the site footer and the print
+     button all set.
+
+     Deliberately not a bare `header, footer` selector. That matched every
+     `<header>` in the document, including the one inside the resume `<article>`
+     holding the name, the headline and the contact line, so the printed resume
+     came out with no name on it. Caught by print emulation, not by reading the
+     stylesheet.
+
+     `.sr-only` is already clipped to zero ink by `clip-path: inset(50%)`, so
+     this changes nothing visually. It is here so screen-reader-only text is
+     genuinely out of the document rather than merely invisible, and so it
+     cannot influence where a page break lands. */
+  .sr-only,
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  /* Keep an entry whole rather than letting a role or a project straddle two
+     sheets. `break-inside-avoid` in the markup pairs with this. */
+  li,
+  section {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+}

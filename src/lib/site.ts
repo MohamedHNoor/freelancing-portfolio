@@ -16,7 +16,8 @@ export const SITE = {
    nothing at all. `/#contact` stays a dead anchor until feature 9 adds the
    section, exactly as it was before.
 
-   `Projects` is the one route item, and feature 8 adds `/resume` the same way.
+   `Projects` and `Resume` are the route items; the rest are still anchors
+   until feature 9 turns them into pages too.
    Someone who clicks a nav item labelled Projects has asked to see the work,
    and `/projects` carries all of it with filters, where the home section shows
    only the featured subset. Route items are what `NavLink` can mark
@@ -27,5 +28,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { label: "Projects", href: "/projects" },
   { label: "Skills", href: "/#skills" },
   { label: "Experience", href: "/#experience" },
+  { label: "Resume", href: "/resume" },
   { label: "Contact", href: "/#contact" },
 ];
