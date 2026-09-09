@@ -1,9 +1,7 @@
-import Link from "next/link";
-import { ArrowRightIcon } from "lucide-react";
 import { Reveal } from "@/components/primitives/Reveal";
 import { Section } from "@/components/primitives/Section";
+import { SectionLink } from "@/components/primitives/SectionLink";
 import { ProjectCard } from "@/components/projects/ProjectCard";
-import { Button } from "@/components/ui/button";
 import { getFeaturedProjects, getServices } from "@/content";
 import { toProjectCardData } from "@/lib/projects";
 
@@ -48,18 +46,7 @@ export function Projects() {
         ))}
       </ul>
 
-      <div className="mt-10">
-        <Button
-          asChild
-          variant="outline"
-          className="h-11 gap-2 px-5 text-[0.95rem]"
-        >
-          <Link href="/projects">
-            View all projects
-            <ArrowRightIcon className="size-4" aria-hidden="true" />
-          </Link>
-        </Button>
-      </div>
+      <SectionLink href="/projects">View all projects</SectionLink>
     </Section>
   );
 }

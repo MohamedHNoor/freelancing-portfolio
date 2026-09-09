@@ -25,7 +25,7 @@ before feature 13, so a `Verify` command exists for automatic checks.
   architecture, stack, and outcome, with previous and next navigation
 - [x] 8. **Resume** - print-optimized resume route rendered from the content layer, plus a
   downloadable CV
-- [ ] 9. **Section detail pages** - /about, /services, /skills and /experience as
+- [x] 9. **Section detail pages** - /about, /services, /skills and /experience as
   standalone routes carrying the full content, with each home section reduced to a
   scannable summary that links to its page, and primary navigation pointing at the
   routes rather than at home page anchors

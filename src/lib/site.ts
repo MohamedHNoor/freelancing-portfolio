@@ -11,23 +11,22 @@ export const SITE = {
     "Freelance developer turning Figma designs into fast, accessible Next.js sites, and building React and Node platforms for healthcare and fintech teams.",
 } as const;
 
-/* Section anchors are absolute, not bare `#about`. With a second route in the
-   site a bare hash on `/projects` would navigate to `/projects#about`, which is
-   nothing at all. `/#contact` stays a dead anchor until feature 9 adds the
-   section, exactly as it was before.
+/* Every item is a route except Contact, which stays `/#contact` until feature 10
+   builds the section or the page and decides which it is. It is the one anchor
+   left, and it still scrolls nowhere, exactly as it has since feature 1.
 
-   `Projects` and `Resume` are the route items; the rest are still anchors
-   until feature 9 turns them into pages too.
-   Someone who clicks a nav item labelled Projects has asked to see the work,
-   and `/projects` carries all of it with filters, where the home section shows
-   only the featured subset. Route items are what `NavLink` can mark
-   `aria-current="page"`; anchors are not pages. */
+   Each of these has a home section too, reachable by scrolling. The nav points
+   at the pages because that is what a proposal links to directly, and because
+   the page carries the full content while the section carries a summary.
+
+   Route items are what `NavLink` can mark `aria-current="page"`; it treats
+   anything containing `#` as an anchor and never marks it. */
 export const NAV_ITEMS: readonly NavItem[] = [
-  { label: "About", href: "/#about" },
-  { label: "Services", href: "/#services" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
   { label: "Projects", href: "/projects" },
-  { label: "Skills", href: "/#skills" },
-  { label: "Experience", href: "/#experience" },
+  { label: "Skills", href: "/skills" },
+  { label: "Experience", href: "/experience" },
   { label: "Resume", href: "/resume" },
   { label: "Contact", href: "/#contact" },
 ];

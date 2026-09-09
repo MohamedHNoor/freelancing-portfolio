@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/primitives/PageHeader";
 import { ProjectIndex } from "@/components/projects/ProjectIndex";
 import { getProfile, getProjects, getServices } from "@/content";
 import { toProjectCardData } from "@/lib/projects";
@@ -24,20 +25,12 @@ export default function ProjectsPage() {
       className="py-12 sm:py-14 lg:py-16"
     >
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand">
-          Work
-        </p>
-        {/* This page owns its own `h1`. The hero owns the only one on `/`. */}
-        <h1
+        <PageHeader
           id="projects-heading"
-          className="mt-4 max-w-3xl text-balance font-heading text-3xl font-semibold tracking-tight sm:text-4xl"
-        >
-          Projects
-        </h1>
-        <p className="mt-5 max-w-2xl text-lg text-muted-foreground">
-          Every build, filterable by track and by the technology it used. Each
-          number carries the measurement it came from.
-        </p>
+          eyebrow="Work"
+          heading="Projects"
+          lead="Every build, filterable by track and by the technology it used. Each number carries the measurement it came from."
+        />
 
         <div className="mt-12">
           <ProjectIndex projects={projects} />
