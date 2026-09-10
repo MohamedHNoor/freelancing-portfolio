@@ -3,13 +3,19 @@ import { notFound } from "next/navigation";
 import { CaseStudyHeader } from "@/components/projects/CaseStudyHeader";
 import { CaseStudyNav } from "@/components/projects/CaseStudyNav";
 import { CaseStudySection } from "@/components/projects/CaseStudySection";
+import { JsonLd } from "@/components/seo/JsonLd";
 import {
   getAdjacentProjects,
-  getProfile,
   getProjectBySlug,
   getProjectSlugs,
   getServiceBySlug,
 } from "@/content";
+import { routeMetadata } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
+import {
+  buildBreadcrumbJsonLd,
+  buildCreativeWorkJsonLd,
+} from "@/lib/structured-data";
 
 /* Every slug is known at build time, so a slug that is not one of them is a 404
    rather than a page rendered on request. Confirmed against the Next.js 16
@@ -22,8 +28,6 @@ export function generateStaticParams() {
   return getProjectSlugs().map((slug) => ({ slug }));
 }
 
-/* Title and description only, matching `/projects`. Feature 10 owns canonicals,
-   social images, structured data and the sitemap entry. */
 export async function generateMetadata(
   props: PageProps<"/projects/[slug]">,
 ): Promise<Metadata> {
@@ -34,9 +38,12 @@ export async function generateMetadata(
     return {};
   }
 
+  /* `article` rather than `website`: a case study is a written piece about one
+     project, not a page of the site itself. */
   return {
-    title: `${project.title} - ${getProfile().name}`,
+    title: project.title,
     description: project.summary,
+    ...routeMetadata(`/projects/${slug}`, { type: "article" }),
   };
 }
 
@@ -56,15 +63,28 @@ export default async function CaseStudyPage(
   }
 
   const service = getServiceBySlug(project.category);
+  const categoryLabel = service?.name ?? project.category;
+
+  const breadcrumb = buildBreadcrumbJsonLd({ project, origin: SITE_URL });
+  /* Absent for a seeded project. See `buildCreativeWorkJsonLd`: the page says
+     in prose that the work is an example, and a machine-readable claim that it
+     is real would contradict it. */
+  const creativeWork = buildCreativeWorkJsonLd({
+    project,
+    categoryLabel,
+    origin: SITE_URL,
+  });
 
   return (
     <article className="py-12 sm:py-14 lg:py-16">
+      <JsonLd data={breadcrumb} />
+      {creativeWork === undefined ? null : <JsonLd data={creativeWork} />}
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <CaseStudyHeader
           project={project}
           /* The content invariant guarantees a matching service, so the
              fallback is defensive rather than expected. */
-          categoryLabel={service?.name ?? project.category}
+          categoryLabel={categoryLabel}
         />
 
         {/* `assertContentInvariants` enforces the four canonical headings in

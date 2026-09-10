@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { PageHeader } from "@/components/primitives/PageHeader";
-import { getProfile, getProfileLinks } from "@/content";
+import { getProfileLinks } from "@/content";
 import { toContactLink } from "@/lib/links";
+import { routeMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: `Contact - ${getProfile().name}`,
+  title: "Contact",
   description:
     "Start a project: a few questions about what you are building, the timeline, and how to reach you.",
+  ...routeMetadata("/contact"),
 };
 
 export default function ContactPage() {

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { SkillsIndex } from "@/components/detail/SkillsIndex";
 import { PageHeader } from "@/components/primitives/PageHeader";
-import { getProfile } from "@/content";
+import { routeMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: `Stack - ${getProfile().name}`,
+  title: "Stack",
   description:
     "The technologies I build with, grouped by where each one sits in a build, with the context each was actually used in.",
+  ...routeMetadata("/skills"),
 };
 
 export default function SkillsPage() {

@@ -31,7 +31,7 @@ before feature 13, so a `Verify` command exists for automatic checks.
   routes rather than at home page anchors
 - [x] 10. **Contact** - qualifying enquiry form with shared client and server validation,
   Server Action, Resend delivery, and a mailto fallback
-- [ ] 11. **SEO and social sharing** - per-route metadata and canonicals, sitemap, robots,
+- [x] 11. **SEO and social sharing** - per-route metadata and canonicals, sitemap, robots,
   generated social images, and structured data
 - [ ] 12. **Accessibility and performance pass** - keyboard and screen reader pass, axe
   clean, reduced-motion pass, Lighthouse at or above 95, bundle and image budget

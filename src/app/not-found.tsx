@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getProfile, getProjects } from "@/content";
+import { getProjects } from "@/content";
 
+/* No canonical: a 404 is not a page that should be indexed under any URL, and
+   `noindex` keeps a mistyped or stale link out of search results rather than
+   letting it compete with the real routes. */
 export const metadata: Metadata = {
-  title: `Page not found - ${getProfile().name}`,
+  title: "Page not found",
+  robots: { index: false, follow: false },
 };
 
 /* The root `not-found.tsx`, so it catches both `notFound()` from

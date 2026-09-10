@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/primitives/PageHeader";
 import { ProjectIndex } from "@/components/projects/ProjectIndex";
-import { getProfile, getProjects, getServices } from "@/content";
+import { getProjects, getServices } from "@/content";
 import { toProjectCardData } from "@/lib/projects";
+import { routeMetadata } from "@/lib/seo";
 
-/* Title and description only. Feature 10 owns metadata properly, including
-   canonicals, social images and the sitemap entry. Without this much the route
-   would inherit the home page title, which names the site rather than the page. */
 export const metadata: Metadata = {
-  title: `Projects - ${getProfile().name}`,
+  title: "Projects",
   description:
     "Selected builds across two tracks: Figma designs turned into production Next.js sites, and platform work for healthcare and fintech teams.",
+  ...routeMetadata("/projects"),
 };
 
 export default function ProjectsPage() {

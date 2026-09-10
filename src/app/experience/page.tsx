@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { ExperienceTimeline } from "@/components/detail/ExperienceTimeline";
 import { PageHeader } from "@/components/primitives/PageHeader";
-import { getProfile } from "@/content";
+import { routeMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: `Experience - ${getProfile().name}`,
+  title: "Experience",
   description:
     "A dated work history with what changed at each role and the stack behind it, rather than a list of duties.",
+  ...routeMetadata("/experience"),
 };
 
 export default function ExperiencePage() {

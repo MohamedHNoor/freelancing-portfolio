@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { AboutDetail } from "@/components/detail/AboutDetail";
 import { PageHeader } from "@/components/primitives/PageHeader";
-import { getProfile } from "@/content";
+import { routeMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: `About - ${getProfile().name}`,
+  title: "About",
   description:
     "How I work: what I build, the two kinds of project I take on, and how a build runs week to week.",
+  ...routeMetadata("/about"),
 };
 
 export default function AboutPage() {

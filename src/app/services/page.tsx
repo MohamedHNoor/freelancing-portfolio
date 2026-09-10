@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { ServicesDetail } from "@/components/detail/ServicesDetail";
 import { PageHeader } from "@/components/primitives/PageHeader";
-import { getProfile } from "@/content";
+import { routeMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: `Services - ${getProfile().name}`,
+  title: "Services",
   description:
     "Two engagement tracks: Figma designs turned into production Next.js sites, and React and Node platform work for healthcare and fintech teams.",
+  ...routeMetadata("/services"),
 };
 
 export default function ServicesPage() {

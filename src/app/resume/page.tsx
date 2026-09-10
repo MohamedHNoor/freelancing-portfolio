@@ -12,13 +12,13 @@ import {
 import { PRESENT, formatRoleEnd, formatYearMonth } from "@/lib/dates";
 import { PrintButton } from "@/components/resume/PrintButton";
 import { toContactLink } from "@/lib/links";
+import { routeMetadata } from "@/lib/seo";
 
-/* Title and description only, matching every other route. Feature 11 owns
-   canonicals, social images, structured data and the sitemap entry. */
 export const metadata: Metadata = {
-  title: `Resume - ${getProfile().name}`,
+  title: "Resume",
   description:
     "Experience, stack and selected work for a freelance developer building Figma to Next.js sites and React and Node platforms.",
+  ...routeMetadata("/resume"),
 };
 
 export default function ResumePage() {
