@@ -35,7 +35,7 @@ before feature 13, so a `Verify` command exists for automatic checks.
   generated social images, and structured data
 - [x] 12. **Accessibility and performance pass** - keyboard and screen reader pass, axe
   clean, reduced-motion pass, Lighthouse at or above 95, bundle and image budget
-- [ ] 13. **Deployment readiness** - Vercel configuration, environment variables, production
+- [x] 13. **Deployment readiness** - Vercel configuration, environment variables, production
   build verification, and a smoke test list
 
 ## Post-MVP

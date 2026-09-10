@@ -250,12 +250,22 @@ Package manager: **npm** (`package-lock.json`).
 
 - Dev server: `npm run dev` (http://localhost:3000)
 - Build: `npm run build`
+- Deploy preflight: `npm run preflight` (`VERCEL_ENV=production next build`)
 - Production server: `npm run start`
 - Lint: `npm run lint`
 - Typecheck: `npx tsc --noEmit`
 - Tests: `npm test` (Vitest, single run)
 - Tests (watch): `npm run test:watch`
 - Add a shadcn/ui component: `npx shadcn@latest add <component>`
+
+**`npm run preflight` is expected to fail today, and that is the gate working.**
+It runs the real production build with `VERCEL_ENV=production`, which is what
+Vercel sets on a production deploy. `src/lib/deploy-readiness.ts` refuses that
+build while any project in `src/content/projects.ts` carries
+`isPlaceholder: true`, and all three currently do. A red preflight means seeded
+example projects would have shipped as real client work; it does not mean the
+build is broken. `npm run build` and Vercel previews are deliberately not gated,
+because a preview of seeded content is how this site gets reviewed before launch.
 
 **The test gate is on.** `npm test` runs Vitest once and exits non-zero, and an
 empty suite fails rather than passing. A build step that adds in-scope logic

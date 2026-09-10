@@ -9,6 +9,7 @@ import {
   type Skill,
   type SkillGroup,
 } from "@/types/content";
+import { assertDeployable } from "@/lib/deploy-readiness";
 import { roles } from "./experience";
 import { profile } from "./profile";
 import { projects } from "./projects";
@@ -134,6 +135,13 @@ export function assertContentInvariants(content: ContentInput): void {
 }
 
 assertContentInvariants({ profile, services, projects, roles });
+
+/* The production deploy gate, beside the content invariants because it is the
+   same kind of rule: content that must never reach a build. This one is scoped
+   to `VERCEL_ENV === "production"`, so local builds and Vercel previews are
+   untouched and only a real deploy is refused. Run `npm run preflight` to ask
+   the same question locally. */
+assertDeployable({ projects, env: { VERCEL_ENV: process.env.VERCEL_ENV } });
 
 const orderedServices: readonly Service[] = [...services].sort(
   (a, b) => a.order - b.order,

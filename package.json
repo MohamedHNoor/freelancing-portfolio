@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "preflight": "VERCEL_ENV=production next build",
     "test": "vitest run",
     "test:watch": "vitest",
     "start": "next start",
