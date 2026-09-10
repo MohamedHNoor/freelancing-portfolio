@@ -124,7 +124,7 @@ export type Project = {
   category: ServiceSlug;
   stack: readonly string[];
   featured: boolean;
-  /** Seeded example content. Feature 12 blocks the deploy while any is true. */
+  /** Seeded example content. Feature 13 blocks the deploy while any is true. */
   isPlaceholder: boolean;
   links: ProjectLinks;
   metrics: readonly Metric[];

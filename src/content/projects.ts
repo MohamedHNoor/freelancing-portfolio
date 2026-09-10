@@ -2,7 +2,7 @@ import type { Project } from "@/types/content";
 
 /* PLACEHOLDER CONTENT. Every project here is fictional and carries
    `isPlaceholder: true`. "Example" company names follow the reserved-example
-   convention so none can be mistaken for a real client. Feature 12 blocks the
+   convention so none can be mistaken for a real client. Feature 13 blocks the
    deploy while any project is still flagged.
 
    Self-initiated builds and spec work count as real entries, provided the case

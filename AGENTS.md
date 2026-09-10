@@ -264,6 +264,51 @@ a passing test in the same reviewable diff. UI and layout are exempt and ride on
 browser evidence instead. Tests live in `tests/`, mirroring the `src/` path of
 the module under test.
 
+### Budgets
+
+Measured in feature 12 against `npm run build && npm start`, Chromium, desktop
+viewport, one fresh browser context per route so nothing is served from cache.
+
+**The Turbopack build output reports no size columns**, so these numbers come
+from the browser (`performance.getEntriesByType`), not from the build. To
+re-measure, load a route with a cold cache and sum `transferSize` by type.
+
+| Budget | Measured | Ceiling |
+|---|---|---|
+| Transferred JS per route | 243 KB, 249 KB with the project filter | 300 KB |
+| Total transferred page weight | 442-495 KB | 600 KB |
+| Fonts (three families, all routes) | 109.5 KB | 130 KB |
+| CSS (all routes) | 13 KB | 25 KB |
+| Project cover, source PNG in `public/` | 53-57 KB | 80 KB |
+| Project cover, as served through `next/image` | 2.4 KB | 10 KB |
+
+The served cover figure is the one that matters for a visitor: `next/image`
+resizes and re-encodes the source PNG, so a 55 KB source arrives as 2.4 KB. The
+source ceiling exists so a future real screenshot cannot be committed at several
+megabytes and quietly rely on that conversion.
+
+Fonts are the largest fixed cost on every route and are the first place to look
+if the total ceiling is ever threatened.
+
+**Lighthouse 12, mobile preset, against `npm run build && npm start`:**
+
+| Route | Perf | A11y | Best practices | SEO |
+|---|---|---|---|---|
+| `/` | 92 | 100 | 100 | 100 |
+| `/projects/example-health-platform` | 97 | 100 | 100 | 100 |
+| `/contact` | 93 | 100 | 100 | 100 |
+
+CLS is 0 and TBT is 10 ms everywhere; the performance gap is entirely LCP, and
+entirely simulated download contention. In a real browser LCP is 108 ms. The
+mobile preset simulates Slow 4G and a 4x CPU, so ~425 KB of critical path costs
+about 2.9 s of render delay that a real visitor on a fast connection never sees.
+
+Two routes are therefore below the 95 target locally. This is byte-bound, not a
+defect: fonts are `font-display: swap`, TTFB is 10 ms, and nothing above the fold
+animates in. Re-measure against the Vercel deployment before treating it as a
+real shortfall, because Brotli on HTML, JS and CSS shrinks exactly the transfer
+sizes the simulation is pricing. Fonts are already woff2 and will not shrink.
+
 **No browser test command is configured.** Run `/browser-tests` or
 `$browser-tests` to add a harness and document its exact command as `Browser
 tests`. Until then, UI verification uses the dev server and browser screenshots.

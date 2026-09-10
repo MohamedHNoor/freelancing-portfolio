@@ -1,11 +1,14 @@
 import type { Profile } from "@/types/content";
 
 /* PLACEHOLDER CONTENT. Every string here is seeded and must be replaced with
-   real copy before launch. The proof points in particular assert numbers that
-   have not been measured yet: feature 11 runs the Lighthouse, axe, and Core Web
-   Vitals passes, and each value below must be replaced with what that pass
-   actually recorded, or removed. A number whose evidence does not hold up is
-   the exact failure this site was designed to avoid. */
+   real copy before launch.
+
+   The proof points are the exception: feature 12 measured them and they are
+   real. Every value below is something that pass actually recorded, and the
+   evidence line says which measurement produced it. A number whose evidence
+   does not hold up is the exact failure this site was designed to avoid, so if
+   one of these stops being true, change the number or delete the entry. Do not
+   soften the evidence. */
 export const profile = {
   name: "Mohamed Noor",
 
@@ -46,18 +49,24 @@ export const profile = {
     cv: "",
   },
 
+  /* Measured in feature 12. The performance claim that used to sit here read
+     "95+" and had never been run; the mobile preset actually returns 92 to 97
+     across the three routes measured, so it was removed rather than restated.
+     Accessibility replaced it because it is the number this site genuinely
+     earned. Feature 13 re-measures against the deployment and decides whether a
+     performance figure goes back. */
   proofPoints: [
     {
-      value: "95+",
-      label: "Lighthouse performance",
+      value: "100/100",
+      label: "Lighthouse accessibility",
       evidence:
-        "Measured on this site's own routes with the mobile preset, re-run before each release.",
+        "Scored on the home page, a case study and the contact form with the mobile preset, against a production build.",
     },
     {
       value: "WCAG 2.1 AA",
       label: "Accessibility target",
       evidence:
-        "Every route passes an automated axe check plus a manual keyboard pass, in both themes.",
+        "Zero axe violations on every route in both themes, including the open menu and a form showing its errors. Colour contrast is a test that fails the build.",
     },
     {
       value: "100%",

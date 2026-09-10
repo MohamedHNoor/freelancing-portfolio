@@ -29,9 +29,9 @@ export function ServicesDetail() {
               {/* A real `h3`: this page's outline is h1 page, h2 nothing, h3
                   track. `CardTitle` renders a div and takes no `asChild`. */}
               <CardHeader className="min-w-0 content-start gap-2 lg:pr-10">
-                <h3 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
+                <h2 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
                   {service.name}
-                </h3>
+                </h2>
                 <CardDescription className="leading-relaxed">
                   {service.forWho}
                 </CardDescription>

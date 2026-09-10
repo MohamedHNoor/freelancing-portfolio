@@ -19,9 +19,9 @@ export function SkillsIndex() {
       {groups.map((group) => (
         <li key={group.id}>
         <div className="border-t border-border pt-8 lg:grid lg:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] lg:gap-10">
-            <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground lg:pt-1">
+            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground lg:pt-1">
               {group.label}
-            </h3>
+            </h2>
 
             <dl className="mt-6 grid gap-x-10 gap-y-5 sm:grid-cols-2 lg:mt-0">
               {group.skills.map((skill) => (
