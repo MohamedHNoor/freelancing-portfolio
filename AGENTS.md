@@ -289,13 +289,19 @@ re-measure, load a route with a cold cache and sum `transferSize` by type.
 | Total transferred page weight | 442-495 KB | 600 KB |
 | Fonts (three families, all routes) | 109.5 KB | 130 KB |
 | CSS (all routes) | 13 KB | 25 KB |
-| Project cover, source PNG in `public/` | 53-57 KB | 80 KB |
+| Project cover, source file in `public/` | 45-52 KB (WebP) | 80 KB |
 | Project cover, as served through `next/image` | 2.4 KB | 10 KB |
 
 The served cover figure is the one that matters for a visitor: `next/image`
-resizes and re-encodes the source PNG, so a 55 KB source arrives as 2.4 KB. The
+resizes and re-encodes the source, so a 52 KB source arrives at a few KB. The
 source ceiling exists so a future real screenshot cannot be committed at several
 megabytes and quietly rely on that conversion.
+
+Covers are WebP rather than PNG since feature 14. The real screenshots that
+replaced the seeded gradient panels do not fit 80 KB as PNG: the same capture is
+89 KB quantized, 88 KB as a JPEG that meets the ceiling only by visibly degrading
+text, and 52 KB as WebP with the type still crisp. `next/image` re-encodes either
+way, so the source format only affects repository weight.
 
 Fonts are the largest fixed cost on every route and are the first place to look
 if the total ceiling is ever threatened.

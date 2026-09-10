@@ -2,8 +2,10 @@
 
 ## 1. Problem - What problem are we solving?
 
-A freelance developer with no completed jobs and no reviews has to win work on evidence
-alone. When a prospective client opens a proposal link, the portfolio has a few seconds to
+A freelance developer with delivered work but no public reviews has to win work on
+evidence alone. Five projects have shipped to direct clients since August 2023, none of
+them through a platform that carries a rating, so a prospective client arrives with
+nothing to read about the person they are considering. When a prospective client opens a proposal link, the portfolio has a few seconds to
 answer three questions: who is this, can they build my specific thing, and is it safe to
 hire them.
 

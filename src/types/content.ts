@@ -28,7 +28,13 @@ export type Profile = {
   name: string;
   headline: string;
   specialisms: readonly ServiceSlug[];
+  /** The canonical one-line description. Read by the hero, the resume and the
+   *  `Person` structured data, so it has to stand alone in all three. */
   shortBio: string;
+  /** The footer's closing line. Deliberately not `shortBio`: the footer used to
+   *  render that, which repeated the hero's pitch verbatim at the bottom of
+   *  every page. A closing line should say what the opening did not. */
+  closing: string;
   longBio: readonly string[];
   availability: Availability;
   location: string;

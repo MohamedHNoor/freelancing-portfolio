@@ -60,11 +60,13 @@ describe("findDeployBlockers", () => {
     expect(blockers[0].message).toContain("example-finance-dashboard");
   });
 
-  /* The real content today. This is the state the gate exists for, and it is
-     expected to stay true until real projects replace the seeded three. */
-  it("blocks the content this repository currently ships", async () => {
+  /* Inverted in feature 14, when real projects replaced the seeded three. It
+     used to assert the shipped content was blocked; now it asserts the shipped
+     content is clear, which is what has to stay true for the site to deploy. The
+     fixture cases above are untouched and are what still prove the rule bites. */
+  it("clears the content this repository currently ships", async () => {
     const { getProjects } = await import("@/content");
-    expect(findDeployBlockers({ projects: getProjects() })).toHaveLength(1);
+    expect(findDeployBlockers({ projects: getProjects() })).toEqual([]);
   });
 });
 

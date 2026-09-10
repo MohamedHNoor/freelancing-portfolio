@@ -1,6 +1,6 @@
 # Freelance Portfolio - Project Overview
 
-<!-- blueprint:source-hash a298a1b64c6770b250c149d16e71fb2161564e6cad3af730d7cf718e4339c0bc -->
+<!-- blueprint:source-hash 43e44d69386b482055603d8c8b650ef047672c0242e9f69ee1874de02af3c587 -->
 
 > A portfolio site that converts cold traffic into qualified freelance enquiries in
 > two niches, for a developer with no reviews yet.
@@ -66,6 +66,17 @@ In build-plan order. One line of purpose each; the spec is `/feature`'s job.
     clean, reduced-motion pass, Lighthouse at or above 95, bundle and image budget.
 13. **Deployment readiness** - Vercel config, env vars, production build
     verification, smoke tests.
+
+Post-MVP, in build order:
+
+14. **Real projects replace the placeholders** - two case studies, one per service
+    track: TravelGrid Africa for the platform track, and this site itself for the
+    Figma to Next.js track. Screenshots, outcome-framed metrics with real
+    evidence, and the removal of all three seeded placeholders. This is what lets
+    a production build pass the deploy gate, so nothing ships before it.
+
+Still candidates, not yet scheduled: a writing section if there is something worth
+publishing, and testimonial quotes once there are genuine ones.
 
 Out of scope for the MVP: blog, CMS, analytics dashboards, testimonials (none
 exist yet to publish), and any pricing display.
@@ -137,7 +148,10 @@ imported at build time so every route can be statically generated. Types live in
 - `caseStudy` (CaseStudySection[])
 
 > `isPlaceholder: true` marks fictional seeded content. No project may reach
-> production with it set; feature 13 blocks on this.
+> production with it set. Feature 13 made that mechanical: a production build is
+> refused while any project carries the flag. Feature 14 is what clears it.
+> Self-initiated builds and spec work count as real entries, provided the case
+> study says so.
 
 ### CaseStudySection
 
@@ -241,6 +255,10 @@ switch from anchors to routes.
 - **Prerequisite:** a Resend account with a verified sender domain before contact
   email works in production; development can use Resend's shared test sender
 - **Health check:** not applicable, static hosting
+- **Deploy gate:** a production build is refused while any project is still a
+  seeded placeholder, enforcing the plan's rule that no project ships with the
+  flag set. All three currently are, so the site cannot deploy until feature 14
+  replaces them.
 - Deployment is explicit and separately approved. Nothing is pushed or deployed
   without a direct yes.
 
@@ -248,18 +266,26 @@ switch from anchors to routes.
 
 > Resolve in the plans, then re-run `/overview`.
 
-- **Where contact lives is now undecided.** `project-plan.md` §3 still calls it a
-  "Contact section", but feature 9 makes every navigation item a route. Feature 10
-  has to choose: a `/contact` page, a home section with the nav item left as an
-  anchor, or both. Until then the nav item stays `/#contact`, which is the dead
-  anchor it already is.
-- **Custom domain undecided.** `NEXT_PUBLIC_SITE_URL` must match the final origin
-  or canonical URLs, sitemap entries, and social images will resolve wrong. Needed
-  by feature 11, blocking for feature 13.
-- **Real identity and content not supplied.** Every content module ships seeded and
-  flagged: three fictional projects, invented roles, and placeholder usage context
-  for all thirty skills. Real profile copy, projects, experience, and the CV file
-  are needed before launch. Feature 13 blocks on the projects; nothing mechanically
-  guards the roles or the skill context.
+- **Custom domain still listed as undecided.** `project-plan.md` §8 says "to be
+  decided", but a value is already configured and every canonical URL, sitemap
+  entry and social image in the current build is baked against it. Confirm it and
+  correct the plan, or change it before the first production build - these are
+  build-time values, so a later change needs a rebuild.
 - **Resend sender domain not verified.** Free account plus DNS verification, and
-  DNS propagation is the slow part. Worth starting well before feature 10.
+  propagation is the slow part. Contact email does not deliver in production until
+  it is done. The form degrades rather than breaking: it fails closed and shows the
+  direct address.
+- **Seeded content beyond projects.** Feature 14 and the deploy gate cover projects
+  only. The roles in `experience.ts` and the usage context on all thirty skills are
+  still seeded and have no mechanical guard. The CV file is still absent, so the
+  resume download correctly renders nothing.
+- **`Verify` command never created.** `project-plan.md` §5 names "a Verify command
+  wired to automatic checks" and `build-plan.md` says `/ci` should run before
+  feature 13. Feature 13 shipped without it, so there is still no single verify
+  command and no automatic GitHub checks. Either run `/ci` or drop the claim from
+  the plans.
+- **Security headers are not in the plans.** Feature 13 shipped a Content Security
+  Policy, HSTS, `nosniff`, `Referrer-Policy`, `X-Frame-Options` and
+  `Permissions-Policy`, none of which `project-plan.md` §8 mentions. They are
+  deliberately not described above, because this overview may only carry what the
+  plans state. Add them to §8 and re-run so the two stop disagreeing.

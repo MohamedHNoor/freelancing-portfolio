@@ -40,6 +40,12 @@ before feature 13, so a `Verify` command exists for automatic checks.
 
 ## Post-MVP
 
-Candidates once the site is live and the first reviews are in: real client case studies
-replacing every placeholder, a writing section if there is something worth publishing, and
-testimonial quotes once there are genuine ones to quote.
+- [x] 14. **Real projects replace the placeholders** - two case studies, one per service
+  track: TravelGrid Africa for the platform track, and this portfolio site itself for the
+  Figma to Next.js track. Screenshots, outcome-framed metrics with real evidence, and the
+  removal of all three seeded placeholders, which is what lets a production build pass the
+  deploy gate
+
+Still candidates, once the site is live and the first reviews are in: a writing section if
+there is something worth publishing, and testimonial quotes once there are genuine ones to
+quote.

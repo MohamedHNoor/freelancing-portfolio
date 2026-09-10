@@ -108,14 +108,19 @@ export function CaseStudyHeader({
         height={project.cover.height}
         priority
         sizes="(min-width: 1152px) 68rem, 100vw"
-        /* Capped in height and cropped from the top. At the full content width
-           a 16:10 cover renders 681px tall, which is three quarters of a laptop
-           viewport and pushes the outcome numbers and the Problem section well
-           below the fold on the one page a client came to read. The cap does
-           not change the `sizes` calculation: the box stays 1088px wide, and
-           448px of height needs only 717px of source across, so width still
-           governs. */
-        className="mt-10 max-h-112 w-full rounded-xl border border-border object-cover object-top"
+        /* Full content width, uncropped. This has now been three things: a
+           681px-tall cover, then a height-capped crop that cut the bottom off,
+           then a width-capped plate that kept the whole image but rendered it
+           small with empty space either side. The cap existed because a cover
+           this tall pushes the outcome numbers and the Problem section below
+           the fold on a laptop, which is a real cost and is the reason to
+           revisit this if the page starts feeling front-loaded.
+
+           It loses to the simpler point: this is the page someone opens to
+           study the product, and a screenshot they cannot read serves nobody.
+           The title, summary and category all sit above it, so a reader has the
+           pitch before the image arrives. */
+        className="mt-10 w-full rounded-xl border border-border"
       />
 
       {project.metrics.length > 0 ? (

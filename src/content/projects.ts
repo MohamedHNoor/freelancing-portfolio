@@ -1,48 +1,147 @@
 import type { Project } from "@/types/content";
 
-/* PLACEHOLDER CONTENT. Every project here is fictional and carries
-   `isPlaceholder: true`. "Example" company names follow the reserved-example
-   convention so none can be mistaken for a real client. Feature 13 blocks the
-   deploy while any project is still flagged.
+/* Real work only. Every entry here carries `isPlaceholder: false`, and the
+   deploy gate in `src/lib/deploy-readiness.ts` refuses a production build if
+   that ever stops being true, so a seeded example cannot reach a buyer.
 
    Self-initiated builds and spec work count as real entries, provided the case
-   study says so. Array order is the canonical order for the whole site. */
+   study says so. TravelGrid is client work; this site is obviously its own.
+   Array order is the canonical order for the whole site: the home section, the
+   index, the sitemap, and the previous and next links on a case study all read
+   it. */
 export const projects = [
   {
-    slug: "example-studio-marketing-site",
-    title: "Design file to production marketing site",
+    slug: "travelgrid-africa",
+    title: "Multi-tenant travel platform with an auditable wallet",
     summary:
-      "A finished Figma file for a six-page marketing site, built as a responsive Next.js application with a typed content layer the client edits without touching code.",
+      "A wallet-first travel commerce platform for flights, hotels and cars, where agent and corporate organisations share one prepaid balance and every debit has to be correct under concurrency, replay and rollback.",
     role: "Sole developer",
-    period: "2025",
-    category: "figma-to-nextjs",
-    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Vercel"],
+    period: "2026",
+    category: "saas-platforms",
+    stack: [
+      "Node.js",
+      "TypeScript",
+      "Express.js",
+      "PostgreSQL",
+      "Drizzle",
+      "React",
+      "Vite",
+      "Docker",
+    ],
     featured: true,
-    isPlaceholder: true,
+    isPlaceholder: false,
     links: {},
     metrics: [
       {
-        label: "Lighthouse performance",
-        value: "98",
-        evidence: "Mobile preset, run against the deployed home page",
+        label: "Server tests",
+        value: "234",
+        evidence:
+          "Across 27 suites. The financial set proves webhook replay cannot double-credit, and that two concurrent bookings against one unit of inventory yield exactly one booking.",
+      },
+      {
+        label: "Tenant isolation",
+        value: "Postgres RLS",
+        evidence:
+          "rlsIsolation.test.ts connects as a dedicated non-superuser role and proves a forgotten filter still cannot return another tenant's rows.",
+      },
+      {
+        label: "Wallet debits",
+        value: "Atomic",
+        evidence:
+          "An insufficient balance rolls the inventory decrement back in the same transaction, proved in the integration suite rather than asserted.",
+      },
+    ],
+    cover: {
+      src: "/projects/travelgrid-africa.webp",
+      alt: "The TravelGrid Africa home page: a dark blue hero reading Explore Africa, Travel Smarter, above a white search panel with tabs for flights, hotels and cars and fields for origin, destination, dates, passengers and cabin class.",
+      width: 1200,
+      height: 750,
+    },
+    caseStudy: [
+      {
+        heading: "Problem",
+        body: [
+          "Travel agents and corporate travel desks do not buy the way a consumer does. They top a balance up once and draw against it all month, several people book on the same account, and an agent earns commission on what they sell. That turns a booking flow into a financial system: money moves before inventory is confirmed, two people can book the last seat at the same moment, and a payment provider will happily deliver the same webhook twice.",
+        ],
+      },
+      {
+        heading: "Approach",
+        body: [
+          "Financial correctness came first and was written as tests before it was written as features. The rules that matter are not visible in a screenshot, so they are pinned by an integration suite that provokes the failure rather than assuming it cannot happen.",
+          "Provider integration was designed as a seam from the start. The normalised flight, hotel and vehicle models mirror the shapes the real GDS APIs return, so wiring live Amadeus and Travelport is a change below the seam and nothing above it moves. The mock provider serves deterministic content over real inventory, which is what makes the concurrency tests meaningful.",
+        ],
+        bullets: [
+          "Webhook replay proved unable to double-credit or double-confirm",
+          "Two concurrent bookings against one unit of inventory yield exactly one booking",
+          "Commission rates snapshot at sale, so a later rate change cannot rewrite history",
+          "Tenant isolation tested from a non-superuser connection, where RLS actually applies",
+        ],
+      },
+      {
+        heading: "Architecture",
+        body: [
+          "Folders are layers and a filename carries its role, so one resource reads as a matching set: adminRouter, adminController, adminService, adminValidators. Controllers stay thin, moving a request to a service and back with no business logic and no database access. Services own the business rules and every transaction boundary. Repositories hold Drizzle queries only, including the conditional updates that make an inventory decrement and a wallet debit atomic.",
+          "Tenant isolation is enforced twice. The application layer scopes every query, and a request-pinned connection sets the RLS session variables so Postgres refuses cross-tenant rows even if a filter is forgotten. A boot-time check verifies the policies are actually on rather than trusting that a migration ran.",
+        ],
+        bullets: [
+          "Append-only ledger with database constraints as the backstop, not the plan A",
+          "Short-lived bearer token in memory, rotating refresh token in an httpOnly cookie, no credential in localStorage",
+          "Paystack webhooks verified by HMAC-SHA512 before anything is trusted",
+          "One Docker image for server and built client; stateless, pointed at managed Postgres",
+        ],
+      },
+      {
+        heading: "Outcome",
+        body: [
+          "234 server tests across 27 suites, with the financial and multitenancy behaviour proved rather than described: replay safety, booking atomicity under concurrency, commission immutability, and cross-tenant reads blocked at the database.",
+          "CI runs lint, typecheck, test and build against a real postgres:16 container on every push, and all four have to pass. The platform runs today as a single container on Railway.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "portfolio-site",
+    title: "Design reference to production portfolio",
+    summary:
+      "This site. Built from a design reference to a measured accessibility and performance standard, with the parts of the reference that would have been dishonest deliberately removed.",
+    role: "Sole developer",
+    period: "2026",
+    category: "figma-to-nextjs",
+    stack: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "shadcn/ui",
+      "Motion",
+      "Vitest",
+    ],
+    featured: true,
+    isPlaceholder: false,
+    links: {},
+    metrics: [
+      {
+        label: "Lighthouse accessibility",
+        value: "100/100",
+        evidence:
+          "Mobile preset against a production build, scored on the home page, a case study and the contact form.",
+      },
+      {
+        label: "axe violations",
+        value: "0",
+        evidence:
+          "Every route in both themes, including the mobile menu open and the contact form showing its errors.",
       },
       {
         label: "Largest Contentful Paint",
-        value: "1.4s",
-        evidence: "Mobile throttled, measured on the deployed site",
-      },
-      {
-        label: "Design fidelity",
-        value: "Every screen and state",
-        evidence: "Side-by-side review against the source file before handover",
+        value: "108 ms",
+        evidence:
+          "Measured in a real browser at mobile viewport, with cumulative layout shift at 0.",
       },
     ],
     cover: {
-      src: "/projects/example-studio-marketing-site.png",
-      /* Empty on purpose: a plain gradient panel conveys nothing and the
-         adjacent title already names the project. Real screenshots must carry
-         descriptive alt text. */
-      alt: "",
+      src: "/projects/portfolio-site.webp",
+      alt: "This site's home page in its dark theme: the headline Figma files in, Production Next.js out, beside a code-editor card listing the developer's tracks and stack, above a row of technology chips.",
       width: 1200,
       height: 750,
     },
@@ -50,191 +149,41 @@ export const projects = [
       {
         heading: "Problem",
         body: [
-          "The client had a finished design file and no front-end capacity. Two previous quotes had proposed rebuilding the design in a page builder, which would have lost the typography and spacing the designer had spent weeks on.",
-          "They also needed to edit copy after launch without booking developer time, and had been burned before by a site only its original author could change.",
+          "A developer with no reviews has to win work on evidence alone, and most portfolios actively work against that. They lead with a generic tagline, rate their own skills with percentage bars, and show screenshots with no account of what was solved. A client cannot tell a capable developer from a template.",
+          "The reference design I started from had that problem built in. It carried a client-count statistic and a satisfaction score, neither of which could be true for an account with no completed jobs, and skill bars that are self-assigned by definition.",
         ],
       },
       {
         heading: "Approach",
         body: [
-          "I read the whole file first and listed every screen, state, and breakpoint, including the ones the design implied but did not draw, such as empty states and long-name overflow. That list became the scope, agreed before any code.",
-          "The token layer was built before any page, so spacing, colour, and type came from one place and stayed consistent as the site grew.",
+          "I matched the reference where it was good and departed from it where it would have made the site lie. The palette, the hero composition, the eyebrow-and-heading rhythm and the card language were kept. The invented statistics and the skill percentages came out and were replaced with numbers that carry the measurement behind them.",
+          "Because accessibility and performance are services this site sells, they were treated as build gates rather than aspirations. Contrast is not reviewed by eye; it is a test that converts every theme token from oklch to sRGB and fails the build if a pair drops below its WCAG threshold.",
         ],
         bullets: [
-          "Every screen and state enumerated before the build started",
-          "Design tokens ported first, pages second",
-          "Each page reviewed on a staging URL as it landed",
+          "Every proof point on the site names the measurement it came from",
+          "Colour contrast is a test, asserted across fourteen token pairs in both themes",
+          "A production build is refused while any project is still seeded example content",
+          "The design reference was followed, not copied: three elements were removed on purpose",
         ],
       },
       {
         heading: "Architecture",
         body: [
-          "Next.js App Router with server components throughout, so the client bundle carried only the two interactive islands the design actually needed.",
-          "All copy lives in typed content modules, which means a wrong field fails the build rather than rendering an empty section.",
+          "Next.js App Router with server components throughout. Every route is statically generated and the only server work is the contact form's Server Action, which re-validates with the same Zod schema the browser used rather than trusting what arrived.",
+          "All copy lives in typed content modules with invariants checked at module scope, so a malformed entry fails the build instead of rendering an empty section. Client components are limited to the five islands that genuinely need them: the theme toggle, mobile navigation, contact form, project filter, and the marquee's pause control.",
         ],
         bullets: [
-          "Static generation for every route",
-          "Typed content modules instead of a CMS, given the page count",
-          "Two client components: the mobile menu and the contact form",
+          "Static generation for every route, verified in the build output",
+          "Security headers including a Content Security Policy, served without middleware so routes stay static",
+          "Social images generated at build time from the content layer",
+          "297 tests over the logic that can be wrong: validation, contrast, metadata, structured data",
         ],
       },
       {
         heading: "Outcome",
         body: [
-          "The site matched the design at every breakpoint and scored 98 on mobile Lighthouse performance.",
-          "The client has since made several copy changes themselves by editing the content modules, which was the point.",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "example-health-platform",
-    title: "Clinician-facing records platform",
-    summary:
-      "Role-aware interfaces for a patient records product, where what a user can see depends on their relationship to the record and every read is auditable.",
-    role: "Front end and API",
-    period: "2024 to 2025",
-    category: "saas-platforms",
-    stack: ["React", "Next.js", "Node.js", "PostgreSQL", "TypeScript"],
-    featured: true,
-    isPlaceholder: true,
-    links: {},
-    metrics: [
-      {
-        label: "Access rules",
-        value: "Enforced server-side",
-        evidence: "Every query scoped in the repository layer, not in the view",
-      },
-      {
-        label: "Audit coverage",
-        value: "Every record read",
-        evidence: "Append-only log written in the same transaction as the read",
-      },
-      {
-        label: "Test coverage",
-        value: "All authorization logic",
-        evidence: "Unit tests on the permission resolver, run in CI",
-      },
-    ],
-    cover: {
-      src: "/projects/example-health-platform.png",
-      alt: "",
-      width: 1200,
-      height: 750,
-    },
-    caseStudy: [
-      {
-        heading: "Problem",
-        body: [
-          "Clinicians needed a fast view of a patient record, but not every clinician was allowed to see every field, and the rules depended on the viewer's relationship to the patient rather than on a flat role.",
-          "The existing prototype resolved permissions in the interface, which meant the API would return data the screen then chose to hide. Anyone reading the network tab could see everything.",
-        ],
-      },
-      {
-        heading: "Approach",
-        body: [
-          "Permission resolution moved to the server and into the data layer. The API cannot return a field the viewer is not entitled to, so the interface never has to be trusted to hide anything.",
-          "The rules were written down and turned into unit tests before the screens were built, so the edge cases were argued about while they were still cheap to change.",
-        ],
-        bullets: [
-          "Authorization resolved in the repository layer, never in a component",
-          "Rules captured as tests before any interface work",
-          "Deny by default: a new field is invisible until a rule grants it",
-        ],
-      },
-      {
-        heading: "Architecture",
-        body: [
-          "Next.js front end against a Node API over Postgres. Every query is scoped by the viewer at the point of access, so there is no code path that can forget.",
-          "Reads and writes to a record append to an audit table inside the same transaction, which means a successful read cannot exist without its log entry.",
-        ],
-        bullets: [
-          "Postgres row scoping applied in one place",
-          "Audit writes share the transaction with the operation they record",
-          "Personal data kept out of logs and error reports",
-        ],
-      },
-      {
-        heading: "Outcome",
-        body: [
-          "The team could answer who had seen a record and when, which they could not do before.",
-          "Adding a new field became a two-line rule change plus a test, rather than an audit of every screen that might display it.",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "example-finance-dashboard",
-    title: "Reconciliation dashboard",
-    summary:
-      "A dashboard for spotting and resolving mismatches between two ledgers, built so an operator can see the discrepancy and the evidence for it on one screen.",
-    role: "Sole developer",
-    period: "2024",
-    category: "saas-platforms",
-    stack: ["React", "Next.js", "Node.js", "PostgreSQL"],
-    featured: true,
-    isPlaceholder: true,
-    links: {},
-    metrics: [
-      {
-        label: "Reconciliation run",
-        value: "Under 30 seconds",
-        evidence: "Measured on a day of production-scale transaction volume",
-      },
-      {
-        label: "Money handling",
-        value: "Integer minor units",
-        evidence: "No floating point anywhere in the calculation path",
-      },
-      {
-        label: "Repeat runs",
-        value: "Idempotent",
-        evidence: "Re-running a completed day produces no duplicate entries",
-      },
-    ],
-    cover: {
-      src: "/projects/example-finance-dashboard.png",
-      alt: "",
-      width: 1200,
-      height: 750,
-    },
-    caseStudy: [
-      {
-        heading: "Problem",
-        body: [
-          "Two systems recorded the same transactions and disagreed often enough that someone was reconciling them by hand in a spreadsheet each morning.",
-          "The manual process took hours, and because it produced no record of the reasoning, the same mismatch was investigated repeatedly.",
-        ],
-      },
-      {
-        heading: "Approach",
-        body: [
-          "The matching rules came first, written as pure functions with tests covering the awkward cases: partial matches, same-amount duplicates on one day, and entries arriving out of order.",
-          "The interface was built around the operator's actual question, which was not whether a mismatch existed but why, so each discrepancy shows both sides and the rule that failed.",
-        ],
-        bullets: [
-          "Matching logic as pure, tested functions before any interface",
-          "Every amount handled as integer minor units",
-          "Each resolution stores who decided it and on what basis",
-        ],
-      },
-      {
-        heading: "Architecture",
-        body: [
-          "A scheduled Node job pulls both ledgers, runs the matcher, and writes results to Postgres. The dashboard reads those results and never recomputes on request.",
-          "Runs are keyed by date and source so a repeat run replaces its own results rather than appending duplicates.",
-        ],
-        bullets: [
-          "Matching separated from both fetching and rendering",
-          "Idempotency keyed on date and source",
-          "Resolutions append to a history rather than overwriting",
-        ],
-      },
-      {
-        heading: "Outcome",
-        body: [
-          "The morning reconciliation went from hours of spreadsheet work to reviewing a short queue of genuine exceptions.",
-          "Because each resolution recorded its reasoning, recurring mismatches were traced to their source instead of being re-investigated.",
+          "Lighthouse accessibility, best practices and SEO all score 100 on the mobile preset, axe reports no violations on any route in either theme, and layout shift is zero.",
+          "Performance measured 92 to 97 on the same runs, which is below the 95 target on two of the three routes. The cause is recorded rather than glossed: with simulated Slow 4G, roughly 425 KB of critical path costs about 2.9 seconds of render delay, while the same page reaches its largest contentful paint in 108 ms on a real connection. Reporting only the flattering half of that would undercut the point of the site.",
         ],
       },
     ],

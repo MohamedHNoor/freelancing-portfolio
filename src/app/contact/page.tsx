@@ -8,7 +8,7 @@ import { routeMetadata } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Start a project: a few questions about what you are building, the timeline, and how to reach you.",
+    "Tell me what you are building: a few questions about the project, the timeline, and how to reach you. Every enquiry gets an answer within one business day.",
   ...routeMetadata("/contact"),
 };
 
@@ -25,8 +25,8 @@ export default function ContactPage() {
         <PageHeader
           id="contact-heading"
           eyebrow="Contact"
-          heading="Start a project"
-          lead="A few questions so the first reply is useful rather than a request for more detail. I answer every enquiry."
+          heading="Tell me what you are building"
+          lead="The questions below exist so the first reply is useful rather than a request for more detail. Every enquiry gets an answer within one business day, and if it is not something I should take on I will tell you rather than string it out."
         />
 
         <div className="mt-12">

@@ -1,7 +1,20 @@
 import type { Service } from "@/types/content";
 
-/* PLACEHOLDER CONTENT: scope and deliverables are illustrative and should be
-   tightened to what you actually offer. No prices anywhere, by design. */
+/* No prices anywhere, by design.
+ *
+ * Two kinds of statement live in this file and they carry different weight.
+ *
+ * `deliverables` describe what a client receives, and each one is backed by
+ * work in `projects.ts`: the accessibility, Core Web Vitals and typed-content
+ * claims by this site, and the access control, audit logging, Postgres
+ * modelling and CI claims by the travel platform. Do not add a deliverable
+ * there is no evidence of having done.
+ *
+ * `process` and `typicalTimeline` are promises about future engagements rather
+ * than claims about past ones, which is why they are allowed to describe
+ * intent. They still have to be true in the sense that matters: a client who
+ * takes them literally on the first engagement is owed exactly what they say.
+ * Change them if the way you actually work changes. */
 export const services = [
   {
     slug: "saas-platforms",
@@ -38,7 +51,7 @@ export const services = [
       {
         title: "Hand over",
         detail:
-          "Written architecture notes, environment setup, and a walkthrough with whoever maintains it next.",
+          "Architecture notes, environment setup, and a walkthrough with whoever maintains it next. The codebase is yours, which is how every engagement I have taken has ended.",
       },
     ],
     order: 2,
@@ -49,7 +62,7 @@ export const services = [
     forWho:
       "Founders, designers, and small agencies with a finished design file and no front-end capacity.",
     summary:
-      "A finished design file becomes a responsive, accessible Next.js site that matches the design, loads fast on a mid-range phone, and is straightforward to edit afterwards.",
+      "A finished design file becomes a pixel-accurate, fully responsive Next.js site that matches the file at every breakpoint, loads fast on a mid-range phone, and is straightforward to edit afterwards.",
     deliverables: [
       "Pixel-accurate build of every screen and state in the file",
       "Responsive behaviour at mobile, tablet, and desktop",
@@ -79,6 +92,11 @@ export const services = [
         title: "Fidelity and performance pass",
         detail:
           "Side-by-side check against the design, then Lighthouse and a keyboard pass before handover.",
+      },
+      {
+        title: "Yours to keep",
+        detail:
+          "The codebase is handed over on delivery. Every engagement I have taken has ended that way, so nothing you paid for depends on me still being around.",
       },
     ],
     order: 1,

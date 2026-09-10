@@ -12,7 +12,7 @@ export const contentType = OG_CONTENT_TYPE;
 
 /* Describes the card, which is what a screen reader user gets instead of it.
    Not a copy of the page title: the title is already read out beside it. */
-export const alt = `A dark title card for ${getProfile().name}, freelance developer, showing the tagline "${getProfile().headline}" above the two service tracks.`;
+export const alt = `A dark title card for ${getProfile().name}, freelance software engineer, showing the tagline "${getProfile().headline}" above the two service tracks.`;
 
 export default async function Image() {
   const profile = getProfile();
@@ -20,7 +20,7 @@ export default async function Image() {
 
   return new ImageResponse(
     (
-      <OgCard eyebrow="Freelance developer">
+      <OgCard eyebrow="Freelance software engineer">
         <div
           style={{
             display: "flex",

@@ -76,10 +76,11 @@ the form fails closed, logs no variable name, and shows the mailto fallback.
 ### The deploy gate
 
 `src/lib/deploy-readiness.ts` refuses a production build while any project in
-`src/content/projects.ts` carries `isPlaceholder: true`. All three currently do,
-so **a production deploy will fail until real projects replace them.** That is
-intended: `project-plan.md` states that no project may ship to production with
-the flag set.
+`src/content/projects.ts` carries `isPlaceholder: true`. Since feature 14 replaced
+the seeded projects with real work, **no project carries the flag and
+`npm run preflight` exits 0.** The guard stays because the next project added has
+to clear the same bar: `project-plan.md` states that no project may ship to
+production with the flag set.
 
 Preview deploys are not gated, so the site can be reviewed on Vercel before its
 content is real. Run `npm run preflight` locally to get the same answer.
@@ -89,7 +90,8 @@ content is real. Run `npm run preflight` locally to get the same answer.
 Cheapest first.
 
 1. Every URL in `/sitemap.xml` returns 200.
-2. `/sitemap.xml` lists eleven URLs, all on the production origin.
+2. `/sitemap.xml` lists ten URLs, all on the production origin: eight static
+   routes plus one per project.
 3. `/robots.txt` names that sitemap at the same origin.
 4. `/opengraph-image` renders, and so does one case study's image.
 5. View source on `/`: the canonical points at the production origin, not

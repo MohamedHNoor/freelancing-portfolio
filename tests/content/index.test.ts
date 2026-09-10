@@ -91,6 +91,7 @@ function content(overrides: Partial<ContentInput> = {}): ContentInput {
       headline: "",
       specialisms: [],
       shortBio: "",
+      closing: "",
       longBio: [],
       availability: { status: "available", detail: "" },
       location: "",
@@ -119,11 +120,19 @@ describe("getProjectBySlug", () => {
 describe("getAdjacentProjects", () => {
   const slugs = getProjectSlugs();
 
-  it("returns both neighbours in the middle, matching array order", () => {
-    expect(slugs.length).toBeGreaterThanOrEqual(3);
-    const { previous, next } = getAdjacentProjects(slugs[1]);
-    expect(previous?.slug).toBe(slugs[0]);
-    expect(next?.slug).toBe(slugs[2]);
+  /* Position-based rather than a hand-picked middle entry. The previous version
+     asserted the shipped list had at least three projects so index 1 had a
+     neighbour on each side, which stopped being true when real work replaced the
+     seeded three. This covers first, middle and last at any length. */
+  it("matches array position for every shipped project", () => {
+    expect(slugs.length).toBeGreaterThan(0);
+    slugs.forEach((slug, index) => {
+      const { previous, next } = getAdjacentProjects(slug);
+      expect(previous?.slug).toBe(index === 0 ? undefined : slugs[index - 1]);
+      expect(next?.slug).toBe(
+        index === slugs.length - 1 ? undefined : slugs[index + 1],
+      );
+    });
   });
 
   it("has no previous at the first entry and does not wrap to the last", () => {
@@ -251,8 +260,12 @@ describe("getProfileLinks", () => {
 });
 
 describe("getPlaceholderProjects", () => {
-  it("returns every project while they are all still flagged", () => {
-    expect(getPlaceholderProjects()).toHaveLength(getProjects().length);
+  /* Asserts the helper's contract rather than a count, which is what the
+     previous version did. A count only held while every shipped project was
+     seeded, so it broke the moment real work landed. This holds either way. */
+  it("returns exactly the projects flagged as seeded", () => {
+    const flagged = getProjects().filter((project) => project.isPlaceholder);
+    expect(getPlaceholderProjects()).toEqual(flagged);
   });
 });
 

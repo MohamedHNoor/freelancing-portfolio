@@ -24,7 +24,7 @@ const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const HOME_TITLE = `${getProfile().name} - Freelance developer`;
+const HOME_TITLE = `${getProfile().name} - Freelance software engineer`;
 
 /* `metadataBase` is what lets every route below declare its canonical, its
    `og:url` and its social image as a path and have Next resolve them against

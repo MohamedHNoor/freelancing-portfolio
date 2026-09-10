@@ -76,7 +76,7 @@ export function ProjectIndex({
       ) : (
         /* Not wrapped in `Reveal`: re-animating the list on every filter press
            is noise, and it delays the result the press asked for. */
-        <ul role="list" className="mt-8 space-y-8">
+        <ul role="list" className="mt-8 grid gap-8 lg:grid-cols-2">
           {visible.map((project, index) => (
             <li key={project.slug}>
               {/* Only the first card preloads its cover. Next reported it as
