@@ -3,11 +3,9 @@ import { ArrowUpRightIcon } from "lucide-react";
 import { Reveal } from "@/components/primitives/Reveal";
 import { StatusPill } from "@/components/primitives/StatusPill";
 import { HeroCodeCard } from "@/components/sections/HeroCodeCard";
+import { TechMarquee } from "@/components/sections/TechMarquee";
 import { Button } from "@/components/ui/button";
-import { TechIcon } from "@/components/icons/TechIcon";
 import { getProfile, getTechnologyMarks } from "@/content";
-import { cn } from "@/lib/utils";
-import type { Skill } from "@/types/content";
 
 /* Nothing in the left column is wrapped in Reveal. Reveal server-renders
    opacity 0, so its children are invisible until JavaScript runs. That is a
@@ -88,26 +86,7 @@ export function Hero() {
               </Button>
             </div>
 
-            {marks.length > 0 ? (
-              <div className="mt-12">
-                <p
-                  id="hero-stack-label"
-                  className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground"
-                >
-                  Working with
-                </p>
-                {/* Two identical copies scrolled by exactly one copy width, so
-                    the loop is seamless. Reduced motion stops the scroll and
-                    wraps the single visible copy instead, and hovering pauses
-                    it for anyone who wants to read a specific mark. */}
-                <div className="relative mt-4 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] motion-reduce:[mask-image:none]">
-                  <div className="flex w-max animate-marquee hover:[animation-play-state:paused] motion-reduce:w-full motion-reduce:animate-none motion-reduce:flex-wrap">
-                    <TechRow marks={marks} labelledBy="hero-stack-label" />
-                    <TechRow marks={marks} duplicate />
-                  </div>
-                </div>
-              </div>
-            ) : null}
+            {marks.length > 0 ? <TechMarquee marks={marks} /> : null}
           </div>
 
           <Reveal delay={0.15} className="min-w-0">
@@ -116,40 +95,5 @@ export function Hero() {
         </div>
       </div>
     </section>
-  );
-}
-
-type TechRowProps = {
-  marks: readonly Skill[];
-  labelledBy?: string;
-  /** The second copy exists only to make the scroll loop seamless, so it is
-   *  hidden from assistive technology and removed under reduced motion. */
-  duplicate?: boolean;
-};
-
-function TechRow({ marks, labelledBy, duplicate = false }: TechRowProps) {
-  return (
-    <ul
-      aria-labelledby={labelledBy}
-      aria-hidden={duplicate || undefined}
-      className={cn(
-        "flex shrink-0 gap-2 pr-2",
-        duplicate
-          ? "motion-reduce:hidden"
-          : "motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:gap-y-2",
-      )}
-    >
-      {marks.map((skill) => (
-        <li
-          key={skill.name}
-          className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground"
-        >
-          {skill.icon ? (
-            <TechIcon icon={skill.icon} className="size-3.5 shrink-0" />
-          ) : null}
-          {skill.name}
-        </li>
-      ))}
-    </ul>
   );
 }
