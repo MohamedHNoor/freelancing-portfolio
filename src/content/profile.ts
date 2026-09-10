@@ -22,7 +22,7 @@ export const profile = {
 
      Each half is aimed at one buyer and is unambiguous to them. "Pixel-exact"
      is the design client's whole anxiety in one word. "Auditable" is the term a
-     fintech or healthcare buyer already uses, and it is accurate rather than
+     platform buyer already uses, and it is accurate rather than
      aspirational: the travel platform's append-only ledger and row-level
      security are what make it true. It claims the property, never certification
      against a standard, and must not drift into implying one.

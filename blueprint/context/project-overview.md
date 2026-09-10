@@ -1,16 +1,18 @@
 # Freelance Portfolio - Project Overview
 
-<!-- blueprint:source-hash 43e44d69386b482055603d8c8b650ef047672c0242e9f69ee1874de02af3c587 -->
+<!-- blueprint:source-hash 41e5e97b9af9c9c7eae70561423b76132718954b61cac01f2bd9188d13ce2cde -->
 
 > A portfolio site that converts cold traffic into qualified freelance enquiries in
-> two niches, for a developer with no reviews yet.
+> two niches, for a developer with delivered work but no public reviews.
 
 ## Problem
 
-A freelance developer with no completed jobs has to win work on evidence alone.
-When a prospective client opens a proposal link, the site has seconds to answer
-who this is, whether they can build this specific thing, and whether hiring is
-safe.
+A freelance developer with delivered work but no public reviews has to win work
+on evidence alone. Five projects have shipped to direct clients since August
+2023, none through a platform that carries a rating, so a prospective client
+arrives with nothing to read about the person they are considering. When they
+open a proposal link, the site has seconds to answer who this is, whether they
+can build this specific thing, and whether hiring is safe.
 
 Most developer portfolios fail that test: a generic tagline, self-assigned skill
 percentages, and screenshots with no explanation of what was solved or what
@@ -266,19 +268,15 @@ switch from anchors to routes.
 
 > Resolve in the plans, then re-run `/overview`.
 
-- **Custom domain still listed as undecided.** `project-plan.md` §8 says "to be
-  decided", but a value is already configured and every canonical URL, sitemap
-  entry and social image in the current build is baked against it. Confirm it and
-  correct the plan, or change it before the first production build - these are
-  build-time values, so a later change needs a rebuild.
+- **`project-plan.md` §8 still calls the custom domain undecided.** It is not:
+  `mohamedhnoor.com` is configured, the developer's public profiles point at it,
+  and every canonical URL, sitemap entry and social image in the current build is
+  baked against it. Correct §8. These are build-time values, so changing the
+  origin later needs a rebuild, not just a redeploy.
 - **Resend sender domain not verified.** Free account plus DNS verification, and
   propagation is the slow part. Contact email does not deliver in production until
-  it is done. The form degrades rather than breaking: it fails closed and shows the
-  direct address.
-- **Seeded content beyond projects.** Feature 14 and the deploy gate cover projects
-  only. The roles in `experience.ts` and the usage context on all thirty skills are
-  still seeded and have no mechanical guard. The CV file is still absent, so the
-  resume download correctly renders nothing.
+  it is done. The form degrades rather than breaking: it fails closed and shows
+  the direct address.
 - **`Verify` command never created.** `project-plan.md` §5 names "a Verify command
   wired to automatic checks" and `build-plan.md` says `/ci` should run before
   feature 13. Feature 13 shipped without it, so there is still no single verify
@@ -287,5 +285,15 @@ switch from anchors to routes.
 - **Security headers are not in the plans.** Feature 13 shipped a Content Security
   Policy, HSTS, `nosniff`, `Referrer-Policy`, `X-Frame-Options` and
   `Permissions-Policy`, none of which `project-plan.md` §8 mentions. They are
-  deliberately not described above, because this overview may only carry what the
-  plans state. Add them to §8 and re-run so the two stop disagreeing.
+  deliberately absent from this overview, which may only carry what the plans
+  state. Add them to §8 and re-run so the two stop disagreeing.
+
+Resolved since the last generation, recorded so they are not reopened:
+
+- **Seeded content beyond projects.** Feature 14 replaced it all. The work
+  history, the thirty skill contexts, the services copy and the profile are real,
+  and no content module declares itself placeholder. The CV file remains absent,
+  which is correct: `profile.links.cv` is empty, so the resume download renders
+  nothing rather than a dead link.
+- **Where contact lives.** Feature 10 settled it: `/contact` carries the form and
+  the home page keeps a section that links to it.

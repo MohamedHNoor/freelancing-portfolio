@@ -6,7 +6,7 @@ import { routeMetadata } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Two engagement tracks: Figma designs turned into production Next.js sites, and React and Node platform work for healthcare and fintech teams.",
+    "Two engagement tracks: Figma designs turned into production Next.js sites, and React and Node SaaS platform work where access control and auditability matter.",
   ...routeMetadata("/services"),
 };
 

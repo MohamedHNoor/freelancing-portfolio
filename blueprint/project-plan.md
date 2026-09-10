@@ -5,9 +5,9 @@
 A freelance developer with delivered work but no public reviews has to win work on
 evidence alone. Five projects have shipped to direct clients since August 2023, none of
 them through a platform that carries a rating, so a prospective client arrives with
-nothing to read about the person they are considering. When a prospective client opens a proposal link, the portfolio has a few seconds to
-answer three questions: who is this, can they build my specific thing, and is it safe to
-hire them.
+nothing to read about the person they are considering. When that client opens a proposal
+link, the portfolio has a few seconds to answer three questions: who is this, can they
+build my specific thing, and is it safe to hire them.
 
 Most developer portfolios fail this. They lead with a generic tagline ("I build things for
 the web"), list technologies with self-assigned percentage bars, and show project

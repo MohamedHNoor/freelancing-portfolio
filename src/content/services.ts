@@ -18,9 +18,9 @@ import type { Service } from "@/types/content";
 export const services = [
   {
     slug: "saas-platforms",
-    name: "Healthcare and fintech platforms",
+    name: "SaaS Platforms",
     forWho:
-      "Technical founders and product leads building a regulated product on React, Node, and Postgres.",
+      "Technical founders and product leads building a product on React, Node and Postgres where the data matters.",
     summary:
       "Front end and API work for products handling sensitive data, where access control, auditability, and a real testing story are requirements rather than nice-to-haves.",
     deliverables: [

@@ -7,7 +7,7 @@ export type NavItem = {
    the content layer; read them with `getProfile()` from `@/content`. */
 export const SITE = {
   description:
-    "Freelance software engineer turning Figma designs into fast, accessible Next.js sites, and building React and Node platforms for healthcare and fintech teams.",
+    "Freelance software engineer turning Figma designs into fast, accessible Next.js sites, and building React and Node SaaS platforms where access control and auditability matter.",
 } as const;
 
 /** Where the site is assumed to run when `NEXT_PUBLIC_SITE_URL` is not
