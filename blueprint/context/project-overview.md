@@ -1,9 +1,10 @@
 # Freelance Portfolio - Project Overview
 
-<!-- blueprint:source-hash 41e5e97b9af9c9c7eae70561423b76132718954b61cac01f2bd9188d13ce2cde -->
+<!-- blueprint:source-hash 748e1d11b9a5685ee297e8263f64e612a0f0e5111b3a276b72184cd078661093 -->
 
-> A portfolio site that converts cold traffic into qualified freelance enquiries in
-> two niches, for a developer with delivered work but no public reviews.
+> A portfolio site that converts cold traffic into qualified freelance enquiries,
+> led by agency white-label builds and startup SaaS, for a developer with
+> delivered work but no public reviews.
 
 ## Problem
 
@@ -26,13 +27,19 @@ are build gates rather than goals.
 
 All arrive cold, often on mobile, from a link pasted into a message thread. No one
 is browsing, so every section has to earn the next scroll. No authentication, no
-access tiers: every visitor sees the same public site.
+access tiers: every visitor sees the same public site. Rows are in the order the
+site presents them.
 
 | User | Priority | Judging on |
 |---|---|---|
-| Client hiring a Figma to Next.js build | Primary, near term | Design fidelity, responsiveness, speed, communication, delivery time |
-| Client hiring healthcare or fintech SaaS work | Secondary, higher value | Access control, auditability, sensitive-data handling, engineering standards |
+| Design or digital agency hiring white-label development | Primary | Match to the design, speed and accessibility before their client sees it, the agency's name on the work with the client left to them, delivery time |
+| Founder or early product team building a startup SaaS | Primary, higher value | A launch that holds up: authentication, tenant isolation, payments and tests built in, a codebase the first engineering hire can take over |
+| Client hiring a Figma to Next.js build directly | Secondary | Design fidelity, responsiveness, speed, communication, delivery time |
 | Recruiter or engineering manager | Tertiary | Resume and a fast code-quality signal |
+
+There is no agency engagement to show yet, so the agency track rests on the build
+standard this site proves. The travel platform case study is the startup SaaS
+evidence.
 
 ## Features
 
@@ -42,11 +49,11 @@ In build-plan order. One line of purpose each; the spec is `/feature`'s job.
    header, mobile menu, footer, theme toggle, animation provider.
 2. **Content layer** - the typed content contract every section reads, seeded with
    flagged placeholder data.
-3. **Hero and about** - dual-track positioning with the Figma track first,
-   availability status, credibility strip, and the about narrative. This is the
+3. **Hero and about** - positioning that names the service tracks, availability
+   status, credibility strip, and the about narrative. This is the
    first-impression gate: if it fails, nothing below it is read.
-4. **Services** - the two engagement tracks with scope, deliverables, timeline, and
-   how a project runs.
+4. **Services** - the engagement tracks with scope, deliverables, timeline, and how
+   a project runs.
 5. **Skills and experience** - stack grouped by role with usage context, and the
    dated experience timeline.
 6. **Selected projects and index** - outcome-framed cards on the home page plus a
@@ -71,11 +78,11 @@ In build-plan order. One line of purpose each; the spec is `/feature`'s job.
 
 Post-MVP, in build order:
 
-14. **Real projects replace the placeholders** - two case studies, one per service
-    track: TravelGrid Africa for the platform track, and this site itself for the
-    Figma to Next.js track. Screenshots, outcome-framed metrics with real
-    evidence, and the removal of all three seeded placeholders. This is what lets
-    a production build pass the deploy gate, so nothing ships before it.
+14. **Real projects replace the placeholders** - two case studies: TravelGrid
+    Africa for the startup SaaS track, and this site itself for the Figma to
+    Next.js track. Screenshots, outcome-framed metrics with real evidence, and the
+    removal of all three seeded placeholders, which is what lets a production build
+    pass the deploy gate.
 
 Still candidates, not yet scheduled: a writing section if there is something worth
 publishing, and testimonial quotes once there are genuine ones.
@@ -96,7 +103,7 @@ imported at build time so every route can be statically generated. Types live in
 ### Profile (single record, `profile.ts`)
 
 - `name` (string)
-- `headline` (string) - one-sentence dual-track positioning, Figma track first
+- `headline` (string) - the two-line positioning, agency and startup work first
 - `specialisms` (Service slug[]) - links to the service tracks
 - `shortBio` (string), `longBio` (string[])
 - `availability` ({ `status`: "available" | "limited" | "unavailable", `detail`: string })
@@ -113,7 +120,8 @@ imported at build time so every route can be statically generated. Types live in
 
 ### Service (`services.ts`)
 
-- `slug` ("figma-to-nextjs" | "saas-platforms")
+- `slug` ("agency-builds" | "startup-saas" | "figma-to-nextjs") - one per track:
+  white-label builds for agencies, SaaS for startups, Figma to production Next.js
 - `name`, `forWho`, `summary` (string)
 - `deliverables` (string[])
 - `typicalTimeline` (string) - no prices anywhere
@@ -151,9 +159,9 @@ imported at build time so every route can be statically generated. Types live in
 
 > `isPlaceholder: true` marks fictional seeded content. No project may reach
 > production with it set. Feature 13 made that mechanical: a production build is
-> refused while any project carries the flag. Feature 14 is what clears it.
-> Self-initiated builds and spec work count as real entries, provided the case
-> study says so.
+> refused while any project carries the flag. Feature 14 cleared it, and no
+> project carries it now. Self-initiated builds and spec work count as real
+> entries, provided the case study says so.
 
 ### CaseStudySection
 
@@ -164,7 +172,7 @@ imported at build time so every route can be statically generated. Types live in
 ### ContactSubmission (validated, never stored)
 
 - `name`, `email`, `message` (string)
-- `projectType` ("figma-conversion" | "saas-build" | "other")
+- `projectType` ("agency-build" | "saas-build" | "figma-conversion" | "other")
 - `timeline` (string)
 - `budgetRange` (string, optional) - aids scoping, never displayed publicly
 - `company` (string) - honeypot, must be empty
@@ -191,8 +199,9 @@ the Server Action. Submissions are forwarded by email and never persisted.
 ## Monetization
 
 Indirect. The site sells nothing. It converts cold traffic from proposals,
-LinkedIn, and GitHub into qualified enquiries in the two target niches. Success is
-enquiries that match those niches, not visits.
+LinkedIn, and GitHub into qualified enquiries in the target niches: agency
+white-label builds and startup SaaS first, Figma to Next.js builds as well.
+Success is enquiries that match those niches, not visits.
 
 No rates or prices appear anywhere; publishing them either anchors low or filters
 out clients who would have paid more. The form captures project type, timeline,
@@ -235,7 +244,7 @@ wired to their inputs.
   sit above skills: proof of delivery outranks a technology list for a buyer with
   no reviews to read
 - `/about` - the full narrative, location, availability
-- `/services` - both engagement tracks in full, including how a project runs
+- `/services` - all three engagement tracks in full, including how a project runs
 - `/projects` - full index, filterable by category and stack
 - `/projects/[slug]` - case study, one static page per project
 - `/skills` - the full stack grouped by role, with usage context
@@ -259,8 +268,7 @@ switch from anchors to routes.
 - **Health check:** not applicable, static hosting
 - **Deploy gate:** a production build is refused while any project is still a
   seeded placeholder, enforcing the plan's rule that no project ships with the
-  flag set. All three currently are, so the site cannot deploy until feature 14
-  replaces them.
+  flag set. Feature 14 replaced all three, so the gate passes today.
 - Deployment is explicit and separately approved. Nothing is pushed or deployed
   without a direct yes.
 
@@ -290,10 +298,15 @@ switch from anchors to routes.
 
 Resolved since the last generation, recorded so they are not reopened:
 
+- **Target niches.** The plans moved from Figma to Next.js plus healthcare or
+  fintech SaaS to agency white-label builds and startup SaaS, with Figma to
+  Next.js kept as a third track. `project-plan.md` §2, §3 and §6 and
+  `build-plan.md` items 3, 4 and 14 now say so. The agency track has no case
+  study yet, which the plan states rather than hides.
 - **Seeded content beyond projects.** Feature 14 replaced it all. The work
-  history, the thirty skill contexts, the services copy and the profile are real,
-  and no content module declares itself placeholder. The CV file remains absent,
-  which is correct: `profile.links.cv` is empty, so the resume download renders
-  nothing rather than a dead link.
+  history, the skill contexts, the services copy and the profile are real, and no
+  content module declares itself placeholder. The CV file remains absent, which
+  is correct: `profile.links.cv` is empty, so the resume download renders nothing
+  rather than a dead link.
 - **Where contact lives.** Feature 10 settled it: `/contact` carries the form and
   the home page keeps a section that links to it.

@@ -8,8 +8,9 @@ this file, so there is a single source of truth.
 ## What this is
 
 A personal portfolio site for a freelance developer, built to convert cold
-traffic into qualified enquiries. It targets two niches: Figma to Next.js
-website builds, and healthcare or fintech SaaS platform work. Because the
+traffic into qualified enquiries. It leads with two niches, white-label builds
+for design and digital agencies and SaaS products for startups, and keeps Figma
+to Next.js website builds as a third track. Because the
 developer has no reviews yet, the site has to prove capability from the work
 itself, so its own performance and accessibility scores are build gates rather
 than goals. See `blueprint/project-plan.md` for the full rationale.
@@ -258,14 +259,15 @@ Package manager: **npm** (`package-lock.json`).
 - Tests (watch): `npm run test:watch`
 - Add a shadcn/ui component: `npx shadcn@latest add <component>`
 
-**`npm run preflight` is expected to fail today, and that is the gate working.**
-It runs the real production build with `VERCEL_ENV=production`, which is what
-Vercel sets on a production deploy. `src/lib/deploy-readiness.ts` refuses that
-build while any project in `src/content/projects.ts` carries
-`isPlaceholder: true`, and all three currently do. A red preflight means seeded
-example projects would have shipped as real client work; it does not mean the
-build is broken. `npm run build` and Vercel previews are deliberately not gated,
-because a preview of seeded content is how this site gets reviewed before launch.
+**`npm run preflight` is the deploy gate, and it passes today.** It runs the real
+production build with `VERCEL_ENV=production`, which is what Vercel sets on a
+production deploy. `src/lib/deploy-readiness.ts` refuses that build while any
+project in `src/content/projects.ts` carries `isPlaceholder: true`. Feature 14
+replaced the seeded projects, so none does and preflight exits 0. A red preflight
+means a seeded example project would ship as real client work; it does not mean
+the build is broken. `npm run build` and Vercel previews are deliberately not
+gated, because a preview of seeded content is how a new project gets reviewed
+before launch.
 
 **The test gate is on.** `npm test` runs Vitest once and exits non-zero, and an
 empty suite fails rather than passing. A build step that adds in-scope logic
@@ -276,8 +278,11 @@ the module under test.
 
 ### Budgets
 
-Measured in feature 12 against `npm run build && npm start`, Chromium, desktop
-viewport, one fresh browser context per route so nothing is served from cache.
+Set in feature 12 and re-measured on 2026-09-28, after the agency and startup
+SaaS repositioning, against `npm run build && npm start`: Chromium, desktop
+viewport, one fresh browser context per route so nothing is served from cache,
+and no scrolling, so lazy images and link prefetches below the fold stay out of
+the total.
 
 **The Turbopack build output reports no size columns**, so these numbers come
 from the browser (`performance.getEntriesByType`), not from the build. To
@@ -285,12 +290,19 @@ re-measure, load a route with a cold cache and sum `transferSize` by type.
 
 | Budget | Measured | Ceiling |
 |---|---|---|
-| Transferred JS per route | 243 KB, 249 KB with the project filter | 300 KB |
-| Total transferred page weight | 442-495 KB | 600 KB |
+| Transferred JS per route | 260.5 KB, the same on all ten routes | 300 KB |
+| Total transferred page weight | 462-528 KB, `/` the heaviest | 600 KB |
 | Fonts (three families, all routes) | 109.5 KB | 130 KB |
 | CSS (all routes) | 13 KB | 25 KB |
 | Project cover, source file in `public/` | 45-52 KB (WebP) | 80 KB |
 | Project cover, as served through `next/image` | 2.4 KB | 10 KB |
+
+JS had already drifted from feature 12's 243 KB to 257 KB before the
+repositioning; its technology icons added the last 3 KB. The home page grew more,
+from 496 KB to 528 KB, because every mark in the hero row is drawn twice there
+and again in the skills section. That is why only the technologies a buyer scans
+for carry an icon in `src/content/skills.ts`. The cover rows were not re-measured;
+the covers have not changed since feature 14.
 
 The served cover figure is the one that matters for a visitor: `next/image`
 resizes and re-encodes the source, so a 52 KB source arrives at a few KB. The
@@ -306,20 +318,26 @@ way, so the source format only affects repository weight.
 Fonts are the largest fixed cost on every route and are the first place to look
 if the total ceiling is ever threatened.
 
-**Lighthouse 12, mobile preset, against `npm run build && npm start`:**
+**Lighthouse 12, mobile preset, against `npm run build && npm start`,** two runs
+per route on 2026-09-28, which agreed on every score:
 
 | Route | Perf | A11y | Best practices | SEO |
 |---|---|---|---|---|
-| `/` | 92 | 100 | 100 | 100 |
-| `/projects/example-health-platform` | 97 | 100 | 100 | 100 |
+| `/` | 90 | 100 | 100 | 100 |
+| `/projects/travelgrid-africa` | 91 | 100 | 100 | 100 |
 | `/contact` | 93 | 100 | 100 | 100 |
 
-CLS is 0 and TBT is 10 ms everywhere; the performance gap is entirely LCP, and
-entirely simulated download contention. In a real browser LCP is 108 ms. The
-mobile preset simulates Slow 4G and a 4x CPU, so ~425 KB of critical path costs
-about 2.9 s of render delay that a real visitor on a fast connection never sees.
+Single runs vary by a few points, so compare pairs rather than one run: an
+earlier run of `/` the same day scored 87 and 89. Feature 12 measured 92, 97 and
+93, the middle one on a seeded placeholder case study that no longer exists.
 
-Two routes are therefore below the 95 target locally. This is byte-bound, not a
+CLS is 0 everywhere and TBT stays at or under 90 ms; the performance gap is
+entirely LCP (3.2 to 3.6 s), and entirely simulated download contention. Feature
+12 measured LCP at 108 ms in a real browser. The mobile preset simulates Slow 4G
+and a 4x CPU, so the critical path costs seconds of render delay that a real
+visitor on a fast connection never sees.
+
+All three routes are therefore below the 95 target locally. This is byte-bound, not a
 defect: fonts are `font-display: swap`, TTFB is 10 ms, and nothing above the fold
 animates in. Re-measure against the Vercel deployment before treating it as a
 real shortfall, because Brotli on HTML, JS and CSS shrinks exactly the transfer

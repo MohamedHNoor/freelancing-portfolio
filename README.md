@@ -1,9 +1,9 @@
 # Freelance Portfolio
 
-A personal portfolio site for a freelance developer, focused on two kinds of work:
-Figma to Next.js website builds, and healthcare or fintech SaaS platform
-engineering. Projects are presented as case studies (problem, approach, stack,
-outcome) rather than screenshots.
+A personal portfolio site for a freelance developer, focused on white-label builds
+for design and digital agencies and SaaS products for startups, with Figma to
+Next.js website builds as a third track. Projects are presented as case studies
+(problem, approach, stack, outcome) rather than screenshots.
 
 Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4,
 shadcn/ui, and Motion.
@@ -113,11 +113,12 @@ Cheapest first.
 
 ### Checks nothing can automate
 
-The deploy gate covers projects only. These are still seeded and carry no
-mechanical guard:
+The deploy gate covers projects only. These are real content now, but nothing
+mechanical guards them:
 
 - the roles in `src/content/experience.ts`
-- the usage context on all thirty entries in `src/content/skills.ts`
+- the usage context on every entry in `src/content/skills.ts`, including the
+  public-repository counts, which drift as repositories are added
 - the proof points in `src/content/profile.ts`, which must keep matching what was
   actually measured
 

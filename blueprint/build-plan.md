@@ -13,10 +13,10 @@ before feature 13, so a `Verify` command exists for automatic checks.
   header with navigation, mobile menu, footer, theme toggle, and the animation provider
 - [x] 2. **Content layer** - typed profile, services, skills, experience, and project data
   with lookup helpers, seeded with clearly flagged placeholder content
-- [x] 3. **Hero and about** - dual-track positioning with the Figma track first, availability
+- [x] 3. **Hero and about** - positioning that names the service tracks, availability
   status, credibility strip, and the about narrative
-- [x] 4. **Services** - the two engagement tracks with scope, deliverables, timeline, and
-  how a project actually runs
+- [x] 4. **Services** - the engagement tracks with scope, deliverables, timeline, and how a
+  project actually runs
 - [x] 5. **Skills and experience** - technology stack grouped by role with usage context,
   and the dated experience timeline
 - [x] 6. **Selected projects and index** - outcome-framed project cards on the home page
@@ -40,9 +40,9 @@ before feature 13, so a `Verify` command exists for automatic checks.
 
 ## Post-MVP
 
-- [x] 14. **Real projects replace the placeholders** - two case studies, one per service
-  track: TravelGrid Africa for the platform track, and this portfolio site itself for the
-  Figma to Next.js track. Screenshots, outcome-framed metrics with real evidence, and the
+- [x] 14. **Real projects replace the placeholders** - two case studies: TravelGrid Africa
+  for the startup SaaS track, and this portfolio site itself for the Figma to Next.js
+  track. Screenshots, outcome-framed metrics with real evidence, and the
   removal of all three seeded placeholders, which is what lets a production build pass the
   deploy gate
 

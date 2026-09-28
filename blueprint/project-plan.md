@@ -25,34 +25,42 @@ part of the argument, which is why they are treated as build gates rather than g
 
 ## 2. Users - Who is this for?
 
-Two buyer types, in the order they matter commercially:
+The site focuses on two buyer types and keeps a third track open. In the order the site
+presents them:
 
-**Primary, near term: clients hiring a Figma to Next.js build.** Typically a founder,
-designer, or small agency with a finished design file and no front-end capacity. They are
-evaluating on: can this person hit the design exactly, will it be responsive and fast, will
-they communicate, and will it be delivered on time. Budgets are smaller and competition per
-quality is lower, which makes this the fastest route to the first five-star reviews.
+**Primary: design and digital agencies hiring white-label development.** An agency with
+signed client work, a finished design, and more projects than developers to build them.
+They are evaluating on: will the build match the design, will it be fast and accessible
+before their client sees it, will it ship under the agency's name with the client
+relationship left with the agency, and will it be delivered on time. There is no agency
+engagement to show yet, so this track rests on the build standard this site itself proves.
 
-**Secondary, higher value: clients hiring for healthcare or fintech SaaS platforms.**
-Typically a technical founder or product lead needing React, Next.js, Node, and Postgres
-work on a regulated product. They are evaluating on: does this person understand access
-control, auditability, and handling sensitive data, and can they work to a real
-engineering standard. Higher budgets, more rigor expected, and a harder sell without
-reviews, so the site positions for these without leading with them.
+**Primary: founders building a startup SaaS.** Founders and early product teams taking a
+SaaS from idea or prototype to its first paying customers on React, Next.js, Node, and
+Postgres. They are evaluating on: can this person reach a launch that holds up, with
+authentication, tenant isolation, payments, and tests in place rather than bolted on
+later, and will the codebase suit the first engineering hire. Higher budgets and a harder
+sell without reviews; the travel platform case study is the evidence.
+
+**Secondary: clients hiring a Figma to Next.js build directly.** A founder, designer, or
+marketing team with a finished design file and no front-end capacity, evaluating on design
+fidelity, responsiveness, speed, communication, and delivery time.
 
 **Tertiary: recruiters and engineering managers** who arrive from LinkedIn or GitHub and
 want a resume and a code-quality signal quickly.
 
-All three arrive cold, often on mobile, often from a link pasted into a message thread. No
-one is browsing. Every section has to earn the next scroll.
+All of them arrive cold, often on mobile, often from a link pasted into a message thread.
+No one is browsing. Every section has to earn the next scroll.
 
 ## 3. Features - What does the MVP need?
 
-- Hero that states both specialisms in one sentence, Figma track first, with a primary
-  call to action and a current availability status
+- Hero that states the specialisms in a two-line headline, agency and startup work
+  first, with a primary call to action and a current availability status
 - Credibility strip of demonstrable metrics, replacing invented client-count statistics
 - About section: a short narrative of how the developer works and what they are good at
-- Services: two named engagement tracks with scope, deliverables, and typical timeline
+- Services: three named engagement tracks, white-label builds for agencies, SaaS for
+  startups, and Figma to production Next.js, each with scope, deliverables, process, and
+  typical timeline
 - Selected projects on the home page, framed by outcome rather than screenshot
 - Project index at its own route, filterable by technology or project type
 - Case study pages covering problem, approach, architecture, stack, and outcome
@@ -109,8 +117,9 @@ navigation, contact form, project filter, and animation wrappers.
 ## 6. Monetize - How will this make money?
 
 Indirectly. The site does not sell anything. It converts cold traffic from proposals,
-LinkedIn, and GitHub into qualified enquiries for freelance engagements in the two target
-niches. Success is measured in enquiries that match those niches, not in visits.
+LinkedIn, and GitHub into qualified enquiries for freelance engagements in the target
+niches: agency white-label builds and startup SaaS first, Figma to Next.js builds as well.
+Success is measured in enquiries that match those niches, not in visits.
 
 The contact form captures project type, timeline, and an optional budget range so enquiries
 arrive pre-qualified. No rates or prices appear anywhere on the site; pricing is a
