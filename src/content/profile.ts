@@ -16,30 +16,33 @@ import type { Profile } from "@/types/content";
 export const profile = {
   name: "Mohamed Noor",
 
-  /* Both specialisms in one line, Figma track first, as the plan requires.
-     Four words and two full stops, because the reader is on a phone, arriving
-     from a message thread, and deciding in about a second.
+  /* All three tracks in two short sentences, because the reader is on a
+     phone, arriving from a message thread, and deciding in about a second.
 
-     Each half is aimed at one buyer and is unambiguous to them. "Pixel-exact"
-     is the design client's whole anxiety in one word. "Auditable" is the term a
-     platform buyer already uses, and it is accurate rather than
-     aspirational: the travel platform's append-only ledger and row-level
-     security are what make it true. It claims the property, never certification
-     against a standard, and must not drift into implying one.
+     "Design files to production" is both design-led tracks at once: an agency
+     and a founder with a Figma file are buying the same thing, a file that
+     becomes a real site. "SaaS to launch" is the startup track, and the word
+     that matters is "launch": the product reaches paying customers with
+     authentication, tenant isolation, payments and tests in place, rather than
+     as a demo that needs rebuilding. The travel platform is the evidence for
+     that half, and it has to stay true. Who each track is for is the short
+     bio's job, directly below.
 
-     Deliberately no verb and no "your". A longer, warmer version read "The site
-     your design file promised", which was better copy in isolation and worse at
-     the job: at 78 characters it took three lines and the reader had to finish
-     a sentence to learn what is on offer. */
-  headline: "Pixel-exact sites. Auditable platforms.",
+     Deliberately no verb and no "your". An earlier, warmer version read "The
+     site your design file promised", which was better copy in isolation and
+     worse at the job: at 78 characters it took three lines and the reader had
+     to finish a sentence to learn what is on offer. */
+  headline: "Design files to production. SaaS to launch.",
 
-  specialisms: ["figma-to-nextjs", "saas-platforms"],
+  /* Agency and startup first, matching the service order. The hero code card
+     prints these slugs, so they are visible copy as well as keys. */
+  specialisms: ["agency-builds", "startup-saas", "figma-to-nextjs"],
 
-  /* Complements the headline rather than restating it. "Figma files in,
-     production Next.js out" already makes the promise; this says what standard
-     it is held to, and names the second track. */
+  /* Names who each track is for, which the headline deliberately does not, and
+     covers all three: Figma files built white-label for agencies or directly
+     for founders, and startup SaaS from schema to launch. */
   shortBio:
-    "I build sites that match the design file at every breakpoint, load fast on a mid-range phone and pass a keyboard test before handover, and the React, Node and Postgres platforms behind products that handle money or sensitive data.",
+    "I build Figma files into fast, accessible Next.js sites, white-label for agencies or directly for founders, and take startup SaaS products from first schema to launch on React, Node and Postgres.",
 
   /* The last thing on every page, so it carries what the hero does not: where I
      am, and the promise that outlasts the engagement. */
@@ -47,8 +50,8 @@ export const profile = {
     "Based in Wellington, New Zealand, working with clients across timezones. Every project is handed over on delivery, so the codebase is yours.",
 
   longBio: [
-    "I have been freelancing since August 2023, straight out of a year-long full-stack program, working directly with the people who own the product rather than through an agency. Most of that work has been handed over on delivery, so the client owns the codebase and nothing they paid for depends on me still being around.",
-    "Most of it falls into two shapes. The first is taking a finished design file and turning it into a responsive, accessible production site that matches the design and loads quickly. The second is platform work for products that handle money or sensitive data, where access control, auditability and a real testing story matter more than shipping fast. The travel platform in my projects is the second kind: a shared prepaid wallet, an append-only ledger, and tenant isolation enforced by Postgres rather than by remembering to add a filter.",
+    "I have been freelancing since August 2023, straight out of a year-long full-stack program. Most of that work has been handed over on delivery, so the client owns the codebase and nothing they paid for depends on me still being around.",
+    "The work I take on comes in three shapes. The first is agency work, delivered white-label: the agency keeps the client and the credit, and I build the site or web app from their design, inside their process. The second is startup product work: a SaaS taken from its first schema to a launch that holds up, with authentication, tenant isolation, payments and a real testing story in place before the first paying customer depends on them. The travel platform in my projects is that kind: a shared prepaid wallet, an append-only ledger, and tenant isolation enforced by Postgres rather than by remembering to add a filter. The third is the one this site demonstrates: a finished design file turned into a responsive, accessible production site that matches it and loads quickly.",
     "I care most about the part a client usually cannot see: whether it is fast on a mid-range phone, whether it works with a keyboard, and whether the next developer can read it. This site is the argument for that. Its accessibility score, contrast and performance numbers are published with the measurement that produced them, including the one that came in under target.",
   ],
 

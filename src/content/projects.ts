@@ -17,7 +17,7 @@ export const projects = [
       "A wallet-first travel commerce platform for flights, hotels and cars, where agent and corporate organisations share one prepaid balance and every debit has to be correct under concurrency, replay and rollback.",
     role: "Sole developer",
     period: "2026",
-    category: "saas-platforms",
+    category: "startup-saas",
     stack: [
       "Node.js",
       "TypeScript",

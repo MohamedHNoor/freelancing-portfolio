@@ -1,4 +1,4 @@
-export type ServiceSlug = "figma-to-nextjs" | "saas-platforms";
+export type ServiceSlug = "agency-builds" | "startup-saas" | "figma-to-nextjs";
 
 export type AvailabilityStatus = "available" | "limited" | "unavailable";
 

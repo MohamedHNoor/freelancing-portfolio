@@ -5,34 +5,46 @@ import type { Service } from "@/types/content";
  * Two kinds of statement live in this file and they carry different weight.
  *
  * `deliverables` describe what a client receives, and each one is backed by
- * work in `projects.ts`: the accessibility, Core Web Vitals and typed-content
- * claims by this site, and the access control, audit logging, Postgres
- * modelling and CI claims by the travel platform. Do not add a deliverable
- * there is no evidence of having done.
+ * work in `projects.ts`: the design fidelity, accessibility, Core Web Vitals
+ * and typed-content claims by this site, and the authentication, tenant
+ * isolation, payments, Postgres modelling, CI and deployment claims by the
+ * travel platform. Do not add a deliverable there is no evidence of having
+ * done.
  *
  * `process` and `typicalTimeline` are promises about future engagements rather
  * than claims about past ones, which is why they are allowed to describe
  * intent. They still have to be true in the sense that matters: a client who
  * takes them literally on the first engagement is owed exactly what they say.
- * Change them if the way you actually work changes. */
+ * Change them if the way you actually work changes.
+ *
+ * The white-label terms on the agency track are process, not deliverables, for
+ * that reason. No agency engagement is in `projects.ts` yet, so the track
+ * claims the build standard this site proves and promises the terms: the
+ * agency's name on the work, and the client relationship left with the agency. */
 export const services = [
   {
-    slug: "saas-platforms",
-    name: "SaaS Platforms",
+    slug: "startup-saas",
+    name: "SaaS for startups",
     forWho:
-      "Technical founders and product leads building a product on React, Node and Postgres where the data matters.",
+      "Founders and early product teams taking a SaaS from idea or prototype to its first paying customers, on a stack their first engineering hire will already know.",
     summary:
-      "Front end and API work for products handling sensitive data, where access control, auditability, and a real testing story are requirements rather than nice-to-haves.",
+      "Full-stack product work from first schema to launch, with the parts that are expensive to retrofit, such as authentication, tenant isolation, payments and tests, built in from the start rather than bolted on after the first customers arrive.",
     deliverables: [
-      "React and Next.js front end against your design system",
+      "React and Next.js front end against your design or design system",
       "Node API endpoints with input validation at every boundary",
       "Postgres data modelling and migrations",
-      "Role-based access control and audit logging",
-      "Handling rules for personal and health data, documented",
+      "Authentication, roles, and isolation between customer accounts",
+      "Payment provider integration with verified webhooks",
       "Test coverage on the logic that matters, wired into CI",
+      "Production deployment to managed hosting, as one container or on Vercel",
     ],
-    typicalTimeline: "Four to twelve weeks, depending on scope",
+    typicalTimeline: "Four to twelve weeks to a first launch, depending on scope",
     process: [
+      {
+        title: "Cut to the launch",
+        detail:
+          "Agree what the first version has to do for a paying customer, and write down what waits, so the scope is a decision rather than a drift.",
+      },
       {
         title: "Model the domain",
         detail:
@@ -51,16 +63,61 @@ export const services = [
       {
         title: "Hand over",
         detail:
-          "Architecture notes, environment setup, and a walkthrough with whoever maintains it next. The codebase is yours, which is how every engagement I have taken has ended.",
+          "Architecture notes, environment setup, and a walkthrough with whoever maintains it next, including your first engineering hire. The codebase is yours, which is how every engagement I have taken has ended.",
       },
     ],
     order: 2,
   },
   {
+    slug: "agency-builds",
+    name: "White-label for agencies",
+    forWho:
+      "Design and digital agencies with signed work, a finished design, and more projects than developers to build them.",
+    summary:
+      "Your team keeps the client and the credit. I build the site or web app from your design, inside your process, so it reaches your client matched to the file, fast on a mid-range phone, and accessible.",
+    deliverables: [
+      "Next.js marketing sites and React web apps, built from your design files",
+      "A match to the file at mobile, tablet, and desktop, including the states it implies but does not draw",
+      "Accessible markup and AA contrast, checked with a keyboard pass before handover",
+      "Core Web Vitals within target on mobile",
+      "Typed, readable code your own developers can maintain after handover",
+      "Deployment to your hosting, plus a handover walkthrough for your team",
+    ],
+    typicalTimeline: "One to three weeks for a typical site, longer for a web app",
+    process: [
+      {
+        title: "Brief from your team",
+        detail:
+          "You own the client relationship. I take the brief and the design from your team and bring questions back to you, so your client hears one voice.",
+      },
+      {
+        title: "Work inside your process",
+        detail:
+          "Your repository, your project board and your review habits, rather than a new set of tools for your team to learn.",
+      },
+      {
+        title: "Gaps found early",
+        detail:
+          "Every screen, state and breakpoint the design implies but does not draw is listed back to you before the build starts, so the questions reach you before they reach your client.",
+      },
+      {
+        title: "Reviewable as it lands",
+        detail:
+          "Each screen goes to a staging URL as it is built, for you to check, and to show your client when you are ready to.",
+      },
+      {
+        title: "Handed over under your name",
+        detail:
+          "The code goes into your repository on delivery, with no credit line or link back to me. Every engagement I have taken has ended with a handover, so nothing your client paid for depends on me still being around.",
+      },
+    ],
+    order: 1,
+  },
+  {
     slug: "figma-to-nextjs",
     name: "Figma to production Next.js",
     forWho:
-      "Founders, designers, and small agencies with a finished design file and no front-end capacity.",
+      "Founders, designers, and marketing teams with a finished design file and no front-end capacity.",
     summary:
       "A finished design file becomes a pixel-accurate, fully responsive Next.js site that matches the file at every breakpoint, loads fast on a mid-range phone, and is straightforward to edit afterwards.",
     deliverables: [
@@ -99,6 +156,6 @@ export const services = [
           "The codebase is handed over on delivery. Every engagement I have taken has ended that way, so nothing you paid for depends on me still being around.",
       },
     ],
-    order: 1,
+    order: 3,
   },
 ] as const satisfies readonly Service[];

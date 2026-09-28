@@ -17,7 +17,7 @@ const profile = {
 
 const services = [
   { slug: "figma-to-nextjs", name: "Figma to production Next.js" },
-  { slug: "saas-platforms", name: "Healthcare and fintech platforms" },
+  { slug: "startup-saas", name: "SaaS for startups" },
 ] as unknown as readonly Service[];
 
 const links: readonly ContactLink[] = [
@@ -31,7 +31,7 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     slug: "records-platform",
     title: "Records platform",
     summary: "A platform.",
-    category: "saas-platforms",
+    category: "startup-saas",
     stack: ["Next.js", "Postgres"],
     isPlaceholder: false,
     ...overrides,
@@ -67,7 +67,7 @@ describe("buildPersonJsonLd", () => {
   it("lists the service tracks as knowsAbout", () => {
     expect(person.knowsAbout).toEqual([
       "Figma to production Next.js",
-      "Healthcare and fintech platforms",
+      "SaaS for startups",
     ]);
   });
 
@@ -104,7 +104,7 @@ describe("buildCreativeWorkJsonLd", () => {
     expect(
       buildCreativeWorkJsonLd({
         project: makeProject(),
-        categoryLabel: "Healthcare and fintech platforms",
+        categoryLabel: "SaaS for startups",
         origin: ORIGIN,
       }),
     ).toEqual({
@@ -113,7 +113,7 @@ describe("buildCreativeWorkJsonLd", () => {
       name: "Records platform",
       description: "A platform.",
       url: "https://example.com/projects/records-platform",
-      about: "Healthcare and fintech platforms",
+      about: "SaaS for startups",
       keywords: ["Next.js", "Postgres"],
     });
   });
@@ -124,7 +124,7 @@ describe("buildCreativeWorkJsonLd", () => {
     expect(
       buildCreativeWorkJsonLd({
         project: makeProject({ isPlaceholder: true }),
-        categoryLabel: "Healthcare and fintech platforms",
+        categoryLabel: "SaaS for startups",
         origin: ORIGIN,
       }),
     ).toBeUndefined();

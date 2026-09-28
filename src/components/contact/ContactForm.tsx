@@ -45,7 +45,7 @@ export function ContactForm() {
     defaultValues: {
       name: "",
       email: "",
-      projectType: "figma-conversion",
+      projectType: "agency-build",
       timeline: "",
       budgetRange: "",
       message: "",

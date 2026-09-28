@@ -7,11 +7,16 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Skill } from "@/types/content";
 
+/** Only what the row draws. The marquee is a client component, so every prop
+ *  is serialized into the page payload, and a skill's `context` line is long
+ *  text this row never shows. */
+export type Mark = Pick<Skill, "name" | "icon">;
+
 const LABEL_ID = "hero-stack-label";
 
 /* The one client island in the hero, and deliberately a leaf.
  *
- *  The row scrolls on a 48s infinite loop, which WCAG 2.1 SC 2.2.2 (Pause,
+ *  The row scrolls on a 62s infinite loop, which WCAG 2.1 SC 2.2.2 (Pause,
  *  Stop, Hide, Level A) says needs a mechanism to stop. It used to have only
  *  `hover:[animation-play-state:paused]`, and the chips are plain `li` elements
  *  with nothing focusable inside, so a keyboard-only visitor had no route to
@@ -21,7 +26,7 @@ const LABEL_ID = "hero-stack-label";
  *  `Hero` would drag the headline, the calls to action and the code card into
  *  the client bundle, and the headline's neighbouring paragraph is the largest
  *  contentful element on the page. */
-export function TechMarquee({ marks }: { marks: readonly Skill[] }) {
+export function TechMarquee({ marks }: { marks: readonly Mark[] }) {
   const [paused, setPaused] = useState(false);
 
   const label = paused
@@ -79,7 +84,7 @@ export function TechMarquee({ marks }: { marks: readonly Skill[] }) {
 }
 
 type TechRowProps = {
-  marks: readonly Skill[];
+  marks: readonly Mark[];
   labelledBy?: string;
   /** The second copy exists only to make the scroll loop seamless, so it is
    *  hidden from assistive technology and removed under reduced motion. */

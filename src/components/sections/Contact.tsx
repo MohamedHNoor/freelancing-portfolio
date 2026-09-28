@@ -19,8 +19,9 @@ export function Contact() {
       /* Ordered the way a hesitant buyer decides, not the way a freelancer
          wants to talk.
 
-         1. Name the artefact. "Send the design file" removes the blank page,
-            which is the real reason most enquiries never get written.
+         1. Name the artefact. "Send the design file" or a paragraph about the
+            product removes the blank page, which is the real reason most
+            enquiries never get written.
          2. Reverse the risk. The fear when hiring someone with no review
             history is not a bad build, it is a wasted fortnight. A reply time
             and an offer to rule yourself out answer that for nothing.
@@ -32,7 +33,7 @@ export function Contact() {
          build at a time"; if that changes, change this first. A promise kept
          beats a faster one broken, especially on a site whose whole argument is
          that its claims survive checking. */
-      lead={`Send the design file, or a paragraph about the platform you need built. You get a reply within one business day, from me rather than a template, and if I am not the right fit I will say so instead of stringing it out. ${profile.availability.detail}`}
+      lead={`Send the design file, or a paragraph about the product you want to launch. You get a reply within one business day, from me rather than a template, and if I am not the right fit I will say so instead of stringing it out. ${profile.availability.detail}`}
     >
       {/* Matches the hero's primary button. The low-commitment framing belongs in
           the lead above, which has already named what to send, promised a reply

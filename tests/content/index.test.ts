@@ -199,14 +199,14 @@ describe("getRoles", () => {
 describe("getServices", () => {
   it("orders by the order field rather than array order", () => {
     // The seed file deliberately lists order 2 before order 1.
-    expect(getServices().map((entry) => entry.order)).toEqual([1, 2]);
-    expect(getServices()[0].slug).toBe("figma-to-nextjs");
+    expect(getServices().map((entry) => entry.order)).toEqual([1, 2, 3]);
+    expect(getServices()[0].slug).toBe("agency-builds");
   });
 });
 
 describe("getServiceBySlug", () => {
   it("returns the matching service", () => {
-    expect(getServiceBySlug("saas-platforms")?.slug).toBe("saas-platforms");
+    expect(getServiceBySlug("startup-saas")?.slug).toBe("startup-saas");
   });
 
   it("returns undefined for an unknown slug without throwing", () => {
@@ -293,7 +293,7 @@ describe("assertContentInvariants", () => {
       assertContentInvariants(
         content({
           services: [service({ slug: "figma-to-nextjs" })],
-          projects: [project({ category: "saas-platforms" })],
+          projects: [project({ category: "startup-saas" })],
         }),
       ),
     ).toThrow(/no matching service/);
@@ -359,7 +359,7 @@ describe("assertContentInvariants", () => {
         content({
           services: [
             service({ slug: "figma-to-nextjs", order: 1 }),
-            service({ slug: "saas-platforms", order: 1 }),
+            service({ slug: "startup-saas", order: 1 }),
           ],
         }),
       ),
@@ -444,6 +444,9 @@ describe("getTechnologyMarks", () => {
     expect(names).toContain("PostgreSQL");
     expect(names).toContain("MongoDB");
     expect(names).toContain("Docker");
+    // The mobile group is a technology group too, so its marks join the row.
+    expect(names).toContain("React Native");
+    expect(names).toContain("Expo");
     // Capabilities have no logo, and practices are not technologies at all.
     expect(names).not.toContain("REST APIs");
     expect(names).not.toContain("Performance budgets");

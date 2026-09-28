@@ -9,7 +9,7 @@ import { getServices } from "@/content";
 
 /* The full panels, carrying what the home summary drops: the deliverables and
    the process steps. Order comes from `getServices()`, which sorts by `order`
-   and puts the Figma track first, so nothing sorts here.
+   and puts the agency track first, so nothing sorts here.
 
    No `Reveal`. On this page the content is the reason to be here, and Reveal
    server-renders `opacity: 0`. */

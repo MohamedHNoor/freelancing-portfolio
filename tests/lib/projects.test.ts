@@ -26,8 +26,8 @@ const SERVICES: readonly Service[] = [
     order: 1,
   },
   {
-    slug: "saas-platforms",
-    name: "Healthcare and fintech platforms",
+    slug: "startup-saas",
+    name: "SaaS for startups",
     forWho: "",
     summary: "",
     deliverables: [],
@@ -76,7 +76,7 @@ describe("toProjectCardData", () => {
       summary: "Role-aware interfaces.",
       role: "Front end and API",
       period: "2024 to 2025",
-      category: "saas-platforms",
+      category: "startup-saas",
       stack: ["React", "PostgreSQL"],
       isPlaceholder: true,
       metrics: [{ label: "Audit coverage", value: "Every read", evidence: "Append-only log" }],
@@ -89,8 +89,8 @@ describe("toProjectCardData", () => {
       summary: "Role-aware interfaces.",
       role: "Front end and API",
       period: "2024 to 2025",
-      category: "saas-platforms",
-      categoryLabel: "Healthcare and fintech platforms",
+      category: "startup-saas",
+      categoryLabel: "SaaS for startups",
       stack: ["React", "PostgreSQL"],
       isPlaceholder: true,
       cover: { src: "/projects/records.png", alt: "A screenshot", width: 1200, height: 750 },
@@ -136,22 +136,22 @@ describe("toProjectCardData", () => {
 describe("getCategoryFacets", () => {
   it("returns a repeated category only once", () => {
     const facets = getCategoryFacets([
-      { ...BASE_CARD, slug: "a", category: "saas-platforms", categoryLabel: "Platforms" },
-      { ...BASE_CARD, slug: "b", category: "saas-platforms", categoryLabel: "Platforms" },
+      { ...BASE_CARD, slug: "a", category: "startup-saas", categoryLabel: "Platforms" },
+      { ...BASE_CARD, slug: "b", category: "startup-saas", categoryLabel: "Platforms" },
     ]);
 
-    expect(facets).toEqual([{ slug: "saas-platforms", label: "Platforms" }]);
+    expect(facets).toEqual([{ slug: "startup-saas", label: "Platforms" }]);
   });
 
   it("keeps first-appearance order rather than sorting", () => {
     const facets = getCategoryFacets([
-      { ...BASE_CARD, slug: "a", category: "saas-platforms", categoryLabel: "Platforms" },
+      { ...BASE_CARD, slug: "a", category: "startup-saas", categoryLabel: "Platforms" },
       { ...BASE_CARD, slug: "b", category: "figma-to-nextjs", categoryLabel: "Figma" },
-      { ...BASE_CARD, slug: "c", category: "saas-platforms", categoryLabel: "Platforms" },
+      { ...BASE_CARD, slug: "c", category: "startup-saas", categoryLabel: "Platforms" },
     ]);
 
     expect(facets).toEqual([
-      { slug: "saas-platforms", label: "Platforms" },
+      { slug: "startup-saas", label: "Platforms" },
       { slug: "figma-to-nextjs", label: "Figma" },
     ]);
   });
@@ -202,8 +202,8 @@ describe("getStackFacets", () => {
 describe("filterProjects", () => {
   const cards: readonly ProjectCardData[] = [
     { ...BASE_CARD, slug: "figma-site", category: "figma-to-nextjs", stack: ["Next.js", "Vercel"] },
-    { ...BASE_CARD, slug: "health", category: "saas-platforms", stack: ["React", "PostgreSQL"] },
-    { ...BASE_CARD, slug: "finance", category: "saas-platforms", stack: ["Node.js", "PostgreSQL"] },
+    { ...BASE_CARD, slug: "health", category: "startup-saas", stack: ["React", "PostgreSQL"] },
+    { ...BASE_CARD, slug: "finance", category: "startup-saas", stack: ["Node.js", "PostgreSQL"] },
   ];
 
   const slugs = (result: readonly ProjectCardData[]) =>
@@ -216,7 +216,7 @@ describe("filterProjects", () => {
   });
 
   it("filters by category alone", () => {
-    const result = filterProjects(cards, { category: "saas-platforms", stack: null });
+    const result = filterProjects(cards, { category: "startup-saas", stack: null });
 
     expect(slugs(result)).toEqual(["health", "finance"]);
   });
@@ -229,7 +229,7 @@ describe("filterProjects", () => {
 
   it("applies both filters together as an AND", () => {
     const result = filterProjects(cards, {
-      category: "saas-platforms",
+      category: "startup-saas",
       stack: "Node.js",
     });
 
@@ -263,7 +263,7 @@ describe("filterProjects", () => {
   it("does not mutate its input", () => {
     const before = JSON.stringify(cards);
 
-    filterProjects(cards, { category: "saas-platforms", stack: "PostgreSQL" });
+    filterProjects(cards, { category: "startup-saas", stack: "PostgreSQL" });
 
     expect(JSON.stringify(cards)).toBe(before);
   });

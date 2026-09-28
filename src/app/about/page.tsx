@@ -6,7 +6,7 @@ import { routeMetadata } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "How I work: what I build, the two kinds of project I take on, and how a build runs week to week.",
+    "How I work: what I build, the three kinds of project I take on, and how a build runs week to week.",
   ...routeMetadata("/about"),
 };
 

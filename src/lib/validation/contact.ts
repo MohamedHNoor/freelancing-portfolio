@@ -2,16 +2,18 @@ import { z } from "zod";
 
 /** A const tuple so the select options and the enum cannot drift apart. */
 export const PROJECT_TYPES = [
-  "figma-conversion",
+  "agency-build",
   "saas-build",
+  "figma-conversion",
   "other",
 ] as const;
 
 export type ProjectType = (typeof PROJECT_TYPES)[number];
 
 export const PROJECT_TYPE_LABELS: Record<ProjectType, string> = {
+  "agency-build": "A white-label build for an agency",
+  "saas-build": "A SaaS product for a startup",
   "figma-conversion": "Figma design to a production site",
-  "saas-build": "A platform or SaaS build",
   other: "Something else",
 };
 

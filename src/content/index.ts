@@ -209,6 +209,7 @@ export function getAdjacentProjects(slug: string): AdjacentProjects {
    Practices belong in the skills section, not in a row read in two seconds. */
 const TECHNOLOGY_GROUP_IDS: readonly string[] = [
   "front-end",
+  "mobile",
   "back-end",
   "data",
   "tooling",

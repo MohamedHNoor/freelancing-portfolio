@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { ArrowUpRightIcon } from "lucide-react";
 import { Reveal } from "@/components/primitives/Reveal";
@@ -6,6 +7,7 @@ import { HeroCodeCard } from "@/components/sections/HeroCodeCard";
 import { TechMarquee } from "@/components/sections/TechMarquee";
 import { Button } from "@/components/ui/button";
 import { getProfile, getTechnologyMarks } from "@/content";
+import { headlineLines } from "@/lib/headline";
 
 /* Nothing in the left column is wrapped in Reveal. Reveal server-renders
    opacity 0, so its children are invisible until JavaScript runs. That is a
@@ -56,13 +58,27 @@ export function Hero() {
 
             {/* The largest contentful element. Never animated, never starting
                 from opacity 0, and the only place a visitor confirms whose
-                site this is, because the header carries the mark alone. */}
+                site this is, because the header carries the mark alone.
+
+                One line per sentence. The sizes are the largest at which
+                "Design files to production." still fits on one line with the
+                web font loaded: `7vw` holds it on phones down to 320px, and
+                `lg` and `xl` fit the column beside the code card at 486 of
+                496px and 608 of 624px. A longer first sentence needs these
+                re-measured, or it wraps to three lines. The space
+                between the lines keeps the sentences apart in the heading's
+                accessible name. */}
             <h1 className="mt-7">
               <span className="block font-mono text-sm uppercase tracking-[0.22em] text-brand">
                 {profile.name}
               </span>{" "}
-              <span className="mt-4 block text-balance font-heading text-[clamp(1.55rem,7.5vw,2rem)] font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-[2.6rem] xl:text-[3.25rem]">
-                {profile.headline}
+              <span className="mt-4 block text-balance font-heading text-[clamp(1.45rem,7vw,2rem)] font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-[2.5rem] xl:text-[3.125rem]">
+                {headlineLines(profile.headline).map((line, index) => (
+                  <Fragment key={line}>
+                    {index > 0 ? " " : null}
+                    <span className="block">{line}</span>
+                  </Fragment>
+                ))}
               </span>
             </h1>
 
@@ -86,7 +102,11 @@ export function Hero() {
               </Button>
             </div>
 
-            {marks.length > 0 ? <TechMarquee marks={marks} /> : null}
+            {marks.length > 0 ? (
+              <TechMarquee
+                marks={marks.map(({ name, icon }) => ({ name, icon }))}
+              />
+            ) : null}
           </div>
 
           <Reveal delay={0.15} className="min-w-0">

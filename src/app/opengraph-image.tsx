@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { OgCard } from "@/components/og/OgCard";
 import { getProfile, getServices } from "@/content";
+import { headlineLines } from "@/lib/headline";
 import { OG_COLORS, OG_CONTENT_TYPE, OG_SIZE, ogFonts } from "@/lib/og";
 
 /* The site card. Metadata files inherit down the route tree, so this is the
@@ -12,7 +13,7 @@ export const contentType = OG_CONTENT_TYPE;
 
 /* Describes the card, which is what a screen reader user gets instead of it.
    Not a copy of the page title: the title is already read out beside it. */
-export const alt = `A dark title card for ${getProfile().name}, freelance software engineer, showing the tagline "${getProfile().headline}" above the two service tracks.`;
+export const alt = `A dark title card for ${getProfile().name}, freelance software engineer, showing the tagline "${getProfile().headline}" above the service tracks.`;
 
 export default async function Image() {
   const profile = getProfile();
@@ -21,16 +22,21 @@ export default async function Image() {
   return new ImageResponse(
     (
       <OgCard eyebrow="Freelance software engineer">
+        {/* A line per sentence, as in the hero. Satori only lays out several
+            children inside a flex container, hence the column. */}
         <div
           style={{
             display: "flex",
+            flexDirection: "column",
             fontSize: 68,
             lineHeight: 1.12,
             letterSpacing: "-0.02em",
             maxWidth: 900,
           }}
         >
-          {profile.headline}
+          {headlineLines(profile.headline).map((line) => (
+            <div key={line}>{line}</div>
+          ))}
         </div>
 
         <div style={{ display: "flex", gap: 16, marginTop: 44 }}>
