@@ -5,6 +5,14 @@
 
 export type SecurityHeader = { key: string; value: string };
 
+export type SecurityHeaderOptions = {
+  /** True under `next dev` only. React's development build uses `eval()` to
+   *  rebuild server error stacks in the browser, so the development policy
+   *  allows it. React and Next never use `eval()` in a production build, and
+   *  the production policy keeps refusing it. */
+  development: boolean;
+};
+
 /* The two `'unsafe-inline'` allowances are the honest part of this policy, and
    they are deliberate rather than accidental.
 
@@ -29,44 +37,65 @@ export type SecurityHeader = { key: string; value: string };
    mitigating fact is that this site renders no user-submitted HTML: its one
    script sink is the JSON-LD in `src/components/seo/JsonLd.tsx`, which escapes
    `<` and is directly tested. */
-const CSP_DIRECTIVES: readonly string[] = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
-  /* `data:` covers the inline SVG icon; `blob:` covers images Next may hand the
-     document from a blob URL. */
-  "img-src 'self' data: blob:",
-  "font-src 'self'",
-  /* Same-origin only. The contact Server Action posts back to this origin, and
-     Resend is called from the server, never the browser. */
-  "connect-src 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "object-src 'none'",
-  "upgrade-insecure-requests",
-];
+function cspDirectives({
+  development,
+}: SecurityHeaderOptions): readonly string[] {
+  return [
+    "default-src 'self'",
+    development
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+      : "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    /* `data:` covers the inline SVG icon; `blob:` covers images Next may hand the
+       document from a blob URL. */
+    "img-src 'self' data: blob:",
+    "font-src 'self'",
+    /* Same-origin only. The contact Server Action posts back to this origin, and
+       Resend is called from the server, never the browser. */
+    "connect-src 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "upgrade-insecure-requests",
+  ];
+}
 
-export const CONTENT_SECURITY_POLICY = CSP_DIRECTIVES.join("; ");
+/** Takes the environment as a parameter rather than reading it, so both
+ *  policies are testable without mutating `process.env`. */
+export function contentSecurityPolicy(options: SecurityHeaderOptions): string {
+  return cspDirectives(options).join("; ");
+}
 
-export const SECURITY_HEADERS: readonly SecurityHeader[] = [
-  { key: "Content-Security-Policy", value: CONTENT_SECURITY_POLICY },
-  /* Two years, subdomains included, and preload-eligible. Vercel terminates TLS
-     for custom domains, so this only ever hardens an already-HTTPS origin. */
-  {
-    key: "Strict-Transport-Security",
-    value: "max-age=63072000; includeSubDomains; preload",
-  },
-  { key: "X-Content-Type-Options", value: "nosniff" },
-  /* Full URL to this origin, origin only when leaving it. Keeps the referring
-     path off third-party servers without breaking same-site analytics later. */
-  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  /* Redundant with `frame-ancestors 'none'` for modern browsers, and still the
-     only signal older ones understand. */
-  { key: "X-Frame-Options", value: "DENY" },
-  /* This site asks for none of these, so it declines them outright. */
-  {
-    key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), payment=()",
-  },
-];
+export function securityHeaders(
+  options: SecurityHeaderOptions,
+): readonly SecurityHeader[] {
+  return [
+    { key: "Content-Security-Policy", value: contentSecurityPolicy(options) },
+    /* Two years, subdomains included, and preload-eligible. Vercel terminates TLS
+       for custom domains, so this only ever hardens an already-HTTPS origin. */
+    {
+      key: "Strict-Transport-Security",
+      value: "max-age=63072000; includeSubDomains; preload",
+    },
+    { key: "X-Content-Type-Options", value: "nosniff" },
+    /* Full URL to this origin, origin only when leaving it. Keeps the referring
+       path off third-party servers without breaking same-site analytics later. */
+    { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+    /* Redundant with `frame-ancestors 'none'` for modern browsers, and still the
+       only signal older ones understand. */
+    { key: "X-Frame-Options", value: "DENY" },
+    /* This site asks for none of these, so it declines them outright. */
+    {
+      key: "Permissions-Policy",
+      value: "camera=(), microphone=(), geolocation=(), payment=()",
+    },
+  ];
+}
+
+/** The production policy: what `next build` bakes in and what ships. */
+export const CONTENT_SECURITY_POLICY = contentSecurityPolicy({
+  development: false,
+});
+
+export const SECURITY_HEADERS = securityHeaders({ development: false });

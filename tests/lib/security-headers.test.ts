@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   CONTENT_SECURITY_POLICY,
   SECURITY_HEADERS,
+  contentSecurityPolicy,
+  securityHeaders,
 } from "@/lib/security-headers";
 
-/** The policy split back into `name -> value` for assertion. */
-function directives(): Map<string, string> {
+/** A policy split back into `name -> value` for assertion. */
+function directives(policy = CONTENT_SECURITY_POLICY): Map<string, string> {
   return new Map(
-    CONTENT_SECURITY_POLICY.split(";").map((part) => {
+    policy.split(";").map((part) => {
       const [name, ...rest] = part.trim().split(/\s+/);
       return [name, rest.join(" ")];
     }),
@@ -100,5 +102,55 @@ describe("CONTENT_SECURITY_POLICY", () => {
 
   it("allows no eval anywhere", () => {
     expect(CONTENT_SECURITY_POLICY).not.toContain("unsafe-eval");
+  });
+
+  it("is the policy the production headers serve", () => {
+    expect(contentSecurityPolicy({ development: false })).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
+    const served = SECURITY_HEADERS.find(
+      (h) => h.key === "Content-Security-Policy",
+    );
+    expect(served?.value).toBe(CONTENT_SECURITY_POLICY);
+  });
+});
+
+/* `next dev` only. React's development build calls `eval()` to rebuild server
+   error stacks, and refusing it floods the console. The allowance must not leak
+   into production or spread past script-src. */
+describe("contentSecurityPolicy in development", () => {
+  const development = directives(contentSecurityPolicy({ development: true }));
+
+  it("allows eval in script-src", () => {
+    expect(development.get("script-src")).toBe(
+      "'self' 'unsafe-inline' 'unsafe-eval'",
+    );
+  });
+
+  it("allows eval nowhere else", () => {
+    for (const [name, value] of development) {
+      if (name !== "script-src") {
+        expect(value, `${name} should not allow eval`).not.toContain(
+          "unsafe-eval",
+        );
+      }
+    }
+  });
+
+  it("matches production in every other directive", () => {
+    const production = directives();
+    expect([...development.keys()]).toEqual([...production.keys()]);
+    for (const [name, value] of production) {
+      if (name !== "script-src") {
+        expect(development.get(name), name).toBe(value);
+      }
+    }
+  });
+
+  it("is what the development headers serve", () => {
+    const served = securityHeaders({ development: true }).find(
+      (h) => h.key === "Content-Security-Policy",
+    );
+    expect(served?.value).toBe(contentSecurityPolicy({ development: true }));
   });
 });

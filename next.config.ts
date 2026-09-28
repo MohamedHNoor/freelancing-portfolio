@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { SECURITY_HEADERS } from "./src/lib/security-headers";
+import { securityHeaders } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -8,12 +8,19 @@ const nextConfig: NextConfig = {
      than in middleware: middleware would make every route dynamic, and this
      site's contract is that all of them are statically generated. Vercel
      translates these into its own routing config at deploy time, and
-     `next start` serves them locally, so both can be verified the same way. */
+     `next start` serves them locally, so both can be verified the same way.
+
+     `next dev` sets NODE_ENV to "development" before loading this file, and
+     gets a policy that also allows React's development-only `eval()`. A
+     production build never matches, so what ships is unchanged. */
   async headers() {
+    const headers = securityHeaders({
+      development: process.env.NODE_ENV === "development",
+    });
     return [
       {
         source: "/:path*",
-        headers: SECURITY_HEADERS.map(({ key, value }) => ({ key, value })),
+        headers: headers.map(({ key, value }) => ({ key, value })),
       },
     ];
   },
