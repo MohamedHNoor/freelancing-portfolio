@@ -15,6 +15,12 @@ developer has no reviews yet, the site has to prove capability from the work
 itself, so its own performance and accessibility scores are build gates rather
 than goals. See `blueprint/project-plan.md` for the full rationale.
 
+The same app is gaining a private, owner-only business dashboard (build-plan
+features 15 to 23): clients, projects, milestone payment plans, tasks, and
+milestone payments through Stripe Checkout, backed by Neon Postgres, Drizzle, and
+Better Auth. It never changes the public site's static generation or budgets. Its
+design reference is `blueprint/dashboard-architecture.md`.
+
 This project is built with the **AI Blueprint**, a workflow layer, not an
 app skeleton. To start a new project, scaffold the app first in an empty folder
 (create-next-app, Vite, etc.), then overlay these files on top. Never run a

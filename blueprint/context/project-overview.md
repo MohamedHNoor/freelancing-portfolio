@@ -1,34 +1,35 @@
 # Freelance Portfolio - Project Overview
 
-<!-- blueprint:source-hash 748e1d11b9a5685ee297e8263f64e612a0f0e5111b3a276b72184cd078661093 -->
+<!-- blueprint:source-hash da747ee86642a28cd65c03fa4d0f14e343921258909a52032c037dd0dbfe701e -->
 
 > A portfolio site that converts cold traffic into qualified freelance enquiries,
-> led by agency white-label builds and startup SaaS, for a developer with
-> delivered work but no public reviews.
+> led by agency white-label builds and startup SaaS, plus a private business
+> dashboard that runs won work and collects milestone payments through Stripe.
 
 ## Problem
 
 A freelance developer with delivered work but no public reviews has to win work
 on evidence alone. Five projects have shipped to direct clients since August
-2023, none through a platform that carries a rating, so a prospective client
-arrives with nothing to read about the person they are considering. When they
-open a proposal link, the site has seconds to answer who this is, whether they
-can build this specific thing, and whether hiring is safe.
+2023, none through a rated platform, so a client opening a proposal link has
+seconds to learn who this is, whether they can build this specific thing, and
+whether hiring is safe. Most portfolios fail that test with a generic tagline,
+self-assigned skill percentages and unexplained screenshots. This site
+substitutes demonstrable proof for the social proof it lacks and presents every
+project as a case study. It is also a work sample, so its own performance and
+accessibility scores are build gates, not goals.
 
-Most developer portfolios fail that test: a generic tagline, self-assigned skill
-percentages, and screenshots with no explanation of what was solved or what
-changed. This site replaces social proof it does not have with proof it can
-demonstrate, and presents every project as a case study rather than a picture.
-
-The site is also a work sample, so its own performance and accessibility scores
-are build gates rather than goals.
+Once work is won it has to be run and paid for. Engagements are priced as a
+total with a deposit (typically 30 or 50 percent) and milestone payments, each
+milestone moving through work done, payment requested and payment received. A
+private dashboard on the same domain keeps clients, projects, payment plans and
+tasks together, collects each milestone payment through Stripe Checkout, and
+keeps development progress separate from payment progress.
 
 ## Users
 
-All arrive cold, often on mobile, from a link pasted into a message thread. No one
-is browsing, so every section has to earn the next scroll. No authentication, no
-access tiers: every visitor sees the same public site. Rows are in the order the
-site presents them.
+Public visitors arrive cold, often on mobile, from a link pasted into a message
+thread, so every section has to earn the next scroll. The public site has no
+sign-in. Rows are in the order the site presents them.
 
 | User | Priority | Judging on |
 |---|---|---|
@@ -38,275 +39,290 @@ site presents them.
 | Recruiter or engineering manager | Tertiary | Resume and a fast code-quality signal |
 
 There is no agency engagement to show yet, so the agency track rests on the build
-standard this site proves. The travel platform case study is the startup SaaS
+standard this site proves; the travel platform case study is the startup SaaS
 evidence.
+
+Dashboard users, who never see the sales pitch:
+
+- **The developer** - the only account (owner). Manages clients, projects, plans
+  and tasks and requests payments, mostly on desktop
+- **Paying clients** - no account. Receive an itemized request email, review it
+  on a private pay page, and pay through Stripe's hosted Checkout
 
 ## Features
 
-In build-plan order. One line of purpose each; the spec is `/feature`'s job.
+In build-plan order; the spec is `/feature`'s job.
 
-1. **Design system and app shell** - brand tokens over the shadcn base, font trio,
-   header, mobile menu, footer, theme toggle, animation provider.
-2. **Content layer** - the typed content contract every section reads, seeded with
-   flagged placeholder data.
-3. **Hero and about** - positioning that names the service tracks, availability
-   status, credibility strip, and the about narrative. This is the
-   first-impression gate: if it fails, nothing below it is read.
-4. **Services** - the engagement tracks with scope, deliverables, timeline, and how
+1. **Design system and app shell** - brand tokens, font trio, header, mobile
+   menu, footer, theme toggle, animation provider.
+2. **Content layer** - the typed content contract every section reads.
+3. **Hero and about** - positioning that names the service tracks,
+   availability, credibility strip, about narrative. The first-impression gate.
+4. **Services** - engagement tracks with scope, deliverables, timeline, and how
    a project runs.
 5. **Skills and experience** - stack grouped by role with usage context, and the
-   dated experience timeline.
-6. **Selected projects and index** - outcome-framed cards on the home page plus a
-   filterable index route.
-7. **Case study pages** - problem, approach, architecture, stack, and outcome per
-   project. **Headline feature**: this is the whole differentiator against a
-   template portfolio, and the main thing a client reads before enquiring.
-8. **Resume** - print-optimized resume route from the content layer, plus a
-   downloadable CV.
-9. **Section detail pages** - `/about`, `/services`, `/skills` and `/experience`
-   as standalone routes carrying the full content, each home section reduced to a
-   scannable summary linking to its page, and primary navigation pointed at the
-   routes. This is the shape feature 6 already gave projects.
-10. **Contact** - qualifying enquiry form with shared client and server validation,
-    Server Action, Resend delivery, mailto fallback.
-11. **SEO and social sharing** - per-route metadata and canonicals, sitemap, robots,
-    generated social images, structured data.
-12. **Accessibility and performance pass** - keyboard and screen reader pass, axe
-    clean, reduced-motion pass, Lighthouse at or above 95, bundle and image budget.
-13. **Deployment readiness** - Vercel config, env vars, production build
-    verification, smoke tests.
+   dated timeline.
+6. **Selected projects and index** - outcome-framed home cards plus a filterable
+   index route.
+7. **Case study pages** - problem, approach, architecture, stack, outcome.
+   **Headline feature**: the differentiator against a template portfolio.
+8. **Resume** - print-optimized route plus a downloadable CV.
+9. **Section detail pages** - `/about`, `/services`, `/skills`, `/experience`
+   carry the full content; home sections become linked summaries; navigation
+   targets routes.
+10. **Contact** - qualifying form, shared validation, Server Action, Resend
+    delivery, mailto fallback.
+11. **SEO and social sharing** - metadata, canonicals, sitemap, robots, social
+    images, structured data.
+12. **Accessibility and performance pass** - keyboard, screen reader, axe,
+    reduced motion, Lighthouse 95+, bundle and image budgets.
+13. **Deployment readiness** - Vercel config, env vars, build verification,
+    smoke tests.
+14. **Real projects replace the placeholders** (post-MVP) - TravelGrid Africa
+    and this site as case studies with real evidence; removing the seeded
+    placeholders lets production builds pass the deploy gate.
 
-Post-MVP, in build order:
+Business dashboard, not yet built (design reference:
+`blueprint/dashboard-architecture.md`):
 
-14. **Real projects replace the placeholders** - two case studies: TravelGrid
-    Africa for the startup SaaS track, and this site itself for the Figma to
-    Next.js track. Screenshots, outcome-framed metrics with real evidence, and the
-    removal of all three seeded placeholders, which is what lets a production build
-    pass the deploy gate.
+15. **Site and dashboard separation** - public pages move into their own route
+    group with URLs, static generation, budgets and behaviour unchanged; robots
+    and the CSP learn the private paths and Stripe Checkout.
+16. **Owner sign-in** - Neon and Drizzle foundation, Better Auth with
+    verification and reset emails, owner-only registration, protected dashboard
+    shell. Everything after it depends on it.
+17. **Clients** - create, edit, archive and list, on integer money handling and
+    the activity log.
+18. **Projects and payment plans** - percentage, fixed or mixed milestone plans
+    with an upfront deposit, exact balance before activation, and the project
+    page with separate development and payment progress. **Headline dashboard
+    feature.**
+19. **Tasks and milestone completion** - tasks with status, reordering and
+    computed progress; ready-for-completion state; manual completion and
+    reopening; activity timeline.
+20. **Payment requests and Checkout** - stable private pay link, Review & Pay
+    page opening Stripe Checkout, request and reminder emails, cancel and retry.
+21. **Payment confirmation** - a verified, idempotent Stripe webhook as the only
+    path that records money received; refunds, disputes, owner notifications,
+    success page, server-side Sync with Stripe.
+22. **Business overview and payments** - value, paid, outstanding and requested
+    totals per currency; pending requests, deadlines, recent activity; payments
+    list.
+23. **Dashboard hardening and launch** - two-factor sign-in, sessions, error
+    monitoring, end-to-end payment test, reconciliation, backups, production
+    setup.
 
-Still candidates, not yet scheduled: a writing section if there is something worth
-publishing, and testimonial quotes once there are genuine ones.
-
-Out of scope for the MVP: blog, CMS, analytics dashboards, testimonials (none
-exist yet to publish), and any pricing display.
+Still candidates: a writing section, and testimonials once genuine ones exist.
+Out of scope for the site: blog, CMS, analytics dashboards, testimonials, any
+pricing display. Out of scope for dashboard v1: client accounts or a portal,
+generated PDF invoices, partial payments, automatic reminders, file storage,
+currency conversion, and Stripe Connect (one freelancer's business, not a
+marketplace).
 
 ## Data model
 
-**No database.** All content is typed TypeScript modules under `src/content/`,
-imported at build time so every route can be statically generated. Types live in
-`src/types/content.ts`.
+### Public site: content modules, no database
 
-> `Project` and `CaseStudySection` are locked shapes, now shipped and read by the
-> home section, the index, and the case study route. Feature 11 reads them again
-> for social images and structured data. Treat changes as breaking.
+All public content is typed TypeScript under `src/content/`, imported at build
+time so every public route is statically generated; types live in
+`src/types/content.ts`. Public pages never query the database.
 
-### Profile (single record, `profile.ts`)
+> `Project` and `CaseStudySection` are locked shapes read by the home section,
+> the index, the case study route, social images and structured data. Treat
+> changes as breaking.
 
-- `name` (string)
-- `headline` (string) - the two-line positioning, agency and startup work first
-- `specialisms` (Service slug[]) - links to the service tracks
-- `shortBio` (string), `longBio` (string[])
-- `availability` ({ `status`: "available" | "limited" | "unavailable", `detail`: string })
-- `location` (string)
-- `links` ({ `email`, `github`, `linkedin`, `cv` } - all string)
-- `proofPoints` (ProofPoint[]) - the credibility strip
+- **Profile** (single record) - `name`, `headline`, `specialisms` (Service
+  slug[]), `shortBio`, `longBio` (string[]), `availability` ({ `status`:
+  available | limited | unavailable, `detail` }), `location`, `links` ({ `email`,
+  `github`, `linkedin`, `cv` }), `proofPoints` (ProofPoint[])
+- **ProofPoint** - `value`, `label`, `evidence` (required: no number ships
+  without something to point at)
+- **Service** - `slug` (agency-builds | startup-saas | figma-to-nextjs), `name`,
+  `forWho`, `summary`, `deliverables` (string[]), `typicalTimeline` (no prices),
+  `process` ({ `title`, `detail` }[]), `order`
+- **SkillGroup** - `id`, `label`, `skills` ({ `name`, `context`, `icon`? }[]);
+  no proficiency percentages
+- **Role** - `id`, `company`, `title`, `start` (`YYYY-MM`), `end` (`YYYY-MM` |
+  present), `summary`, `impact` (string[]), `stack` (string[])
+- **Project** - `slug` (route segment), `title`, `summary`, `role`, `period`,
+  `category` (Service slug, drives the filter), `stack`, `featured`,
+  `isPlaceholder`, `links` ({ `live`?, `repo`? }), `metrics` ({ `label`,
+  `value`, `evidence` }[]), `cover` ({ `src`, `alt`, `width`, `height` }),
+  `caseStudy` (CaseStudySection[])
+- **CaseStudySection** - `heading` (Problem, Approach, Architecture, Outcome, in
+  that order), `body` (string[]), `bullets`?
+- **ContactSubmission** (validated, never stored) - `name`, `email`, `message`,
+  `projectType` (agency-build | saas-build | figma-conversion | other),
+  `timeline`, `budgetRange`? (never displayed), `company` (honeypot, must be
+  empty). One Zod schema in `src/lib/validation/contact.ts` serves form and
+  action.
 
-### ProofPoint
+> `isPlaceholder: true` marks fictional seeded content, and a production build
+> is refused while any project carries it. Feature 14 cleared it everywhere.
 
-- `value` (string) - for example "100/100"
-- `label` (string) - what it measures
-- `evidence` (string) - what backs the claim. Required, because no number ships
-  without something to point at
+### Dashboard: Neon Postgres through Drizzle
 
-### Service (`services.ts`)
+Better Auth owns `user`, `session`, `account` and `verification` in the same
+database; the signed-in user owns every record below. Money is integer minor
+units beside an explicit currency (ZAR | NZD | AUD | USD | GBP), percentages are
+integer basis points, and no card data is stored.
 
-- `slug` ("agency-builds" | "startup-saas" | "figma-to-nextjs") - one per track:
-  white-label builds for agencies, SaaS for startups, Figma to production Next.js
-- `name`, `forWho`, `summary` (string)
-- `deliverables` (string[])
-- `typicalTimeline` (string) - no prices anywhere
-- `process` (ProcessStep[]) - { `title`, `detail` }
-- `order` (number)
+- **Client** - `name`, `email`, `phone`?, `companyName`?, `countryCode`?,
+  `defaultCurrency`, billing address, `notes`?, `stripeCustomerId`?,
+  `archivedAt`?. Has many projects
+- **Project** - `clientId`, `name`, `description`?, `status` (draft | active |
+  on_hold | completed | cancelled), `currency`, `totalAmountMinor`,
+  `startDate`?, `expectedEndDate`?, `completedAt`?. Has many milestones
+- **Milestone** (the payment plan) - `projectId`, `name`, `position`,
+  `billingTrigger` (upfront, for the deposit | on_completion), `pricingMode`
+  (percentage | fixed), `percentageBps`?, `amountMinor` (always concrete),
+  `status` (work only: pending | in_progress | completed | cancelled),
+  `dueDate`?, `completedAt`?. Has many tasks and payment requests
+- **Task** - `milestoneId`, `title`, `description`?, `position`, `status`
+  (pending | in_progress | completed | blocked | cancelled), `completedAt`?
+- **PaymentRequest** - `projectId` and `milestoneId` (kept consistent by a
+  composite key), `invoiceNumber`, `amountMinor`, `currency`, `status` (pending
+  | requested | processing | paid | failed | cancelled | refunded),
+  `publicToken` (the stable pay link), the current Checkout session, `dueDate`?.
+  At most one open request per milestone
+- **Payment** (money received, separate from requests) - `paymentRequestId`,
+  `amountMinor`, `amountRefundedMinor`, `currency`, `status` (succeeded |
+  partially_refunded | refunded), unique Stripe payment intent, session and
+  charge ids, `paidAt`, `disputedAt`?
+- **Activity** - append-only audit trail: `type`, `actor` (owner | client |
+  stripe | system), snapshot `summary`, typed `data`, optional links to the
+  client, project, milestone, task and request
+- **EmailMessage** and **StripeEvent** - idempotency ledgers for email sends and
+  webhook events
 
-### SkillGroup (`skills.ts`)
+Derived on the server, never stored: allocated and unallocated plan value, paid,
+outstanding, requested, payment and development progress, each milestone's
+payment status, billable and overdue.
 
-- `id`, `label` (string) - for example "Front end", "Data", "Practices"
-- `skills` (Skill[]) - { `name`, `context` (string, where it was actually used),
-  `icon` (optional key into `src/components/icons/`) }
-- No proficiency percentages by design
-
-### Role (`experience.ts`)
-
-- `id`, `company`, `title` (string)
-- `start` (string, `YYYY-MM`), `end` (string `YYYY-MM` | "present")
-- `summary` (string)
-- `impact` (string[])
-- `stack` (string[])
-
-### Project (`projects.ts`)
-
-- `slug` (string) - the route segment for `/projects/[slug]`
-- `title`, `summary`, `role`, `period` (string)
-- `category` (Service slug) - drives the index filter and ties a project to the
-  track it demonstrates
-- `stack` (string[])
-- `featured` (boolean) - selects it for the home page
-- `isPlaceholder` (boolean) - seeded example content
-- `links` ({ `live`?, `repo`? })
-- `metrics` (Metric[]) - { `label`, `value`, `evidence` }
-- `cover` ({ `src`, `alt`, `width`, `height` })
-- `caseStudy` (CaseStudySection[])
-
-> `isPlaceholder: true` marks fictional seeded content. No project may reach
-> production with it set. Feature 13 made that mechanical: a production build is
-> refused while any project carries the flag. Feature 14 cleared it, and no
-> project carries it now. Self-initiated builds and spec work count as real
-> entries, provided the case study says so.
-
-### CaseStudySection
-
-- `heading` (string) - fixed order: Problem, Approach, Architecture, Outcome
-- `body` (string[]) - paragraphs
-- `bullets` (string[], optional)
-
-### ContactSubmission (validated, never stored)
-
-- `name`, `email`, `message` (string)
-- `projectType` ("agency-build" | "saas-build" | "figma-conversion" | "other")
-- `timeline` (string)
-- `budgetRange` (string, optional) - aids scoping, never displayed publicly
-- `company` (string) - honeypot, must be empty
-
-One Zod schema in `src/lib/validation/contact.ts` is shared by the client form and
-the Server Action. Submissions are forwarded by email and never persisted.
+> Locked for every dashboard feature: money as integer minor units with a
+> currency, never summed across currencies, and milestone work status kept
+> separate from payment status. Full columns, constraints and indexes:
+> `blueprint/dashboard-architecture.md` §4.
 
 ## Tech stack
 
-- **Next.js 16 (App Router)** - static generation for every route; the only server
-  work is the contact Server Action
+- **Next.js 16 (App Router)** - public routes statically generated; server work
+  is the contact action, the dashboard, sign-in and payment pages, and the Better
+  Auth and Stripe webhook route handlers
 - **React 19 with the React Compiler** - no hand-written memoization
-- **TypeScript (strict)** - content modules typed so a malformed entry fails the build
+- **TypeScript (strict)** - malformed content fails the build
 - **Tailwind CSS v4** - CSS-first config, design decisions as CSS variables
-- **shadcn/ui on Radix** - interactive primitives, retuned to the brand palette
-- **Motion** - animation, code split via LazyMotion, reduced-motion aware
-- **react-hook-form + Zod** - contact form, one schema for client and server
-- **Resend** - transactional email from the Server Action
-- **Vitest** - logic tests; configured and gating from feature 5 onward
+- **shadcn/ui on Radix** - primitives retuned to the brand palette
+- **Motion** - public-site animation via LazyMotion, reduced-motion aware
+- **react-hook-form + Zod** - forms, one schema for client and server
+- **Resend** - contact email, plus the dashboard's payment, reminder and auth
+  emails as React Email templates
+- **Neon Postgres + Drizzle ORM and Drizzle Kit** - dashboard data and migrations
+- **Better Auth** - owner email and password sign-in, Drizzle adapter
+- **Stripe Checkout and webhooks** - milestone payments, hosted card collection
+- **dnd-kit** - accessible reordering
+- **Vitest** - logic tests, gating since feature 5
 - **Playwright MCP** - browser verification during the build
-- **Git and GitHub** - a Verify command is still to be wired via `/ci` before
-  feature 13
+- **Git and GitHub** - a Verify command is still to be wired via `/ci`
 
 ## Monetization
 
-Indirect. The site sells nothing. It converts cold traffic from proposals,
-LinkedIn, and GitHub into qualified enquiries in the target niches: agency
-white-label builds and startup SaaS first, Figma to Next.js builds as well.
-Success is enquiries that match those niches, not visits.
+Indirect. The site sells nothing: it turns cold traffic from proposals, LinkedIn
+and GitHub into qualified enquiries in the target niches, measured by matching
+enquiries, not visits. No rates or prices appear on the public site; the contact
+form captures project type, timeline and an optional budget range instead.
 
-No rates or prices appear anywhere; publishing them either anchors low or filters
-out clients who would have paid more. The form captures project type, timeline,
-and an optional budget range so enquiries arrive pre-qualified.
+The dashboard collects payment for engagements already agreed, through the
+developer's own Stripe account, with no fees or commissions. Amounts appear only
+in the dashboard and on a client's own pay page.
 
 ## UI/UX
 
-Reference: `design/website-ui-design.png`. Dark, layered near-black surfaces with a
-violet accent, a code-editor motif in the hero, eyebrow-and-heading section rhythm,
-card-based content blocks. Confident and technical, not playful. Dark is the
-default theme; light is a supported option and both must keep working.
+Reference: `design/website-ui-design.png`. Dark, layered near-black surfaces,
+violet accent, a code-editor motif in the hero, eyebrow-and-heading rhythm,
+card-based blocks. Confident and technical. Dark is the default; light is
+supported and both must keep working.
 
-Deliberately changed from the reference:
-
-- Client-count and satisfaction statistics removed - false for an account with no
-  completed jobs, and a client who cross-checks sees the mismatch
-- Skill percentage bars removed - self-assigned scores are filler
-- Blog navigation removed - an empty blog is a negative signal
-- Services section, experience timeline, and case study pages added - the reference
-  has none, and all three are load-bearing for these buyers
-- Navigation targets routes rather than same-page anchors. The home page stays one
-  scroll that earns attention section by section, but each section has a page
-  behind it, so a proposal can link straight to the relevant depth instead of to a
-  hash the reader has to scroll away from. It also stops the home page growing
-  without limit as real content replaces the seeded placeholders
-
-Typography moves off the scaffold default to a display, body, and monospace trio.
-Motion is used for staged entrances and scroll reveals, on transform and opacity
-only, collapsing under `prefers-reduced-motion`, and never on the largest
+Deliberately changed from the reference: invented client-count statistics, skill
+percentage bars and the blog link are removed; services, an experience timeline
+and case studies are added; navigation targets routes rather than anchors, so a
+proposal can link straight to the right depth. A display, body and monospace
+type trio replaces the scaffold default. Motion animates transform and opacity
+only, collapses under `prefers-reduced-motion`, and never touches the largest
 contentful heading.
 
-Accessibility is a service the site sells, so it has to pass its own claim: WCAG AA
-contrast, full keyboard operation, correct landmarks and heading order, form errors
-wired to their inputs.
+Accessibility is a service the site sells: WCAG AA contrast, full keyboard
+operation, correct landmarks and heading order, form errors wired to their
+inputs. The dashboard meets the same bar with the same tokens and themes: a
+desktop-first sidebar app that collapses on mobile, no entrance motion, status
+always in text as well as colour, and tabular figures for money.
 
 ### Routes
 
-- `/` - hero, credibility strip, then a scannable summary of about, services,
-  selected projects, skills and experience, each linking to its own page. Projects
-  sit above skills: proof of delivery outranks a technology list for a buyer with
-  no reviews to read
-- `/about` - the full narrative, location, availability
-- `/services` - all three engagement tracks in full, including how a project runs
-- `/projects` - full index, filterable by category and stack
-- `/projects/[slug]` - case study, one static page per project
-- `/skills` - the full stack grouped by role, with usage context
-- `/experience` - the full dated timeline with impact and stack per role
-- `/resume` - print-optimized CV
-- `/sitemap.xml`, `/robots.txt`, generated `opengraph-image`, and a 404 page
+Public, all statically generated:
 
-Every item in the primary navigation is one of these routes. Feature 9 owns the
-switch from anchors to routes.
+- `/` - hero, credibility strip, then linked summaries of about, services,
+  selected projects, skills and experience (projects above skills: delivery
+  outranks a technology list)
+- `/about`, `/services`, `/skills`, `/experience` - the full section content
+- `/projects` - index filterable by category and stack; `/projects/[slug]` - one
+  static case study each
+- `/resume` - print-optimized CV
+- `/sitemap.xml`, `/robots.txt`, generated `opengraph-image`, 404 page
+
+Private and payment screens, dynamic and not indexed: sign-in, registration and
+password reset; dashboard overview, clients, projects, project page, milestone
+page, payments, settings; the client's pay page and the post-payment success
+page. Paths are in `blueprint/dashboard-architecture.md` §19.
 
 ## Deployment
 
-- **Host:** Vercel, standard Next.js App Router application
+- **Host:** Vercel, standard Next.js App Router application; Functions in `syd1`
 - **Build:** `npm run build`, served by Vercel's Next.js runtime
-- **Routes:** all statically generated; only the contact Server Action runs server-side
+- **Server work:** the contact action, the dashboard, sign-in and payment pages,
+  and the Better Auth and Stripe webhook handlers; every public route is static
 - **Env vars:** `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`,
-  `NEXT_PUBLIC_SITE_URL`
-- **No** database, storage buckets, workers, or cron jobs
-- **Prerequisite:** a Resend account with a verified sender domain before contact
-  email works in production; development can use Resend's shared test sender
-- **Health check:** not applicable, static hosting
-- **Deploy gate:** a production build is refused while any project is still a
-  seeded placeholder, enforcing the plan's rule that no project ships with the
-  flag set. Feature 14 replaced all three, so the gate passes today.
-- Deployment is explicit and separately approved. Nothing is pushed or deployed
-  without a direct yes.
+  `NEXT_PUBLIC_SITE_URL`; for the dashboard `DATABASE_URL`,
+  `DATABASE_URL_UNPOOLED`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`,
+  `OWNER_EMAIL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+  `BILLING_FROM_EMAIL`
+- **Database:** one Neon Postgres in `aws-ap-southeast-2`. Migrations are an
+  explicit, approved step before a deploy, never part of the build. No storage
+  buckets, workers or cron jobs
+- **Stripe:** a New Zealand account with one webhook endpoint for Checkout,
+  refund and dispute events; test keys until go-live
+- **Resend:** a verified sender domain before contact and payment emails deliver
+  in production; development can use the shared test sender
+- **Domain:** `mohamedhnoor.com`, matched by `NEXT_PUBLIC_SITE_URL` for
+  canonicals, sitemap, social images, pay links and Stripe redirects. These are
+  build-time values, so changing the origin needs a rebuild
+- **Health check:** not applicable
+- **Deploy gate:** a production build is refused while any project is a seeded
+  placeholder; none is, so it passes
+- Nothing is pushed or deployed without a direct yes
 
 ## Open questions
 
 > Resolve in the plans, then re-run `/overview`.
 
-- **`project-plan.md` §8 still calls the custom domain undecided.** It is not:
-  `mohamedhnoor.com` is configured, the developer's public profiles point at it,
-  and every canonical URL, sitemap entry and social image in the current build is
-  baked against it. Correct §8. These are build-time values, so changing the
-  origin later needs a rebuild, not just a redeploy.
-- **Resend sender domain not verified.** Free account plus DNS verification, and
-  propagation is the slow part. Contact email does not deliver in production until
-  it is done. The form degrades rather than breaking: it fails closed and shows
-  the direct address.
-- **`Verify` command never created.** `project-plan.md` §5 names "a Verify command
-  wired to automatic checks" and `build-plan.md` says `/ci` should run before
-  feature 13. Feature 13 shipped without it, so there is still no single verify
-  command and no automatic GitHub checks. Either run `/ci` or drop the claim from
-  the plans.
-- **Security headers are not in the plans.** Feature 13 shipped a Content Security
-  Policy, HSTS, `nosniff`, `Referrer-Policy`, `X-Frame-Options` and
-  `Permissions-Policy`, none of which `project-plan.md` §8 mentions. They are
-  deliberately absent from this overview, which may only carry what the plans
-  state. Add them to §8 and re-run so the two stop disagreeing.
+- **Resend sender domain not verified.** Contact email does not deliver in
+  production until it is (the form fails closed and shows the direct address).
+  It now gates the dashboard too: owner sign-up requires a verification email,
+  and every payment request is an email.
+- **`Verify` command never created.** §5 names one wired to automatic checks,
+  and the build plan's intro still says `/ci` runs before feature 13, which
+  shipped without it. Run `/ci`, ideally before feature 16 adds integration
+  tests, or drop the claim.
+- **Security headers are not in the plans.** Feature 13 shipped a CSP, HSTS,
+  `nosniff`, `Referrer-Policy`, `X-Frame-Options` and `Permissions-Policy`; §8
+  names none, and feature 15 now changes the CSP. Add them to §8.
+- **Feature 23 goes beyond `project-plan.md`.** It names two-factor sign-in,
+  error monitoring, an end-to-end payment test and backups, while §3 lists only
+  verification and reset for sign-in and §5 and §8 name no monitoring, browser
+  test runner or backups. Add them to the plan or trim the item. It is also the
+  build plan's one bundle; `/feature 23` may need to split it.
 
-Resolved since the last generation, recorded so they are not reopened:
-
-- **Target niches.** The plans moved from Figma to Next.js plus healthcare or
-  fintech SaaS to agency white-label builds and startup SaaS, with Figma to
-  Next.js kept as a third track. `project-plan.md` §2, §3 and §6 and
-  `build-plan.md` items 3, 4 and 14 now say so. The agency track has no case
-  study yet, which the plan states rather than hides.
-- **Seeded content beyond projects.** Feature 14 replaced it all. The work
-  history, the skill contexts, the services copy and the profile are real, and no
-  content module declares itself placeholder. The CV file remains absent, which
-  is correct: `profile.links.cv` is empty, so the resume download renders nothing
-  rather than a dead link.
-- **Where contact lives.** Feature 10 settled it: `/contact` carries the form and
-  the home page keeps a section that links to it.
+Resolved, recorded so they are not reopened: the custom domain (§8 now names
+`mohamedhnoor.com`); the target niches (agency and startup SaaS first, Figma to
+Next.js kept); seeded content (all replaced, and the CV link stays empty by
+design); and where contact lives (`/contact`, with a home section linking to it).

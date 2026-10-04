@@ -49,3 +49,38 @@ before feature 13, so a `Verify` command exists for automatic checks.
 Still candidates, once the site is live and the first reviews are in: a writing section if
 there is something worth publishing, and testimonial quotes once there are genuine ones to
 quote.
+
+## Business dashboard
+
+A private, owner-only tool for running the work once it is won. The schema, state
+machines, payment flow, and rules every item below builds on are in
+`blueprint/dashboard-architecture.md`.
+
+- [ ] 15. **Site and dashboard separation** - the public pages move into their own route
+  group with their URLs, static generation, budgets, and behaviour unchanged; the root
+  layout keeps only the document shell, and robots and the CSP learn the private paths
+  and Stripe Checkout
+- [ ] 16. **Owner sign-in** - the Neon and Drizzle foundation, Better Auth email and
+  password sign-in with verification and reset emails through Resend, registration limited
+  to the owner's address, and the protected dashboard shell
+- [ ] 17. **Clients** - create, edit, archive, and list clients with their currency and
+  billing details, on exact integer money handling and an append-only activity log
+- [ ] 18. **Projects and payment plans** - projects with a total and a currency;
+  percentage, fixed, or mixed milestone plans with the deposit as an upfront milestone;
+  plans that must balance exactly before a project activates; and the project page with
+  separate development and payment progress
+- [ ] 19. **Tasks and milestone completion** - tasks inside each milestone with status,
+  reordering, and computed progress, a ready-for-completion state, manual milestone
+  completion and reopening, and the project activity timeline
+- [ ] 20. **Payment requests and Checkout** - request payment for a billable milestone, a
+  stable private pay link and Review & Pay page that opens Stripe Checkout, request and
+  reminder emails, and cancelling or retrying a request
+- [ ] 21. **Payment confirmation** - a signature-verified, idempotent Stripe webhook as the
+  only path that marks money received, payment records, refunds and disputes, owner
+  notifications, the success page, and a server-side Sync with Stripe fallback
+- [ ] 22. **Business overview and payments** - the dashboard home with value, paid,
+  outstanding, and requested totals per currency, pending requests, upcoming deadlines,
+  and recent payments and milestones, plus the filterable payments list
+- [ ] 23. **Dashboard hardening and launch** - two-factor sign-in and session management,
+  error monitoring, the end-to-end payment test, Stripe reconciliation and database
+  backups, and the production setup for Stripe, Resend, and Neon
