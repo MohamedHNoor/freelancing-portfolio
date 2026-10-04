@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview - Dashboard mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="components.css">
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-overview" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
+    <symbol id="i-clients" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-projects" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+    <symbol id="i-payments" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></symbol>
+    <symbol id="i-money" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 1-1h13l-3 5 3 5H5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  </svg>
+
+  <div class="app">
+    <aside class="sidebar" aria-label="Dashboard">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">MN</span>
+        <span>Mohamed Noor<small>Business dashboard</small></span>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <a href="overview.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-overview"/></svg>Overview</a>
+        <a href="#"><svg class="icon" aria-hidden="true"><use href="#i-clients"/></svg>Clients</a>
+        <a href="project.html"><svg class="icon" aria-hidden="true"><use href="#i-projects"/></svg>Projects</a>
+        <a href="#"><svg class="icon" aria-hidden="true"><use href="#i-payments"/></svg>Payments</a>
+        <a href="#"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg>Settings</a>
+      </nav>
+      <div class="sidebar-foot stack-tight">
+        <div class="spread"><span class="muted">Stripe</span><span class="pill pill--warning">Test mode</span></div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <nav class="crumbs" aria-label="Breadcrumb"><span aria-current="page">Overview</span></nav>
+        <button class="btn btn-ghost btn-sm" type="button" data-theme-toggle><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg>Theme</button>
+      </header>
+
+      <main class="content stack-page">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Overview</h1>
+            <p class="page-meta">Monday 5 October 2026</p>
+          </div>
+          <div class="row">
+            <a class="btn" href="#"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Blank project</a>
+            <a class="btn btn-primary" href="import.html"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Upload a plan</a>
+          </div>
+        </div>
+
+        <section class="stats" aria-label="At a glance">
+          <div class="card stat">
+            <p class="stat-label">Active projects</p>
+            <p class="stat-value">4</p>
+            <p class="stat-note">1 more on hold</p>
+          </div>
+          <div class="card stat">
+            <p class="stat-label">Open payment requests</p>
+            <p class="stat-value">3</p>
+            <p class="stat-note money">R17,500.00 and NZ$5,700.00</p>
+          </div>
+          <div class="card stat">
+            <p class="stat-label">Overdue</p>
+            <p class="stat-value stat-value--danger">1</p>
+            <p class="stat-note">Fleet Tracker, 7 days late</p>
+          </div>
+        </section>
+
+        <div class="grid-main-side">
+          <section class="card" aria-labelledby="attention-title">
+            <div class="card-head">
+              <div class="row"><h2 class="card-title" id="attention-title">Needs your attention</h2><span class="count">3</span></div>
+            </div>
+            <ul class="attention">
+              <li>
+                <span class="attention-icon tone-danger"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg></span>
+                <div>
+                  <p class="strong">Payment 7 days overdue</p>
+                  <p class="small muted money">Fleet Tracker · UI/UX Design · R7,500.00 · INV-2026-00039</p>
+                </div>
+                <button class="btn btn-sm" type="button"><svg class="icon-sm" aria-hidden="true"><use href="#i-bell"/></svg>Remind</button>
+              </li>
+              <li>
+                <span class="attention-icon tone-success"><svg class="icon" aria-hidden="true"><use href="#i-money"/></svg></span>
+                <div>
+                  <p class="strong">Ready to bill</p>
+                  <p class="small muted money">Harbour CRM · Discovery and scope · NZ$3,800.00</p>
+                </div>
+                <button class="btn btn-primary btn-sm" type="button">Request payment</button>
+              </li>
+              <li>
+                <span class="attention-icon tone-warning"><svg class="icon" aria-hidden="true"><use href="#i-flag"/></svg></span>
+                <div>
+                  <p class="strong">Task blocked: Admin API</p>
+                  <p class="small muted">E-commerce Website · Backend Development, due 14 Oct</p>
+                </div>
+                <a class="btn btn-sm" href="project.html">Open</a>
+              </li>
+            </ul>
+          </section>
+
+          <section class="card" aria-labelledby="money-title">
+            <div class="card-head">
+              <h2 class="card-title" id="money-title">Money by currency</h2>
+            </div>
+            <div class="card-body stack-page">
+              <div class="meter">
+                <div class="meter-label"><span class="strong">ZAR</span><span class="small muted">72% paid</span></div>
+                <div class="progress progress--pay" role="progressbar" aria-label="ZAR paid" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"><span style="width: 72%"></span></div>
+                <p class="money"><strong>R180,000.00</strong> <span class="muted">of R250,000.00</span></p>
+                <p class="small muted money">R70,000.00 outstanding · R17,500.00 requested</p>
+              </div>
+              <div class="meter">
+                <div class="meter-label"><span class="strong">NZD</span><span class="small muted">70% paid</span></div>
+                <div class="progress progress--pay" role="progressbar" aria-label="NZD paid" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"><span style="width: 70%"></span></div>
+                <p class="money"><strong>NZ$26,600.00</strong> <span class="muted">of NZ$38,000.00</span></p>
+                <p class="small muted money">NZ$11,400.00 outstanding · NZ$5,700.00 requested</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="stack" aria-labelledby="projects-title">
+          <div class="spread">
+            <div class="row"><h2 class="section-title" id="projects-title">Active projects</h2><span class="count">4</span></div>
+            <a class="link small" href="#">All projects</a>
+          </div>
+          <div class="grid-2">
+            <a class="card project-card" href="project.html">
+              <div class="spread">
+                <div>
+                  <p class="strong">E-commerce Website</p>
+                  <p class="small muted">Acme Retail · ZAR</p>
+                </div>
+                <span class="pill pill--warning">Payment requested</span>
+              </div>
+              <div class="grid-2">
+                <div class="meter">
+                  <div class="meter-label"><span class="small muted">Development</span><span class="small strong">72%</span></div>
+                  <div class="progress progress--dev" role="progressbar" aria-label="E-commerce Website development" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"><span style="width: 72%"></span></div>
+                </div>
+                <div class="meter">
+                  <div class="meter-label"><span class="small muted">Payments</span><span class="small strong">45%</span></div>
+                  <div class="progress progress--pay" role="progressbar" aria-label="E-commerce Website payments" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"><span style="width: 45%"></span></div>
+                </div>
+              </div>
+              <p class="small muted">Next: Backend Development, due 14 Oct</p>
+            </a>
+
+            <a class="card project-card" href="#">
+              <div class="spread">
+                <div>
+                  <p class="strong">Fleet Tracker</p>
+                  <p class="small muted">Karoo Logistics · ZAR</p>
+                </div>
+                <span class="pill pill--danger">Overdue</span>
+              </div>
+              <div class="grid-2">
+                <div class="meter">
+                  <div class="meter-label"><span class="small muted">Development</span><span class="small strong">30%</span></div>
+                  <div class="progress progress--dev" role="progressbar" aria-label="Fleet Tracker development" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"><span style="width: 30%"></span></div>
+                </div>
+                <div class="meter">
+                  <div class="meter-label"><span class="small muted">Payments</span><span class="small strong">36%</span></div>
+                  <div class="progress progress--pay" role="progressbar" aria-label="Fleet Tracker payments" aria-valuenow="36" aria-valuemin="0" aria-valuemax="100"><span style="width: 36%"></span></div>
+                </div>
+              </div>
+              <p class="small muted">Next: Driver app, due 17 Oct</p>
+            </a>
+
+            <a class="card project-card" href="#">
+              <div class="spread">
+                <div>
+                  <p class="strong">Booking Platform</p>
+                  <p class="small muted">Tui Studio · NZD</p>
+                </div>
+                <span class="pill pill--info">Deposit processing</span>
+              </div>
+              <div class="grid-2">
+                <div class="meter">
+                  <div class="meter-label"><span class="small muted">Development</span><span class="small strong">10%</span></div>
+                  <div class="progress progress--dev" role="progressbar" aria-label="Booking Platform development" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span style="width: 10%"></span></div>
+                </div>
+                <div class="meter">
+                  <div class="meter-label"><span class="small muted">Payments</span><span class="small strong">0%</span></div>
+                  <div class="progress progress--pay" role="progressbar" aria-label="Booking Platform payments" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><span style="width: 0%"></span></div>
+                </div>
+              </div>
+              <p class="small muted">Next: Design system, due 9 Oct</p>
+            </a>
+
+            <a class="card project-card" href="#">
+              <div class="spread">
+                <div>
+                  <p class="strong">Harbour CRM</p>
+                  <p class="small muted">Harbour Digital · NZD</p>
+                </div>
+                <span class="pill pill--success">Ready to bill</span>
+              </div>
+              <div class="grid-2">
+                <div class="meter">
+                  <div class="meter-label"><span class="small muted">Development</span><span class="small strong">25%</span></div>
+                  <div class="progress progress--dev" role="progressbar" aria-label="Harbour CRM development" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span style="width: 25%"></span></div>
+                </div>
+                <div class="meter">
+                  <div class="meter-label"><span class="small muted">Payments</span><span class="small strong">40%</span></div>
+                  <div class="progress progress--pay" role="progressbar" aria-label="Harbour CRM payments" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"><span style="width: 40%"></span></div>
+                </div>
+              </div>
+              <p class="small muted">Next: request payment for Discovery and scope</p>
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) =>
+      button.addEventListener("click", () => document.documentElement.classList.toggle("dark")),
+    );
+  </script>
+</body>
+</html>

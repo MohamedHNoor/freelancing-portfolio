@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>E-commerce Website - Dashboard mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="components.css">
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-overview" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
+    <symbol id="i-clients" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-projects" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+    <symbol id="i-payments" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
+    <symbol id="i-money" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></symbol>
+  </svg>
+
+  <div class="app">
+    <aside class="sidebar" aria-label="Dashboard">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">MN</span>
+        <span>Mohamed Noor<small>Business dashboard</small></span>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <a href="overview.html"><svg class="icon" aria-hidden="true"><use href="#i-overview"/></svg>Overview</a>
+        <a href="#"><svg class="icon" aria-hidden="true"><use href="#i-clients"/></svg>Clients</a>
+        <a href="project.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-projects"/></svg>Projects</a>
+        <a href="#"><svg class="icon" aria-hidden="true"><use href="#i-payments"/></svg>Payments</a>
+        <a href="#"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg>Settings</a>
+      </nav>
+      <div class="sidebar-foot stack-tight">
+        <div class="spread"><span class="muted">Stripe</span><span class="pill pill--warning">Test mode</span></div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="#">Projects</a><span aria-hidden="true">/</span><span aria-current="page">E-commerce Website</span>
+        </nav>
+        <button class="btn btn-ghost btn-sm" type="button" data-theme-toggle><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg>Theme</button>
+      </header>
+
+      <main class="content stack-page">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">E-commerce Website <span class="pill pill--info">Active</span></h1>
+            <p class="page-meta">
+              <a class="link" href="#">Acme Retail (Pty) Ltd</a>
+              <span class="dot-sep">ZAR</span>
+              <span class="dot-sep">1 Sep to 30 Nov 2026</span>
+            </p>
+          </div>
+          <div class="row">
+            <a class="btn" href="import.html"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Upload plan</a>
+            <button class="btn btn-primary" type="button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Task</button>
+            <button class="btn btn-ghost btn-icon" type="button" aria-label="More project actions"><svg class="icon" aria-hidden="true"><use href="#i-more"/></svg></button>
+          </div>
+        </div>
+
+        <section class="card" aria-label="Progress">
+          <div class="card-body grid-2">
+            <div class="meter">
+              <div class="meter-label"><span class="strong">Development</span><span class="meter-value">72%</span></div>
+              <div class="progress progress-lg progress--dev" role="progressbar" aria-label="Development progress" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"><span style="width: 72%"></span></div>
+              <p class="small muted">2 of 4 delivery milestones done, Backend at 80%</p>
+            </div>
+            <div class="meter">
+              <div class="meter-label"><span class="strong">Payments</span><span class="meter-value">45%</span></div>
+              <div class="progress progress-lg progress--pay" role="progressbar" aria-label="Payment progress" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"><span style="width: 45%"></span></div>
+              <p class="small muted money">R22,500.00 of R50,000.00 paid · R10,000.00 requested</p>
+            </div>
+          </div>
+        </section>
+
+        <div>
+          <div class="tabs" role="tablist" aria-label="Project views">
+            <button class="tab" type="button" role="tab" id="tab-board" aria-controls="panel-board" aria-selected="true">Board</button>
+            <button class="tab" type="button" role="tab" id="tab-activity" aria-controls="panel-activity" aria-selected="false">Activity</button>
+            <button class="tab" type="button" role="tab" id="tab-details" aria-controls="panel-details" aria-selected="false">Details</button>
+          </div>
+
+          <div role="tabpanel" id="panel-board" aria-labelledby="tab-board" class="stack-page" style="padding-top: var(--space-5)">
+            <section class="stack" aria-labelledby="ms-title">
+              <div class="spread">
+                <div class="row">
+                  <h2 class="section-title" id="ms-title">Milestones</h2>
+                  <span class="count">5</span>
+                </div>
+                <div class="row">
+                  <span class="small muted">Plan balanced at R50,000.00</span>
+                  <a class="btn btn-ghost btn-sm" href="#">Edit plan</a>
+                </div>
+              </div>
+
+              <div class="ms-row">
+                <article class="card ms-card" data-ms="deposit">
+                  <div class="spread"><span class="ms-index">Deposit</span><span class="pill pill--success">Paid</span></div>
+                  <button class="ms-select" type="button" data-select="all">Initial deposit</button>
+                  <p class="ms-amount">R15,000.00 · 30%</p>
+                  <p class="small muted">Billed upfront, no tasks</p>
+                  <div class="ms-foot"><span class="small muted">Paid 18 Sep</span></div>
+                </article>
+
+                <article class="card ms-card" data-ms="uiux">
+                  <div class="spread"><span class="ms-index">M1</span><span class="pill pill--success">Paid</span></div>
+                  <button class="ms-select" type="button" data-select="all">UI/UX Design</button>
+                  <p class="ms-amount">R7,500.00 · 15%</p>
+                  <div class="stack-tight">
+                    <div class="progress progress--dev" role="progressbar" aria-label="UI/UX Design progress" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><span style="width: 100%"></span></div>
+                    <span class="small muted">4 of 4 tasks · Completed</span>
+                  </div>
+                  <div class="ms-foot"><span class="small muted">Paid 26 Sep</span></div>
+                </article>
+
+                <article class="card ms-card" data-ms="frontend">
+                  <div class="spread"><span class="ms-index">M2</span><span class="pill pill--warning">Requested</span></div>
+                  <button class="ms-select" type="button" data-select="frontend">Frontend Development</button>
+                  <p class="ms-amount">R10,000.00 · 20%</p>
+                  <div class="stack-tight">
+                    <div class="progress progress--dev" role="progressbar" aria-label="Frontend Development progress" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><span style="width: 100%"></span></div>
+                    <span class="small muted">6 of 6 tasks · Completed</span>
+                  </div>
+                  <div class="ms-foot">
+                    <span class="small muted">Due 10 Oct</span>
+                    <button class="btn btn-sm" type="button"><svg class="icon-sm" aria-hidden="true"><use href="#i-link"/></svg>Copy link</button>
+                  </div>
+                </article>
+
+                <article class="card ms-card" data-ms="backend">
+                  <div class="spread"><span class="ms-index">M3</span><span class="pill pill--neutral">Unbilled</span></div>
+                  <button class="ms-select" type="button" data-select="backend">Backend Development</button>
+                  <p class="ms-amount">R10,000.00 · 20%</p>
+                  <div class="stack-tight">
+                    <div class="progress progress--dev" role="progressbar" aria-label="Backend Development progress" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"><span style="width: 80%"></span></div>
+                    <span class="small muted">4 of 5 tasks · 1 blocked</span>
+                  </div>
+                  <div class="ms-foot"><span class="small muted">Due 14 Oct</span></div>
+                </article>
+
+                <article class="card ms-card" data-ms="testing">
+                  <div class="spread"><span class="ms-index">M4</span><span class="pill pill--neutral">Unbilled</span></div>
+                  <button class="ms-select" type="button" data-select="all">Testing and Launch</button>
+                  <p class="ms-amount">R7,500.00 · 15%</p>
+                  <div class="stack-tight">
+                    <div class="progress progress--dev" role="progressbar" aria-label="Testing and Launch progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><span style="width: 0%"></span></div>
+                    <span class="small muted">0 of 4 tasks · Not started</span>
+                  </div>
+                  <div class="ms-foot"><span class="small muted">Due 30 Nov</span></div>
+                </article>
+              </div>
+            </section>
+
+            <section class="stack" aria-labelledby="board-title">
+              <div class="spread">
+                <div class="row">
+                  <h2 class="section-title" id="board-title">Tasks</h2>
+                  <span class="chip" data-when="all">All milestones</span>
+                  <span class="chip" data-when="backend">Backend Development<button type="button" data-select="all" aria-label="Clear milestone filter"><svg class="icon-sm" aria-hidden="true"><use href="#i-x"/></svg></button></span>
+                  <span class="chip" data-when="frontend">Frontend Development<button type="button" data-select="all" aria-label="Clear milestone filter"><svg class="icon-sm" aria-hidden="true"><use href="#i-x"/></svg></button></span>
+                </div>
+                <span class="small muted">Drag a card to change its status</span>
+              </div>
+
+              <!-- all milestones -->
+              <div class="board" data-when="all">
+                <div class="column" aria-label="Todo">
+                  <div class="column-head"><span class="state-icon state-icon--todo" aria-hidden="true"></span>Todo <span class="count">4</span></div>
+                  <div class="task-card"><span class="task-card-title">Functional testing</span><div class="task-card-meta"><span class="tag">Testing and Launch</span></div></div>
+                  <div class="task-card"><span class="task-card-title">Responsive testing</span><div class="task-card-meta"><span class="tag">Testing and Launch</span></div></div>
+                  <div class="task-card"><span class="task-card-title">Bug fixing</span><div class="task-card-meta"><span class="tag">Testing and Launch</span></div></div>
+                  <div class="task-card"><span class="task-card-title">Production deployment</span><div class="task-card-meta"><span class="tag">Testing and Launch</span></div></div>
+                  <button class="column-add" type="button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Add task</button>
+                </div>
+                <div class="column" aria-label="In progress">
+                  <div class="column-head"><span class="state-icon state-icon--doing" aria-hidden="true"></span>In progress <span class="count">1</span></div>
+                  <div class="task-card">
+                    <span class="task-card-title">Admin API</span>
+                    <span class="small muted">Waiting on the client's admin role list</span>
+                    <div class="task-card-meta"><span class="tag">Backend Development</span><span class="tag tag-blocked"><svg class="icon-sm" aria-hidden="true"><use href="#i-alert"/></svg>Blocked</span></div>
+                  </div>
+                </div>
+                <div class="column" aria-label="Done">
+                  <div class="column-head"><span class="state-icon state-icon--done" aria-hidden="true"><svg class="icon-sm" aria-hidden="true"><use href="#i-check"/></svg></span>Done <span class="count">14</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Payment integration</span><div class="task-card-meta"><span class="tag">Backend Development</span></div></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Order API</span><div class="task-card-meta"><span class="tag">Backend Development</span></div></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Checkout</span><div class="task-card-meta"><span class="tag">Frontend Development</span></div></div>
+                  <button class="column-more" type="button">Show 11 more</button>
+                </div>
+              </div>
+
+              <!-- filtered to Backend -->
+              <div class="board" data-when="backend">
+                <div class="column" aria-label="Todo">
+                  <div class="column-head"><span class="state-icon state-icon--todo" aria-hidden="true"></span>Todo <span class="count">0</span></div>
+                  <div class="column-empty">Nothing waiting</div>
+                  <button class="column-add" type="button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Add task</button>
+                </div>
+                <div class="column" aria-label="In progress">
+                  <div class="column-head"><span class="state-icon state-icon--doing" aria-hidden="true"></span>In progress <span class="count">1</span></div>
+                  <div class="task-card">
+                    <span class="task-card-title">Admin API</span>
+                    <span class="small muted">Waiting on the client's admin role list</span>
+                    <div class="task-card-meta"><span class="tag tag-blocked"><svg class="icon-sm" aria-hidden="true"><use href="#i-alert"/></svg>Blocked</span></div>
+                  </div>
+                </div>
+                <div class="column" aria-label="Done">
+                  <div class="column-head"><span class="state-icon state-icon--done" aria-hidden="true"><svg class="icon-sm" aria-hidden="true"><use href="#i-check"/></svg></span>Done <span class="count">4</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Authentication API</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Product API</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Order API</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Payment integration</span></div>
+                </div>
+              </div>
+
+              <!-- filtered to Frontend -->
+              <div class="board" data-when="frontend">
+                <div class="column" aria-label="Todo">
+                  <div class="column-head"><span class="state-icon state-icon--todo" aria-hidden="true"></span>Todo <span class="count">0</span></div>
+                  <div class="column-empty">Nothing waiting</div>
+                </div>
+                <div class="column" aria-label="In progress">
+                  <div class="column-head"><span class="state-icon state-icon--doing" aria-hidden="true"></span>In progress <span class="count">0</span></div>
+                  <div class="column-empty">Nothing in progress</div>
+                </div>
+                <div class="column" aria-label="Done">
+                  <div class="column-head"><span class="state-icon state-icon--done" aria-hidden="true"><svg class="icon-sm" aria-hidden="true"><use href="#i-check"/></svg></span>Done <span class="count">6</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Homepage</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Navigation</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Product listing</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Product details</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Cart</span></div>
+                  <div class="task-card task-card--done"><span class="task-card-title">Checkout</span></div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div role="tabpanel" id="panel-activity" aria-labelledby="tab-activity" hidden style="padding-top: var(--space-5)">
+            <section class="card" aria-label="Activity">
+              <div class="card-body">
+                <ol class="timeline">
+                  <li class="tl-day">4 Oct 2026</li>
+                  <li class="tl-item"><span class="tl-dot tl-dot--warning"><svg class="icon-sm" aria-hidden="true"><use href="#i-alert"/></svg></span><span>Task <strong>Admin API</strong> blocked<span class="tl-meta">Backend Development · Waiting on the client's admin role list</span></span></li>
+                  <li class="tl-day">3 Oct 2026</li>
+                  <li class="tl-item"><span class="tl-dot tl-dot--info"><svg class="icon-sm" aria-hidden="true"><use href="#i-send"/></svg></span><span>Payment request sent to finance@acmeretail.co.za<span class="tl-meta money">INV-2026-00042 · R10,000.00 · 10:02</span></span></li>
+                  <li class="tl-day">2 Oct 2026</li>
+                  <li class="tl-item"><span class="tl-dot tl-dot--success"><svg class="icon-sm" aria-hidden="true"><use href="#i-check"/></svg></span><span>Milestone <strong>Frontend Development</strong> completed<span class="tl-meta">By you · 16:40</span></span></li>
+                  <li class="tl-day">26 Sep 2026</li>
+                  <li class="tl-item"><span class="tl-dot tl-dot--success"><svg class="icon-sm" aria-hidden="true"><use href="#i-money"/></svg></span><span>Payment received: <strong class="money">R7,500.00</strong><span class="tl-meta">UI/UX Design · Confirmed by Stripe · 14:05</span></span></li>
+                  <li class="tl-day">1 Sep 2026</li>
+                  <li class="tl-item"><span class="tl-dot"><svg class="icon-sm" aria-hidden="true"><use href="#i-file"/></svg></span><span>Project created from <strong>E-commerce Website - proposal.pdf</strong><span class="tl-meta">5 milestones and 19 tasks drafted, reviewed by you · 09:14</span></span></li>
+                </ol>
+              </div>
+            </section>
+          </div>
+
+          <div role="tabpanel" id="panel-details" aria-labelledby="tab-details" hidden style="padding-top: var(--space-5)">
+            <div class="grid-2">
+              <section class="card" aria-labelledby="client-title">
+                <div class="card-head"><h2 class="card-title" id="client-title">Client</h2><a class="link small" href="#">View client</a></div>
+                <div class="card-body">
+                  <dl class="details">
+                    <dt>Company</dt><dd>Acme Retail (Pty) Ltd</dd>
+                    <dt>Contact</dt><dd>Thandi Mokoena</dd>
+                    <dt>Billing email</dt><dd>finance@acmeretail.co.za</dd>
+                    <dt>Country</dt><dd>South Africa</dd>
+                  </dl>
+                </div>
+              </section>
+              <section class="card" aria-labelledby="project-title">
+                <div class="card-head"><h2 class="card-title" id="project-title">Project</h2><a class="link small" href="#">Edit</a></div>
+                <div class="card-body">
+                  <dl class="details">
+                    <dt>Total</dt><dd class="money">R50,000.00 ZAR</dd>
+                    <dt>Dates</dt><dd>1 Sep to 30 Nov 2026</dd>
+                    <dt>Plan file</dt><dd><a class="link" href="#">E-commerce Website - proposal.pdf</a></dd>
+                    <dt>Outstanding</dt><dd class="money">R27,500.00</dd>
+                  </dl>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- side panel: Backend, in progress -->
+  <aside class="panel" data-when="backend" aria-labelledby="panel-backend-title">
+    <div class="panel-head">
+      <div class="stack-tight">
+        <span class="ms-index">M3 · Milestone</span>
+        <h2 class="panel-title" id="panel-backend-title">Backend Development</h2>
+        <div class="row"><span class="pill pill--info">In progress</span><span class="pill pill--neutral">Unbilled</span></div>
+      </div>
+      <button class="btn btn-ghost btn-icon" type="button" data-select="all" aria-label="Close panel"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="panel-section">
+      <dl class="facts">
+        <div><dt>Amount</dt><dd class="money">R10,000.00</dd></div>
+        <div><dt>Share</dt><dd>20%</dd></div>
+        <div><dt>Due</dt><dd>14 Oct 2026</dd></div>
+      </dl>
+    </div>
+    <div class="panel-section">
+      <div class="spread"><h3 class="card-title">Tasks</h3><span class="small muted">4 of 5 · 80%</span></div>
+      <div class="progress progress--dev" role="progressbar" aria-label="Task progress" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"><span style="width: 80%"></span></div>
+      <ul class="checklist">
+        <li><input type="checkbox" checked aria-label="Authentication API complete"><span class="done">Authentication API</span></li>
+        <li><input type="checkbox" checked aria-label="Product API complete"><span class="done">Product API</span></li>
+        <li><input type="checkbox" checked aria-label="Order API complete"><span class="done">Order API</span></li>
+        <li><input type="checkbox" checked aria-label="Payment integration complete"><span class="done">Payment integration</span></li>
+        <li><input type="checkbox" aria-label="Admin API complete"><span>Admin API</span><span class="tag tag-blocked"><svg class="icon-sm" aria-hidden="true"><use href="#i-alert"/></svg>Blocked</span></li>
+      </ul>
+      <button class="column-add" type="button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Add task</button>
+    </div>
+    <div class="panel-section">
+      <h3 class="card-title">Completion</h3>
+      <p class="small muted">You mark a milestone complete yourself once the work is signed off. One task is still open: Admin API, which is blocked.</p>
+      <button class="btn btn-block" type="button" disabled>Mark milestone complete</button>
+    </div>
+    <div class="panel-section">
+      <h3 class="card-title">Payment</h3>
+      <p class="small muted">R10,000.00 can be requested as soon as this milestone is complete.</p>
+    </div>
+  </aside>
+
+  <!-- side panel: Frontend, completed and requested -->
+  <aside class="panel" data-when="frontend" aria-labelledby="panel-frontend-title">
+    <div class="panel-head">
+      <div class="stack-tight">
+        <span class="ms-index">M2 · Milestone</span>
+        <h2 class="panel-title" id="panel-frontend-title">Frontend Development</h2>
+        <div class="row"><span class="pill pill--success">Completed</span><span class="pill pill--warning">Payment requested</span></div>
+      </div>
+      <button class="btn btn-ghost btn-icon" type="button" data-select="all" aria-label="Close panel"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="panel-section">
+      <dl class="facts">
+        <div><dt>Amount</dt><dd class="money">R10,000.00</dd></div>
+        <div><dt>Share</dt><dd>20%</dd></div>
+        <div><dt>Completed</dt><dd>2 Oct 2026</dd></div>
+      </dl>
+    </div>
+    <div class="panel-section">
+      <div class="spread"><h3 class="card-title">Tasks</h3><span class="small muted">All 6 complete</span></div>
+      <div class="progress progress--dev" role="progressbar" aria-label="Task progress" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><span style="width: 100%"></span></div>
+    </div>
+    <div class="panel-section">
+      <div class="spread"><h3 class="card-title">Payment request</h3><span class="mono muted">INV-2026-00042</span></div>
+      <dl class="details">
+        <dt>Requested</dt><dd>3 Oct 2026</dd>
+        <dt>Due</dt><dd>10 Oct 2026</dd>
+        <dt>Emailed to</dt><dd>finance@acmeretail.co.za</dd>
+        <dt>Email</dt><dd><span class="pill pill--success">Delivered</span></dd>
+      </dl>
+      <div class="link-field">
+        <span>mohamedhnoor.com/pay/q9Xk2vRmT7cLw4</span>
+        <button class="btn btn-sm" type="button"><svg class="icon-sm" aria-hidden="true"><use href="#i-link"/></svg>Copy</button>
+      </div>
+      <div class="grid-2">
+        <button class="btn btn-block" type="button"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg>Remind</button>
+        <button class="btn btn-block" type="button"><svg class="icon" aria-hidden="true"><use href="#i-sync"/></svg>Sync Stripe</button>
+      </div>
+      <button class="btn btn-ghost btn-danger-text btn-sm" type="button">Cancel request</button>
+    </div>
+    <div class="panel-section">
+      <h3 class="card-title">Payment history</h3>
+      <p class="small muted">No payments yet. A payment appears here once Stripe confirms it, never from the client's browser.</p>
+    </div>
+  </aside>
+
+  <div class="mock-bar" role="group" aria-label="Mockup state">
+    <span>Mockup state</span>
+    <button type="button" data-state="all">Board</button>
+    <button type="button" data-state="backend">Backend open</button>
+    <button type="button" data-state="frontend">Frontend, payment requested</button>
+  </div>
+
+  <script>
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) =>
+      button.addEventListener("click", () => document.documentElement.classList.toggle("dark")),
+    );
+
+    const views = document.querySelectorAll("[data-when]");
+    const stateButtons = document.querySelectorAll("[data-state]");
+    function show(state) {
+      views.forEach((el) => { el.hidden = !el.dataset.when.split(" ").includes(state); });
+      stateButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.state === state)));
+      document.querySelectorAll(".ms-card").forEach((card) => card.classList.toggle("is-selected", card.dataset.ms === state));
+    }
+    stateButtons.forEach((b) => b.addEventListener("click", () => show(b.dataset.state)));
+    document.querySelectorAll("[data-select]").forEach((b) => b.addEventListener("click", () => show(b.dataset.select)));
+    show("all");
+
+    const tabs = document.querySelectorAll('[role="tab"]');
+    tabs.forEach((tab) => tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+      document.querySelectorAll('[role="tabpanel"]').forEach((p) => { p.hidden = p.id !== tab.getAttribute("aria-controls"); });
+    }));
+  </script>
+</body>
+</html>
