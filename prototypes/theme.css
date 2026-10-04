@@ -1,0 +1,155 @@
+/* Business dashboard theme - the durable output of /prototype.
+
+   The base tokens are copied verbatim from src/app/globals.css, so these
+   mockups render in the shipped palette. Only the blocks marked "new" are
+   additions, and they are what ports into globals.css (both theme blocks,
+   plus matching `--color-*` entries in `@theme inline`) when the first
+   dashboard UI feature is built.
+
+   Every status colour is checked against its soft tint, the card, and the page
+   background at AA (4.5:1), and each progress fill against its track at 3:1. */
+
+:root {
+  color-scheme: light;
+
+  --background: oklch(0.99 0.003 285);
+  --foreground: oklch(0.18 0.02 285);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 285);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 285);
+  --primary: oklch(0.5 0.21 288);
+  --primary-foreground: oklch(0.99 0.005 285);
+  --secondary: oklch(0.955 0.008 285);
+  --secondary-foreground: oklch(0.22 0.02 285);
+  --muted: oklch(0.965 0.005 285);
+  --muted-foreground: oklch(0.48 0.02 285);
+  --accent: oklch(0.95 0.015 288);
+  --accent-foreground: oklch(0.3 0.05 288);
+  --destructive: oklch(0.52 0.22 25);
+  --border: oklch(0.9 0.005 285);
+  --input: oklch(0.65 0.015 285);
+  --ring: oklch(0.5 0.21 288);
+  --brand: oklch(0.48 0.2 288);
+  --logo-from: oklch(0.5 0.21 288);
+  --logo-to: oklch(0.5 0.17 250);
+  --sidebar: oklch(0.975 0.005 285);
+  --sidebar-foreground: oklch(0.18 0.02 285);
+  --sidebar-primary: oklch(0.5 0.21 288);
+  --sidebar-primary-foreground: oklch(0.99 0.005 285);
+  --sidebar-accent: oklch(0.95 0.015 288);
+  --sidebar-accent-foreground: oklch(0.3 0.05 288);
+  --sidebar-border: oklch(0.9 0.005 285);
+  --sidebar-ring: oklch(0.5 0.21 288);
+
+  /* new: status. `--x` is text, dot, and icon colour; `--x-soft` is the pill
+     fill behind it. */
+  --success: oklch(0.45 0.13 155);
+  --success-soft: oklch(0.95 0.04 155);
+  --warning: oklch(0.48 0.11 65);
+  --warning-soft: oklch(0.95 0.05 85);
+  --info: oklch(0.47 0.14 250);
+  --info-soft: oklch(0.95 0.03 250);
+  --danger: oklch(0.5 0.2 25);
+  --danger-soft: oklch(0.95 0.03 25);
+  --neutral: oklch(0.46 0.02 285);
+  --neutral-soft: oklch(0.95 0.006 285);
+
+  /* new: development and payment progress must never be mistaken for each
+     other, so they get different hues as well as different labels. */
+  --progress-track: oklch(0.9 0.008 285);
+  --progress-dev: oklch(0.5 0.21 288);
+  --progress-pay: oklch(0.55 0.14 155);
+
+  /* new: board columns sit one step back from the cards on them */
+  --column: oklch(0.975 0.004 285);
+  --shadow-card: 0 1px 2px oklch(0.18 0.02 285 / 6%), 0 1px 1px oklch(0.18 0.02 285 / 4%);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: oklch(0.145 0.018 285);
+  --foreground: oklch(0.97 0.008 285);
+  --card: oklch(0.19 0.022 285);
+  --card-foreground: oklch(0.97 0.008 285);
+  --popover: oklch(0.19 0.022 285);
+  --popover-foreground: oklch(0.97 0.008 285);
+  --primary: oklch(0.54 0.2 288);
+  --primary-foreground: oklch(0.98 0.005 285);
+  --secondary: oklch(0.26 0.025 285);
+  --secondary-foreground: oklch(0.97 0.008 285);
+  --muted: oklch(0.24 0.022 285);
+  --muted-foreground: oklch(0.72 0.02 285);
+  --accent: oklch(0.28 0.04 288);
+  --accent-foreground: oklch(0.97 0.008 285);
+  --destructive: oklch(0.63 0.21 25);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(0.5 0.03 285);
+  --ring: oklch(0.78 0.14 288);
+  --brand: oklch(0.78 0.14 288);
+  --logo-from: oklch(0.72 0.17 291);
+  --logo-to: oklch(0.7 0.14 250);
+  --sidebar: oklch(0.19 0.022 285);
+  --sidebar-foreground: oklch(0.97 0.008 285);
+  --sidebar-primary: oklch(0.54 0.2 288);
+  --sidebar-primary-foreground: oklch(0.98 0.005 285);
+  --sidebar-accent: oklch(0.28 0.04 288);
+  --sidebar-accent-foreground: oklch(0.97 0.008 285);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.78 0.14 288);
+
+  /* new: status */
+  --success: oklch(0.8 0.15 155);
+  --success-soft: oklch(0.28 0.05 155);
+  --warning: oklch(0.84 0.13 80);
+  --warning-soft: oklch(0.29 0.05 75);
+  --info: oklch(0.8 0.11 245);
+  --info-soft: oklch(0.28 0.05 250);
+  --danger: oklch(0.76 0.15 25);
+  --danger-soft: oklch(0.28 0.06 25);
+  --neutral: oklch(0.76 0.015 285);
+  --neutral-soft: oklch(0.27 0.015 285);
+
+  /* new: progress */
+  --progress-track: oklch(0.3 0.025 285);
+  --progress-dev: oklch(0.72 0.17 291);
+  --progress-pay: oklch(0.74 0.15 155);
+
+  /* new: board */
+  --column: oklch(0.165 0.02 285);
+  --shadow-card: none;
+}
+
+:root {
+  /* type: the same trio as the site. In the app these resolve through
+     next/font variables; here they load from Google Fonts. */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Space Grotesk", "Inter", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* new: comfortable dashboard density. Money uses the sans face with
+     tabular figures rather than the mono face, so columns align without
+     reading as code. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-table: 0.875rem;
+  --text-body: 0.875rem;
+  --text-title: 1.625rem;
+  --row-height: 2.75rem;
+  --sidebar-width: 14.5rem;
+  --content-max: 78rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  --radius: 0.75rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-pill: 999px;
+}

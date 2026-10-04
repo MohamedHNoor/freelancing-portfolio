@@ -13,7 +13,7 @@ export function About() {
   const [opening] = profile.longBio;
 
   return (
-    <Section id="about" label="About" heading="How I work">
+    <Section id="about" label="About" heading="About Mohamed">
       <Reveal>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16">
           {opening !== undefined ? (
@@ -22,17 +22,28 @@ export function About() {
             </p>
           ) : null}
 
-          <dl className="text-sm lg:border-l lg:border-border lg:pl-8">
-            <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-              Availability
-            </dt>
-            <dd className="mt-2">
-              <StatusPill status={profile.availability.status} />
-            </dd>
+          <dl className="space-y-6 text-sm lg:border-l lg:border-border lg:pl-8">
+            <div>
+              <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                Location
+              </dt>
+              <dd className="mt-2">{profile.location}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                Availability
+              </dt>
+              <dd className="mt-2 space-y-2">
+                <StatusPill status={profile.availability.status} />
+                <p className="text-muted-foreground">
+                  {profile.availability.detail}
+                </p>
+              </dd>
+            </div>
           </dl>
         </div>
 
-        <SectionLink href="/about">Read how I work</SectionLink>
+        <SectionLink href="/about">Read more about me</SectionLink>
       </Reveal>
     </Section>
   );

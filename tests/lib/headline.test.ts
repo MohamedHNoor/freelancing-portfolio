@@ -37,9 +37,10 @@ describe("headlineLines", () => {
     expect(headlineLines("   ")).toEqual([]);
   });
 
-  /* The hero is designed for exactly two lines. A third sentence would add a
-     line the layout was not measured for. */
-  it("gives the real headline two lines", () => {
-    expect(headlineLines(getProfile().headline)).toHaveLength(2);
+  /* The headline is one sentence, so it renders as one block that wraps under
+     `text-balance` rather than breaking at a full stop. A second sentence would
+     add a forced break the layout was not designed for. */
+  it("gives the real headline one line per sentence: one", () => {
+    expect(headlineLines(getProfile().headline)).toHaveLength(1);
   });
 });

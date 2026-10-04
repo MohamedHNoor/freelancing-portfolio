@@ -69,9 +69,10 @@ describe("buildSitemapEntries", () => {
   it("lists the static routes first, then one URL per project", () => {
     expect(buildSitemapEntries(ORIGIN, ROUTE_PATHS, SLUGS)).toEqual([
       { url: "https://example.com" },
-      { url: "https://example.com/about" },
       { url: "https://example.com/services" },
       { url: "https://example.com/projects" },
+      { url: "https://example.com/process" },
+      { url: "https://example.com/about" },
       { url: "https://example.com/skills" },
       { url: "https://example.com/experience" },
       { url: "https://example.com/resume" },

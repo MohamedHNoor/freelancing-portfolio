@@ -1,8 +1,12 @@
 # Coding Standards
 
 > Tuned by `/onboard` to the real stack: Next.js 16 App Router, React 19,
-> TypeScript, Tailwind CSS v4, shadcn/ui, and Motion. There is no database and no
-> auth provider in this project. Update this file if the stack changes.
+> TypeScript, Tailwind CSS v4, shadcn/ui, and Motion. The public site has no
+> database and no auth. The private business dashboard (build-plan features 15 to
+> 23) adds Neon Postgres through Drizzle, Better Auth, Stripe Checkout, and Resend;
+> its rules are the Database and money, Auth and authorization, and Payments
+> sections below, and its design is `blueprint/dashboard-architecture.md`. Update
+> this file if the stack changes.
 
 ## TypeScript
 
@@ -28,10 +32,15 @@
 - Only use `'use client'` when needed: interactivity, hooks, browser APIs
 - Keep client components small and push them to the leaves. The known client
   islands are the animation provider, theme toggle, mobile navigation, contact
-  form, and project filter
+  form, and project filter on the public site, and forms, the task list, dialogs,
+  and the copy-link button in the dashboard
 - Use Server Actions for form submission
-- Every route should be statically generated. Use `generateStaticParams` for
-  dynamic routes and check the build output route table to confirm
+- Every public route should be statically generated. Use `generateStaticParams`
+  for dynamic routes and check the build output route table to confirm. The
+  dashboard, sign-in, and payment routes are dynamic by design and must never
+  make a public route dynamic
+- No `proxy.ts` or middleware. Dashboard protection lives in the data access
+  layer (see Auth and authorization)
 - Use the metadata API for SEO, never hand-written `<head>` tags
 - Use `next/font` for fonts and `next/image` with explicit `sizes` for images
 
@@ -42,11 +51,20 @@
 - Bespoke primitives: `src/components/primitives/ComponentName.tsx`
 - Layout chrome: `src/components/layout/`
 - Page sections: `src/components/sections/`
-- Pages: `src/app/[route]/page.tsx`
+- Pages: `src/app/[route]/page.tsx`. From feature 15, public pages live under
+  `src/app/(site)/`, sign-in pages under `src/app/(auth)/`, and the dashboard
+  under `src/app/dashboard/`
 - Server Actions: `src/actions/[feature].ts`
 - Types: `src/types/[feature].ts`
 - Content: `src/content/[collection].ts`
-- Lib/Utils: `src/lib/[utility].ts`
+- Lib/Utils: `src/lib/[utility].ts`, and Zod schemas in
+  `src/lib/validation/[feature].ts`
+- Dashboard components: `src/components/dashboard/[area]/`. The existing
+  `src/components/projects/` belongs to the public case studies
+- Database schema: `src/db/schema/[table-group].ts`; migrations in `drizzle/`
+- Server-only domain logic: `src/server/services/` (writes, transactions) and
+  `src/server/queries/` (owner-scoped reads)
+- Email templates: `src/emails/`
 - Tests: `tests/[mirrored src path].test.ts`
 
 ## Naming
@@ -85,8 +103,8 @@
 
 ## Content and data
 
-- No database. All content is typed modules under `src/content/`, imported at
-  build time
+- The public site has no database. All of its content is typed modules under
+  `src/content/`, imported at build time. Public pages never query the database
 - Components read content through helpers in the content layer, never by
   hard-coding copy inline
 - A project with `isPlaceholder: true` is seeded example content and must never
@@ -107,6 +125,53 @@
 - Display user-friendly error messages; never leak provider errors to the UI
 - Fail closed on missing configuration. A missing API key must produce a clear
   message and a working fallback, not a silent success
+
+## Database and money
+
+- Money is an integer number of minor units (`bigint` in Postgres) stored next to
+  an explicit `currency`. Percentages are integer basis points (3000 is 30%).
+  Never parse money with `parseFloat` or `Number()` and never do arithmetic on
+  decimal values; go through `src/lib/money.ts`
+- Never add amounts in different currencies. Every total is per currency
+- Totals, paid, outstanding, and progress figures are derived by queries and pure
+  functions on the server, never stored as counters and never computed in the
+  browser. Client components receive values already formatted
+- Format money and dates on the server only, with an explicit locale and the
+  `Pacific/Auckland` timezone, so the output cannot depend on the machine
+- Schema changes go through `npm run db:generate` and reviewed SQL in `drizzle/`.
+  Never run `drizzle-kit push` against a shared Neon branch
+- A write that touches more than one row runs in one transaction. Status changes
+  are conditional updates (`WHERE status IN (...)`) so a lost race fails instead
+  of overwriting
+- Never call Stripe, Resend, or any other network service inside a database
+  transaction
+- Write the activity record in the same transaction as the change it describes
+- Database, auth, Stripe, Resend, and server env modules start with
+  `import "server-only"`, read their environment lazily, and never throw at module
+  scope, because the static build imports them
+
+## Auth and authorization
+
+- Every dashboard page, query, and action calls `requireOwner()`. A layout check
+  alone is not enough, because layouts do not re-run on client navigation
+- Load records only through the owner-scoped loaders in `src/lib/permissions.ts`.
+  A record that belongs to someone else raises the same `NotFoundError` as one
+  that does not exist
+- Validate every id from the browser as a uuid before use, including arguments
+  bound with `.bind()`
+- Auth forms use Server Actions calling Better Auth's server API, not the Better
+  Auth browser client
+
+## Payments
+
+- Only the signature-verified Stripe webhook, or the owner's server-side Sync with
+  Stripe, records money as received. The success redirect never writes anything
+- Checkout amounts and currency always come from the database, never from the
+  request
+- Every Stripe create call and every Resend send carries an idempotency key, and
+  webhook handling is idempotent through `stripe_events`
+- Log Stripe's error type, code, and request id only; never log payloads, card
+  details, or personal data
 
 ## Accessibility
 
@@ -169,6 +234,14 @@ Stack binding for this project: Vitest, with `vi.mock()` for external
 dependencies (the Resend client) and `vi.useFakeTimers()` for time-dependent
 logic. The in-scope logic here is the contact schema, content lookup helpers, and
 slug handling; sections and layout are verified in the browser instead.
+
+For the dashboard, the in-scope logic also covers money parsing, formatting, and
+allocation, progress and payment-status derivation, the state machines, every Zod
+schema, and the Stripe webhook mapping. From feature 17, services, ownership
+checks, and the webhook route also need integration tests against a real
+Postgres test branch (`npm run test:integration`), with Stripe mocked at
+`src/lib/stripe.ts`. Every service that loads a record needs a test proving that
+a second owner gets `NotFoundError`.
 
 ## Browser Verification
 

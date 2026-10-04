@@ -12,12 +12,13 @@ const ORIGIN = "https://example.com";
 
 const profile = {
   name: "Ada Lovelace",
+  role: "Full-Stack Web Developer",
   shortBio: "Builds things.",
 } as unknown as Profile;
 
 const services = [
-  { slug: "figma-to-nextjs", name: "Figma to production Next.js" },
-  { slug: "startup-saas", name: "SaaS for startups" },
+  { slug: "figma-to-production", name: "Figma to Production" },
+  { slug: "saas-development", name: "SaaS Development" },
 ] as unknown as readonly Service[];
 
 const links: readonly ContactLink[] = [
@@ -29,9 +30,10 @@ const links: readonly ContactLink[] = [
 function makeProject(overrides: Partial<Project> = {}): Project {
   return {
     slug: "records-platform",
+    name: "Acme Health",
     title: "Records platform",
     summary: "A platform.",
-    category: "startup-saas",
+    category: "saas-development",
     stack: ["Next.js", "Postgres"],
     isPlaceholder: false,
     ...overrides,
@@ -60,15 +62,23 @@ describe("buildPersonJsonLd", () => {
       "@type": "Person",
       name: "Ada Lovelace",
       url: "https://example.com",
+      jobTitle: "Full-Stack Web Developer",
       description: "Builds things.",
     });
   });
 
-  it("lists the service tracks as knowsAbout", () => {
-    expect(person.knowsAbout).toEqual([
-      "Figma to production Next.js",
-      "SaaS for startups",
-    ]);
+  /* Locality and country only: what a local search matches on, and nothing a
+     visitor could not already read on the page. */
+  it("places the person in Wellington without a street address", () => {
+    expect(person.address).toEqual({
+      "@type": "PostalAddress",
+      addressLocality: "Wellington",
+      addressCountry: "NZ",
+    });
+  });
+
+  it("lists the services as knowsAbout", () => {
+    expect(person.knowsAbout).toEqual(["Figma to Production", "SaaS Development"]);
   });
 
   it("puts only other-service profiles in sameAs", () => {
@@ -104,16 +114,16 @@ describe("buildCreativeWorkJsonLd", () => {
     expect(
       buildCreativeWorkJsonLd({
         project: makeProject(),
-        categoryLabel: "SaaS for startups",
+        categoryLabel: "SaaS Development",
         origin: ORIGIN,
       }),
     ).toEqual({
       "@context": "https://schema.org",
       "@type": "CreativeWork",
-      name: "Records platform",
+      name: "Acme Health: Records platform",
       description: "A platform.",
       url: "https://example.com/projects/records-platform",
-      about: "SaaS for startups",
+      about: "SaaS Development",
       keywords: ["Next.js", "Postgres"],
     });
   });
@@ -124,7 +134,7 @@ describe("buildCreativeWorkJsonLd", () => {
     expect(
       buildCreativeWorkJsonLd({
         project: makeProject({ isPlaceholder: true }),
-        categoryLabel: "SaaS for startups",
+        categoryLabel: "SaaS Development",
         origin: ORIGIN,
       }),
     ).toBeUndefined();
@@ -132,7 +142,7 @@ describe("buildCreativeWorkJsonLd", () => {
 });
 
 describe("buildBreadcrumbJsonLd", () => {
-  it("walks home, projects, then the case study", () => {
+  it("walks home, work, then the case study", () => {
     expect(
       buildBreadcrumbJsonLd({ project: makeProject(), origin: ORIGIN }),
     ).toEqual({
@@ -143,13 +153,13 @@ describe("buildBreadcrumbJsonLd", () => {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Projects",
+          name: "Work",
           item: "https://example.com/projects",
         },
         {
           "@type": "ListItem",
           position: 3,
-          name: "Records platform",
+          name: "Acme Health: Records platform",
           item: "https://example.com/projects/records-platform",
         },
       ],

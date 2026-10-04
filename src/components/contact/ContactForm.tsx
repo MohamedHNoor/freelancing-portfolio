@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { submitContact } from "@/actions/contact";
@@ -9,9 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  BUDGET_RANGES,
+  BUDGET_RANGE_LABELS,
+  EXISTING_DESIGN_LABELS,
+  EXISTING_DESIGN_OPTIONS,
   PROJECT_TYPES,
   PROJECT_TYPE_LABELS,
+  TIMELINES,
+  TIMELINE_LABELS,
   contactSchema,
+  projectTypeFromQuery,
   type ContactInput,
 } from "@/lib/validation/contact";
 import { cn } from "@/lib/utils";
@@ -24,10 +31,18 @@ type Status =
 const FIELD_CLASS =
   "mt-2 aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/20";
 
-/* `handleSubmit` rather than a form `action` with `useActionState`. React Hook
-   Form owns client validation and, on an invalid submit, moves focus to the
-   first field that failed. A form action would post before any of that ran and
-   the focus behaviour would have to be rebuilt by hand.
+/* Native selects, not the Radix one: a real mobile picker, no controller
+   layer, and nothing to get wrong. Styled to match `Input`. */
+const SELECT_CLASS = cn(
+  "mt-2 flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+  "aria-[invalid=true]:border-destructive",
+);
+
+/* A client component because react-hook-form needs one, and React Hook Form owns
+   client validation and, on an invalid submit, moves focus to the first field
+   that failed. A form action would post before any of that ran and the focus
+   behaviour would have to be rebuilt by hand.
+
    `useTransition` supplies the pending state, which is the documented way to
    track a Server Action called as a function. */
 export function ContactForm() {
@@ -39,19 +54,29 @@ export function ContactForm() {
     handleSubmit,
     reset,
     setError,
+    setValue,
     formState: { errors },
   } = useForm<ContactInput>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       name: "",
       email: "",
-      projectType: "agency-build",
-      timeline: "",
-      budgetRange: "",
-      message: "",
       company: "",
+      message: "",
+      budgetRange: "",
+      website: "",
     },
   });
+
+  /* A service or case study button links here as `/contact?type=...`. Read
+     after mount rather than through `useSearchParams`, which would need a
+     Suspense boundary and leave the form out of the static HTML. */
+  useEffect(() => {
+    const type = projectTypeFromQuery(window.location.search);
+    if (type !== undefined) {
+      setValue("projectType", type);
+    }
+  }, [setValue]);
 
   const onSubmit = handleSubmit((values) => {
     setStatus({ kind: "idle" });
@@ -64,7 +89,7 @@ export function ContactForm() {
         return;
       }
 
-      /* The server re-validates, so it can reject something the client let
+      /* The server re-validates, so a client parse that passed can still come
          through. Attach anything field-shaped to its input rather than only
          showing the summary. */
       for (const [field, messages] of Object.entries(
@@ -86,7 +111,7 @@ export function ContactForm() {
     <form onSubmit={onSubmit} noValidate className="max-w-2xl">
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="min-w-0">
-          <Label htmlFor="name">Your name</Label>
+          <Label htmlFor="name">Name</Label>
           <Input
             id="name"
             autoComplete="name"
@@ -113,19 +138,31 @@ export function ContactForm() {
         </div>
 
         <div className="min-w-0">
-          <Label htmlFor="projectType">What kind of project?</Label>
-          {/* A native select, not the Radix one. Three options, a real mobile
-              picker, no controller layer, and nothing to get wrong. */}
+          <Label htmlFor="company">
+            Company or business{" "}
+            <span className="font-normal text-muted-foreground">(optional)</span>
+          </Label>
+          <Input
+            id="company"
+            autoComplete="organization"
+            aria-invalid={errors.company !== undefined}
+            aria-describedby={describedBy("company")}
+            className={FIELD_CLASS}
+            {...register("company")}
+          />
+          <FieldError id="company-error" message={errors.company?.message} />
+        </div>
+
+        <div className="min-w-0">
+          <Label htmlFor="projectType">What are you looking to build?</Label>
           <select
             id="projectType"
             aria-invalid={errors.projectType !== undefined}
             aria-describedby={describedBy("projectType")}
-            className={cn(
-              "mt-2 flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-              "aria-[invalid=true]:border-destructive",
-            )}
+            className={SELECT_CLASS}
             {...register("projectType")}
           >
+            <option value="">Choose one</option>
             {PROJECT_TYPES.map((type) => (
               <option key={type} value={type}>
                 {PROJECT_TYPE_LABELS[type]}
@@ -138,50 +175,84 @@ export function ContactForm() {
           />
         </div>
 
-        <div className="min-w-0">
-          <Label htmlFor="timeline">Rough timeline</Label>
-          <Input
-            id="timeline"
-            placeholder="Next month, no fixed date, ..."
-            aria-invalid={errors.timeline !== undefined}
-            aria-describedby={describedBy("timeline")}
-            className={FIELD_CLASS}
-            {...register("timeline")}
-          />
-          <FieldError id="timeline-error" message={errors.timeline?.message} />
-        </div>
-
         <div className="min-w-0 sm:col-span-2">
-          <Label htmlFor="budgetRange">
-            Budget range{" "}
-            <span className="font-normal text-muted-foreground">
-              (optional, and never shown publicly)
-            </span>
-          </Label>
-          <Input
-            id="budgetRange"
-            aria-invalid={errors.budgetRange !== undefined}
-            aria-describedby={describedBy("budgetRange")}
-            className={FIELD_CLASS}
-            {...register("budgetRange")}
-          />
-          <FieldError
-            id="budgetRange-error"
-            message={errors.budgetRange?.message}
-          />
-        </div>
-
-        <div className="min-w-0 sm:col-span-2">
-          <Label htmlFor="message">What are you building?</Label>
+          <Label htmlFor="message">Project description</Label>
           <Textarea
             id="message"
             rows={6}
+            placeholder="Tell me what you're trying to build, what problem it needs to solve, and any important requirements you already know."
             aria-invalid={errors.message !== undefined}
             aria-describedby={describedBy("message")}
             className={FIELD_CLASS}
             {...register("message")}
           />
           <FieldError id="message-error" message={errors.message?.message} />
+        </div>
+
+        <div className="min-w-0 sm:col-span-2">
+          <Label htmlFor="existingDesign">Do you have an existing design?</Label>
+          <select
+            id="existingDesign"
+            aria-invalid={errors.existingDesign !== undefined}
+            aria-describedby={describedBy("existingDesign")}
+            className={SELECT_CLASS}
+            {...register("existingDesign")}
+          >
+            <option value="">Choose one</option>
+            {EXISTING_DESIGN_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {EXISTING_DESIGN_LABELS[option]}
+              </option>
+            ))}
+          </select>
+          <FieldError
+            id="existingDesign-error"
+            message={errors.existingDesign?.message}
+          />
+        </div>
+
+        <div className="min-w-0">
+          <Label htmlFor="budgetRange">
+            Budget range{" "}
+            <span className="font-normal text-muted-foreground">(optional)</span>
+          </Label>
+          <select
+            id="budgetRange"
+            aria-invalid={errors.budgetRange !== undefined}
+            aria-describedby={describedBy("budgetRange")}
+            className={SELECT_CLASS}
+            {...register("budgetRange")}
+          >
+            <option value="">Prefer not to say</option>
+            {BUDGET_RANGES.map((range) => (
+              <option key={range} value={range}>
+                {BUDGET_RANGE_LABELS[range]}
+              </option>
+            ))}
+          </select>
+          <FieldError
+            id="budgetRange-error"
+            message={errors.budgetRange?.message}
+          />
+        </div>
+
+        <div className="min-w-0">
+          <Label htmlFor="timeline">Timeline</Label>
+          <select
+            id="timeline"
+            aria-invalid={errors.timeline !== undefined}
+            aria-describedby={describedBy("timeline")}
+            className={SELECT_CLASS}
+            {...register("timeline")}
+          >
+            <option value="">Choose one</option>
+            {TIMELINES.map((timeline) => (
+              <option key={timeline} value={timeline}>
+                {TIMELINE_LABELS[timeline]}
+              </option>
+            ))}
+          </select>
+          <FieldError id="timeline-error" message={errors.timeline?.message} />
         </div>
       </div>
 
@@ -190,13 +261,13 @@ export function ContactForm() {
           accessibility tree is its own violation. Anyone who does reach it is
           told plainly to leave it alone. */}
       <div className="sr-only">
-        <Label htmlFor="company">Leave this field empty</Label>
+        <Label htmlFor="website">Leave this field empty</Label>
         <input
-          id="company"
+          id="website"
           type="text"
           tabIndex={-1}
           autoComplete="off"
-          {...register("company")}
+          {...register("website")}
         />
       </div>
 
@@ -206,7 +277,7 @@ export function ContactForm() {
           disabled={pending}
           className="h-11 gap-2 px-5 text-[0.95rem]"
         >
-          {pending ? "Sending..." : "Send enquiry"}
+          {pending ? "Sending..." : "Send Project Enquiry"}
         </Button>
 
         {/* Always in the document so it has somewhere to announce into. */}
@@ -219,7 +290,7 @@ export function ContactForm() {
           )}
         >
           {status.kind === "sent"
-            ? "Thanks. That reached my inbox, and I reply to everything."
+            ? "Thanks, your project enquiry has been received. I'll review the details and get back to you."
             : status.kind === "failed"
               ? status.message
               : ""}

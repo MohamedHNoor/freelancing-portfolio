@@ -1,30 +1,42 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { About } from "@/components/sections/About";
-import { Contact } from "@/components/sections/Contact";
-import { CredibilityStrip } from "@/components/sections/CredibilityStrip";
-import { Experience } from "@/components/sections/Experience";
+import { Audiences } from "@/components/sections/Audiences";
+import { FinalCta } from "@/components/sections/FinalCta";
 import { Hero } from "@/components/sections/Hero";
+import { Location } from "@/components/sections/Location";
+import { Process } from "@/components/sections/Process";
 import { Projects } from "@/components/sections/Projects";
+import { Reasons } from "@/components/sections/Reasons";
 import { Services } from "@/components/sections/Services";
 import { Skills } from "@/components/sections/Skills";
+import { ValuePoints } from "@/components/sections/ValuePoints";
 import { getProfile, getProfileLinks, getServices } from "@/content";
 import { toContactLink } from "@/lib/links";
 import { routeMetadata } from "@/lib/seo";
-import { SITE_URL } from "@/lib/site";
+import { SITE, SITE_URL } from "@/lib/site";
 import { buildPersonJsonLd } from "@/lib/structured-data";
 
-/* Canonical and `og:url` only. The title, description and Open Graph defaults
-   on the root layout already describe this page, so restating them here would
-   be two places to keep in step. */
+/* The title and description come from the root layout. The social card is
+   declared here because `routeMetadata` gives the page its own `openGraph`,
+   which replaces the layout's instead of merging into it: without these two
+   fields the card would fall back to the search title. */
+const route = routeMetadata("/");
+
 export const metadata: Metadata = {
-  ...routeMetadata("/"),
+  ...route,
+  openGraph: {
+    ...route.openGraph,
+    title: `${getProfile().name} | ${getProfile().role}`,
+    description: SITE.shareDescription,
+  },
 };
 
-/* Order is fixed by the overview: hero, credibility strip, about, services,
-   projects, skills, experience, contact. Projects sits above skills on purpose,
-   because proof of delivery outranks a technology list for a buyer with no
-   reviews to read. */
+/* Order follows the conversion path: what is on offer and for whom, then the
+   work that proves it, then why and how, and one call to action at the end.
+   Work sits above technology on purpose, because proof of delivery outranks a
+   technology list for a buyer with no reviews to read. Each section is a
+   summary that links to its own page. */
 export default function Home() {
   const person = buildPersonJsonLd({
     profile: getProfile(),
@@ -36,7 +48,7 @@ export default function Home() {
   return (
     /* One root element, not a fragment. On a client navigation Next picks the
        first DOM node of the changed segment as its scroll target, and a
-       fragment of seven sections gave it seven candidates: arriving from
+       fragment of sections gave it a candidate per section: arriving from
        `/projects` it settled on the credibility strip and smoothly scrolled
        past the hero, which is the one thing a first-time visitor must see.
        `/projects` never had the bug because it already returned a single root. */
@@ -45,13 +57,16 @@ export default function Home() {
           because that is the page a search engine treats as the site's own. */}
       <JsonLd data={person} />
       <Hero />
-      <CredibilityStrip />
-      <About />
+      <ValuePoints />
       <Services />
+      <Audiences />
       <Projects />
+      <Reasons />
+      <Process />
       <Skills />
-      <Experience />
-      <Contact />
+      <About />
+      <Location />
+      <FinalCta />
     </div>
   );
 }

@@ -10,9 +10,10 @@ import { NAV_ITEMS, joinSiteUrl, type NavItem } from "@/lib/site";
  *  `buildSitemapEntries` guards that this never drifts below the navigation. */
 export const ROUTE_PATHS = [
   "/",
-  "/about",
   "/services",
   "/projects",
+  "/process",
+  "/about",
   "/skills",
   "/experience",
   "/resume",

@@ -1,5 +1,6 @@
 import {
   CASE_STUDY_HEADINGS,
+  type Point,
   type Profile,
   type ProfileLinks,
   type Project,
@@ -10,6 +11,13 @@ import {
   type SkillGroup,
 } from "@/types/content";
 import { assertDeployable } from "@/lib/deploy-readiness";
+import {
+  audiences,
+  milestones,
+  processSteps,
+  reasons,
+  valuePoints,
+} from "./approach";
 import { roles } from "./experience";
 import { profile } from "./profile";
 import { projects } from "./projects";
@@ -71,6 +79,13 @@ export function assertContentInvariants(content: ContentInput): void {
       );
     }
     seenOrders.add(service.order);
+
+    const listed = service.lists.some((list) => list.items.length > 0);
+    if (!listed) {
+      throw new Error(
+        `Content: service "${service.slug}" lists nothing it includes`,
+      );
+    }
   }
 
   const serviceSlugs = new Set<ServiceSlug>(
@@ -111,12 +126,6 @@ export function assertContentInvariants(content: ContentInput): void {
           `Content: metric "${metric.label}" on project "${project.slug}" has no evidence`,
         );
       }
-    }
-  }
-
-  for (const point of content.profile.proofPoints) {
-    if (point.evidence.trim() === "") {
-      throw new Error(`Content: proof point "${point.label}" has no evidence`);
     }
   }
 
@@ -208,10 +217,14 @@ export function getAdjacentProjects(slug: string): AdjacentProjects {
 /* Groups whose skills are technologies someone scans a stack row for.
    Practices belong in the skills section, not in a row read in two seconds. */
 const TECHNOLOGY_GROUP_IDS: readonly string[] = [
-  "front-end",
+  "frontend",
+  "backend",
+  "database",
+  "orm",
+  "auth",
+  "payments",
+  "infrastructure",
   "mobile",
-  "back-end",
-  "data",
   "tooling",
 ];
 
@@ -238,6 +251,40 @@ export function getTechnologyMarks(limit?: number): readonly Skill[] {
     skillGroups.filter((group) => TECHNOLOGY_GROUP_IDS.includes(group.id)),
   ).filter((skill) => skill.icon !== undefined);
   return typeof limit === "number" ? all.slice(0, limit) : all;
+}
+
+/** The home page's technology summary: each purpose group with only its
+ *  featured entries, and groups with none dropped. `/skills` reads the full
+ *  groups through `getSkillGroups()`. */
+export function getFeaturedSkillGroups(): readonly SkillGroup[] {
+  return skillGroups
+    .map((group) => ({
+      ...group,
+      skills: group.skills.filter(
+        (skill: Skill) => "featured" in skill && skill.featured === true,
+      ),
+    }))
+    .filter((group) => group.skills.length > 0);
+}
+
+export function getValuePoints(): readonly Point[] {
+  return valuePoints;
+}
+
+export function getAudiences(): readonly Point[] {
+  return audiences;
+}
+
+export function getReasons(): readonly Point[] {
+  return reasons;
+}
+
+export function getProcessSteps(): readonly Point[] {
+  return processSteps;
+}
+
+export function getMilestones(): readonly Point[] {
+  return milestones;
 }
 
 /** What feature 12's honesty gate asserts on before deploying. */

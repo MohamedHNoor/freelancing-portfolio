@@ -48,8 +48,10 @@ export default function ResumePage() {
             <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
               {profile.name}
             </h1>
+            {/* The job title, not the marketing headline: this is the page that
+                gets printed and filed. */}
             <p className="mt-3 text-lg text-muted-foreground">
-              {profile.headline}
+              {profile.role}
             </p>
 
             <ul

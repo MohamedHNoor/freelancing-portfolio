@@ -6,7 +6,10 @@ import { Resend } from "resend";
 import { formatFromHeader } from "@/lib/links";
 import { checkRateLimit, type RateLimitStore } from "@/lib/rate-limit";
 import {
+  BUDGET_RANGE_LABELS,
+  EXISTING_DESIGN_LABELS,
   PROJECT_TYPE_LABELS,
+  TIMELINE_LABELS,
   contactSchema,
   type ContactSubmission,
 } from "@/lib/validation/contact";
@@ -57,13 +60,15 @@ function fail(
  *  as binary: `git diff` printed only "Binary files differ" and `grep` refused
  *  to match, on the most security-sensitive file in the project.
  *
- *  `company` is excluded. It is the honeypot, always empty on a valid
+ *  `website` is excluded. It is the honeypot, always empty on a valid
  *  submission, and not part of the enquiry. */
 function idempotencyKey(submission: ContactSubmission): string {
   const canonical = JSON.stringify([
     submission.name,
     submission.email,
+    submission.company ?? "",
     submission.projectType,
+    submission.existingDesign,
     submission.timeline,
     submission.budgetRange ?? "",
     submission.message,
@@ -78,21 +83,27 @@ function idempotencyKey(submission: ContactSubmission): string {
 }
 
 function plainTextBody(submission: ContactSubmission): string {
-  /* `?? "not given"` on its own never fired. The field is optional, so the
-     nullish branch only covers an omitted key, but the form always submits an
-     empty string rather than omitting it. The empty string is the real "not
-     given" case, so it has to be handled explicitly or the line reads
-     `Budget:` followed by nothing. */
+  /* `?? "not given"` on its own never fires for these. Both fields are
+     optional, so the nullish branch only covers an omitted key, but the form
+     always submits an empty string rather than omitting it. The empty string
+     is the real "not given" case, so it has to be handled explicitly or the
+     line reads `Budget:` followed by nothing. */
+  const company =
+    submission.company === undefined || submission.company === ""
+      ? "not given"
+      : submission.company;
   const budget =
     submission.budgetRange === undefined || submission.budgetRange === ""
       ? "not given"
-      : submission.budgetRange;
+      : BUDGET_RANGE_LABELS[submission.budgetRange];
 
   return [
     `Name:     ${submission.name}`,
     `Email:    ${submission.email}`,
+    `Company:  ${company}`,
     `Project:  ${PROJECT_TYPE_LABELS[submission.projectType]}`,
-    `Timeline: ${submission.timeline}`,
+    `Design:   ${EXISTING_DESIGN_LABELS[submission.existingDesign]}`,
+    `Timeline: ${TIMELINE_LABELS[submission.timeline]}`,
     `Budget:   ${budget}`,
     "",
     submission.message,
@@ -103,17 +114,17 @@ export async function submitContact(
   raw: unknown,
 ): Promise<ContactResult> {
   /* The honeypot is judged on the value that arrived, not on whether the schema
-     produced an error for that field. Inferring it from `fieldErrors.company`
-     was wrong in a way that lost mail: a payload missing `company` altogether
-     also produces an error there, so any malformed submission was answered with
-     a fake success and silently dropped. Only a field that is present and
-     non-empty is a bot. */
-  const rawCompany =
+     produced an error for that field. Inferring it from `fieldErrors.website`
+     would be wrong in a way that loses mail: a payload missing `website`
+     altogether also produces an error there, so any malformed submission would
+     be answered with a fake success and silently dropped. Only a field that is
+     present and non-empty is a bot. */
+  const rawHoneypot =
     typeof raw === "object" && raw !== null
-      ? (raw as Record<string, unknown>).company
+      ? (raw as Record<string, unknown>).website
       : undefined;
 
-  if (typeof rawCompany === "string" && rawCompany.trim() !== "") {
+  if (typeof rawHoneypot === "string" && rawHoneypot.trim() !== "") {
     /* Answered with the success shape. Telling a bot what tripped teaches it to
        leave the field alone next time. */
     return { success: true, data: { sent: true }, error: null };
@@ -166,7 +177,7 @@ export async function submitContact(
         from: formatFromHeader(submission.name, from),
         to: [to],
         replyTo: submission.email,
-        subject: `New enquiry from ${submission.name}`,
+        subject: `Project enquiry from ${submission.name}`,
         text: plainTextBody(submission),
       },
       /* Second argument, not part of the payload. Resend's own guide shows

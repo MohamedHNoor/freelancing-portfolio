@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { CaseStudyCta } from "@/components/projects/CaseStudyCta";
 import { CaseStudyHeader } from "@/components/projects/CaseStudyHeader";
 import { CaseStudyNav } from "@/components/projects/CaseStudyNav";
 import { CaseStudySection } from "@/components/projects/CaseStudySection";
@@ -10,6 +11,7 @@ import {
   getProjectSlugs,
   getServiceBySlug,
 } from "@/content";
+import { projectHeading } from "@/lib/projects";
 import { routeMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import {
@@ -41,7 +43,7 @@ export async function generateMetadata(
   /* `article` rather than `website`: a case study is a written piece about one
      project, not a page of the site itself. */
   return {
-    title: project.title,
+    title: projectHeading(project),
     description: project.summary,
     ...routeMetadata(`/projects/${slug}`, { type: "article" }),
   };
@@ -87,14 +89,23 @@ export default async function CaseStudyPage(
           categoryLabel={categoryLabel}
         />
 
-        {/* `assertContentInvariants` enforces the four canonical headings in
+        {/* `assertContentInvariants` enforces the ten canonical headings in
             their canonical order at module load, so array order is the render
             order and nothing needs sorting here. */}
         <div className="mt-16 space-y-12 sm:mt-20 sm:space-y-14">
-          {project.caseStudy.map((section) => (
-            <CaseStudySection key={section.heading} section={section} />
+          {project.caseStudy.map((section, index) => (
+            <CaseStudySection
+              key={section.heading}
+              section={section}
+              index={index}
+            />
           ))}
         </div>
+
+        {/* The step this page exists to lead to: a reader who has finished a
+            case study is offered the form, with the project type that matches
+            this one already chosen. */}
+        <CaseStudyCta enquiryType={service?.enquiryType} />
 
         <CaseStudyNav adjacent={getAdjacentProjects(project.slug)} />
       </div>
