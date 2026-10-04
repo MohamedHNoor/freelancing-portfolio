@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { formatFromHeader, toContactLink } from "@/lib/links";
+import { enquiryHref, formatFromHeader, toContactLink } from "@/lib/links";
 import type { ProfileLink } from "@/content";
+import { PROJECT_TYPES, projectTypeFromQuery } from "@/lib/validation/contact";
 
 const email = (href: string): ProfileLink => ({ key: "email", href });
 const github = (href: string): ProfileLink => ({ key: "github", href });
@@ -140,5 +141,24 @@ describe("formatFromHeader", () => {
   it("falls back to the bare address when nothing survives sanitising", () => {
     expect(formatFromHeader('"""', "hi@example.com")).toBe("hi@example.com");
     expect(formatFromHeader("   ", "hi@example.com")).toBe("hi@example.com");
+  });
+});
+
+describe("enquiryHref", () => {
+  it("links to the bare form when no project type is given", () => {
+    expect(enquiryHref()).toBe("/contact");
+  });
+
+  it("preselects a project type through the query", () => {
+    expect(enquiryHref("saas-product")).toBe("/contact?type=saas-product");
+  });
+
+  /* The form reads the same query with `projectTypeFromQuery`, so a link
+     built here must survive that round trip for every type. */
+  it("round-trips every project type through the form's reader", () => {
+    for (const type of PROJECT_TYPES) {
+      const search = enquiryHref(type).slice("/contact".length);
+      expect(projectTypeFromQuery(search)).toBe(type);
+    }
   });
 });

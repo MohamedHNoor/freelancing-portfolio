@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { MenuIcon } from "lucide-react";
 import { Logo } from "@/components/icons/Logo";
 import { NavLink } from "@/components/layout/NavLink";
@@ -12,7 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { NAV_ITEMS } from "@/lib/site";
+import { NAV_ITEMS, PRIMARY_CTA } from "@/lib/site";
 
 /* `name` is passed in rather than read from `@/content` here: this is a
    client component, and importing the content layer would ship every case
@@ -56,6 +57,11 @@ export function MobileNav({ name }: { name: string }) {
               </li>
             ))}
           </ul>
+          <Button asChild className="mt-4 h-11 w-full">
+            <Link href={PRIMARY_CTA.href} onClick={() => setOpen(false)}>
+              {PRIMARY_CTA.label}
+            </Link>
+          </Button>
         </nav>
       </SheetContent>
     </Sheet>

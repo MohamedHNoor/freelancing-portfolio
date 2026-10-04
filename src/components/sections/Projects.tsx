@@ -23,10 +23,10 @@ export function Projects() {
 
   return (
     <Section
-      id="projects"
+      id="work"
       label="Work"
-      heading="What I have built, and what it changed"
-      lead="Outcome first, with the measurement each number came from. Both tracks are represented."
+      heading="Selected Work"
+      lead="A selection of websites and applications I have built, each with a full case study and the measurement behind every number."
     >
       {hasPlaceholder ? (
         <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
@@ -52,7 +52,7 @@ export function Projects() {
         ))}
       </ul>
 
-      <SectionLink href="/projects">View all projects</SectionLink>
+      <SectionLink href="/projects">View all work</SectionLink>
     </Section>
   );
 }

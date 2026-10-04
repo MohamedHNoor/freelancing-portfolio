@@ -2,7 +2,7 @@ import { Reveal } from "@/components/primitives/Reveal";
 import { Section } from "@/components/primitives/Section";
 import { SectionLink } from "@/components/primitives/SectionLink";
 import { TechIcon, hasTechIcon } from "@/components/icons/TechIcon";
-import { getSkillGroups } from "@/content";
+import { getFeaturedSkillGroups } from "@/content";
 
 /* Names only here. Where each one was actually used is the whole argument this
    section makes, and it lives at `/skills`: thirty context lines is a page's
@@ -12,7 +12,7 @@ import { getSkillGroups } from "@/content";
    which the hero technology row also reads. No sorting here. There is still no
    proficiency value anywhere, by design. */
 export function Skills() {
-  const groups = getSkillGroups().filter((group) => group.skills.length > 0);
+  const groups = getFeaturedSkillGroups();
 
   if (groups.length === 0) {
     return null;
@@ -20,10 +20,10 @@ export function Skills() {
 
   return (
     <Section
-      id="skills"
-      label="Stack"
-      heading="What I build with, and where I have used it"
-      lead="Grouped by where each one sits in a build. No self-assigned percentages: a score I award myself would not be evidence."
+      id="technology"
+      label="Technology"
+      heading="Technology I Work With"
+      lead="Organised by what each one does in a product. Every entry has been used on real work, and the full list says where."
     >
       <Reveal>
         <dl className="space-y-8">

@@ -1,5 +1,6 @@
 import type { ContactLink } from "@/lib/links";
 import type { Profile, Project, Service } from "@/types/content";
+import { projectHeading } from "@/lib/projects";
 import { joinSiteUrl } from "@/lib/site";
 
 /** A JSON-LD document, loose on purpose: schema.org vocabularies are open and
@@ -53,8 +54,16 @@ export function buildPersonJsonLd({
     "@type": "Person",
     name: profile.name,
     url: joinSiteUrl(origin, "/"),
+    jobTitle: profile.role,
     description: profile.shortBio,
     knowsAbout: services.map((service) => service.name),
+    /* Wellington only, never a street: it is what a local search matches on,
+       and it is already on every page. */
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Wellington",
+      addressCountry: "NZ",
+    },
   };
 
   /* Omitted rather than emitted empty. An empty `sameAs` array is a claim that
@@ -99,7 +108,7 @@ export function buildCreativeWorkJsonLd({
   return {
     "@context": SCHEMA_CONTEXT,
     "@type": "CreativeWork",
-    name: project.title,
+    name: projectHeading(project),
     description: project.summary,
     url: joinSiteUrl(origin, `/projects/${project.slug}`),
     about: categoryLabel,
@@ -122,8 +131,8 @@ export function buildBreadcrumbJsonLd({
 }: BreadcrumbInput): JsonLd {
   const crumbs = [
     { name: "Home", path: "/" },
-    { name: "Projects", path: "/projects" },
-    { name: project.title, path: `/projects/${project.slug}` },
+    { name: "Work", path: "/projects" },
+    { name: projectHeading(project), path: `/projects/${project.slug}` },
   ];
 
   return {

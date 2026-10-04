@@ -31,7 +31,7 @@ export function CaseStudyHeader({
         className="inline-flex items-center gap-2 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <ArrowLeftIcon className="size-4" aria-hidden="true" />
-        Back to projects
+        Back to work
       </Link>
 
       <div className="mt-8 flex flex-wrap items-center gap-2">
@@ -44,7 +44,10 @@ export function CaseStudyHeader({
       {/* This page owns the only `h1` on it. The case study section headings
           below are `h2`. */}
       <h1 className="mt-5 max-w-3xl text-balance font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
-        {project.title}
+        <span className="block font-mono text-sm font-normal uppercase tracking-[0.2em] text-brand">
+          {project.name}
+        </span>{" "}
+        <span className="mt-3 block">{project.title}</span>
       </h1>
 
       <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">

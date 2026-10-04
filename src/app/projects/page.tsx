@@ -6,9 +6,9 @@ import { toProjectCardData } from "@/lib/projects";
 import { routeMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Projects",
+  title: "Work",
   description:
-    "Selected builds, from a multi-tenant SaaS platform taken to launch to Figma designs turned into production Next.js sites.",
+    "Case studies of websites and web applications built by Mohamed Noor, from a multi-tenant travel commerce platform to a production Next.js website.",
   ...routeMetadata("/projects"),
 };
 
@@ -27,8 +27,8 @@ export default function ProjectsPage() {
         <PageHeader
           id="projects-heading"
           eyebrow="Work"
-          heading="Projects"
-          lead="Every build, filterable by track and by the technology it used. Each number carries the measurement it came from."
+          heading="Selected Work"
+          lead="Websites and applications I have built, filterable by service and by technology. Every number carries the measurement it came from."
         />
 
         <div className="mt-12">

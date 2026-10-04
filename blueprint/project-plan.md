@@ -14,11 +14,13 @@ the web"), list technologies with self-assigned percentage bars, and show projec
 screenshots with no explanation of what problem was solved or what changed as a result. A
 client cannot tell a capable developer from a template.
 
-This site solves that by being a conversion page rather than a gallery. It states a
-specific specialism in the first screen, presents each project as a case study with
-problem, approach, technologies, and outcome, and substitutes demonstrable proof
-(Lighthouse scores, Core Web Vitals, pixel fidelity, accessibility conformance) for the
-social proof a new account does not have yet.
+This site solves that by being a conversion page rather than a gallery. It says in the
+first screen what the developer builds and for whom, presents each project as a full case
+study, and substitutes demonstrable proof (test counts, Lighthouse scores, Core Web
+Vitals, accessibility conformance) for the social proof a new account does not have yet.
+It reads as the business of a serious independent developer: business problems first,
+technology in support. The conversion path it is built around is Google, LinkedIn or
+GitHub, then the portfolio, then a case study, then Start a Project, then an enquiry.
 
 The site is also itself a work sample. Its own performance and accessibility scores are
 part of the argument, which is why they are treated as build gates rather than goals.
@@ -33,29 +35,34 @@ clear how much of the work is done against how much of the price has been paid.
 
 ## 2. Users - Who is this for?
 
-The site focuses on two buyer types and keeps a third track open. In the order the site
-presents them:
+The site is the portfolio of a full-stack web developer in Wellington, New Zealand, who
+builds websites and custom web applications. It speaks to four kinds of client, in the
+order the site presents them, all of whom want to deal directly with the developer
+building their product:
 
-**Primary: design and digital agencies hiring white-label development.** An agency with
-signed client work, a finished design, and more projects than developers to build them.
-They are evaluating on: will the build match the design, will it be fast and accessible
-before their client sees it, will it ship under the agency's name with the client
-relationship left with the agency, and will it be delivered on time. There is no agency
-engagement to show yet, so this track rests on the build standard this site itself proves.
+**Businesses** that need a professional website or custom software that fits the way the
+business actually operates. They are evaluating on credibility, reliability and clear
+communication.
 
-**Primary: founders building a startup SaaS.** Founders and early product teams taking a
-SaaS from idea or prototype to its first paying customers on React, Next.js, Node, and
-Postgres. They are evaluating on: can this person reach a launch that holds up, with
-authentication, tenant isolation, payments, and tests in place rather than bolted on
-later, and will the codebase suit the first engineering hire. Higher budgets and a harder
-sell without reviews; the travel platform case study is the evidence.
+**Startups** with a product idea that needs to become a working MVP and then a product
+ready for production. They are evaluating on whether authentication, tenant isolation,
+payments and tests are in place rather than bolted on later; the travel platform case
+study is the evidence.
 
-**Secondary: clients hiring a Figma to Next.js build directly.** A founder, designer, or
-marketing team with a finished design file and no front-end capacity, evaluating on design
-fidelity, responsiveness, speed, communication, and delivery time.
+**Agencies** with client projects and Figma designs that need turning into
+production-ready sites and applications, white-label if they need it, with the agency's
+name on the work and the client relationship left with the agency. There is no agency
+engagement to show yet, so this rests on the build standard this site itself proves.
 
-**Tertiary: recruiters and engineering managers** who arrive from LinkedIn or GitHub and
-want a resume and a code-quality signal quickly.
+**Entrepreneurs** with an idea and no one to handle the technical implementation, from
+frontend to backend.
+
+**Also: recruiters and engineering managers** who arrive from LinkedIn or GitHub and want
+a resume and a code-quality signal quickly.
+
+The market is New Zealand, Australia and international. Local relevance matters to New
+Zealand and Australian buyers, so Wellington is stated plainly, but the site never implies
+existing clients in any country.
 
 All of them arrive cold, often on mobile, often from a link pasted into a message thread.
 No one is browsing. Every section has to earn the next scroll.
@@ -72,31 +79,48 @@ never sign in.
 
 ## 3. Features - What does the MVP need?
 
-- Hero that states the specialisms in a two-line headline, agency and startup work
-  first, with a primary call to action and a current availability status
-- Credibility strip of demonstrable metrics, replacing invented client-count statistics
-- About section: a short narrative of how the developer works and what they are good at
-- Services: three named engagement tracks, white-label builds for agencies, SaaS for
-  startups, and Figma to production Next.js, each with scope, deliverables, process, and
-  typical timeline
-- Selected projects on the home page, framed by outcome rather than screenshot
-- Project index at its own route, filterable by technology or project type
-- Case study pages covering problem, approach, architecture, stack, and outcome
-- Technical skills grouped by role in the stack, with the context each was used in
-- Professional experience as a dated timeline
-- A detail route for each of about, services, skills and experience, carrying the full
-  content while the matching home section carries a scannable summary and a link to it.
-  This is the shape projects already has: a featured subset on the home page, everything
-  at `/projects`. Primary navigation points at these routes rather than at home page
-  anchors, so every item in the header is a page a proposal can link to directly
-- Print-optimized resume page plus a downloadable CV
-- Contact section with a qualifying enquiry form that emails the developer, plus GitHub,
-  LinkedIn, and a direct mailto fallback
+The home page, in order. Each section is a scannable summary linking to its own page:
+
+- Hero: the role and location, the headline "Websites and Web Applications Built for Your
+  Business", what the developer builds, Start a Project and View My Work, availability,
+  and the primary stack
+- Four value points under the hero: full-stack, production-ready, direct communication,
+  New Zealand based
+- What I Can Build: four services, business websites, custom web applications, SaaS
+  development, and Figma to production, each with what it suits or can include and its
+  own call to action, which opens the enquiry form with that project type chosen
+- Who I Work With: businesses, startups, agencies, entrepreneurs
+- Selected Work, framed by outcome with the measurement behind every number
+- Why Work With Me: seven reasons, from full-stack development to code ownership
+- How I Work: a seven-step process from discovery to handover
+- Technology I Work With, grouped by purpose (frontend, backend, database, data and ORM,
+  authentication, payments and integrations, deployment and infrastructure)
+- About, then Based in New Zealand, Working Globally, then a final call to action
+
+Pages and the rest of the site:
+
+- Navigation: Home, Services, Work (`/projects`), Process, About, Contact, with a Start a
+  Project button on every page, including the mobile menu. Skills, experience and the
+  resume keep their pages and are linked from About
+- Case studies in ten parts: overview, the problem, the solution, key features,
+  architecture, engineering challenges, testing, technology, my role, and outcome, each
+  ending in a Start a Project call to action
+- `/process`: the seven steps in full and a milestone-based model, with the milestones and
+  payment schedule agreed per project and no percentages published
+- A project index filterable by service and technology
+- Technical skills grouped by purpose, with the context each was used in
+- Professional experience as a dated timeline, and a print-optimized resume plus a
+  downloadable CV
+- Contact: "Have a Project in Mind?", with a form asking for name, email, company, what is
+  being built (eight project types), a description, whether a design exists, an optional
+  budget range, and a timeline, plus a direct email address. Every enquiry gets a reply
+  within one business day
 - Light and dark themes, with dark as the default
 - Full metadata, sitemap, robots, generated social images, and structured data
 
-Explicitly out of scope for the MVP: a blog, a CMS, analytics dashboards, testimonials
-(there are none yet to publish), and any pricing display.
+Explicitly out of scope: a blog, a CMS, analytics dashboards, testimonials and client
+logos (there are none yet to publish), and any pricing display other than the optional
+budget brackets in the enquiry form.
 
 ### Post-MVP: private business dashboard
 
@@ -129,14 +153,16 @@ full design is in `blueprint/dashboard-architecture.md`.
 The public site has no database. All of its content is typed TypeScript modules under
 `src/content/`, imported at build time so every public page can be statically generated.
 
-- `profile` - name, headline, specialisms, short and long bio, availability status,
-  location, social and contact links
-- `services` - slug, name, who it is for, deliverables, typical timeline, process steps
-- `skills` - groups (front end, back end, data, tooling, practices) with per-technology
-  usage context
+- `profile` - name, role, headline, specialisms, short and long bio, the primary stack,
+  availability status, location, service area, social and contact links
+- `services` - slug, name, summary, one or two labelled lists, a call to action with the
+  project type it preselects, and a typical timeline only where one has been promised
+- `approach` - the value points, audiences, reasons to hire, process steps and milestones
+- `skills` - groups by purpose with per-technology usage context, and which ones the home
+  page features
 - `experience` - roles with company, title, period, summary, and impact points
-- `projects` - slug, title, summary, role, period, stack, featured flag, links, outcome
-  metrics, a placeholder flag, and case study sections
+- `projects` - slug, product name, title, summary, role, period, stack, featured flag,
+  links, outcome metrics, a placeholder flag, and the ten case study sections
 - Contact submissions are not stored. They are validated and forwarded by email.
 
 The placeholder flag exists so seeded example projects can never be mistaken for real
@@ -179,15 +205,17 @@ for forms, the task list, and dialogs in the dashboard.
 
 ## 6. Monetize - How will this make money?
 
-Indirectly. The site does not sell anything. It converts cold traffic from proposals,
-LinkedIn, and GitHub into qualified enquiries for freelance engagements in the target
-niches: agency white-label builds and startup SaaS first, Figma to Next.js builds as well.
-Success is measured in enquiries that match those niches, not in visits.
+Indirectly. The site does not sell anything. It converts traffic from search, LinkedIn,
+GitHub and proposals into qualified project enquiries for websites and web applications.
+Success is measured in enquiries, not in visits.
 
-The contact form captures project type, timeline, and an optional budget range so enquiries
-arrive pre-qualified. No rates or prices appear anywhere on the site; pricing is a
-conversation, and publishing it either anchors the developer low or filters out clients who
-would have paid more.
+The contact form captures the project type, whether a design exists, a timeline, and an
+optional budget range so enquiries arrive pre-qualified. The budget question offers NZD
+brackets, from under NZ$5,000 to NZ$60,000 or more, plus "not sure yet". Those brackets
+are the only figures on the site and are never rendered anywhere else. No rates or prices
+appear; pricing is a conversation, and publishing it either anchors the developer low or
+filters out clients who would have paid more. Larger projects are split into milestones
+agreed before development begins, and the site describes that model without percentages.
 
 The business dashboard does not change this. It collects payment for engagements already
 agreed, through the developer's own Stripe account, with no fees or commissions added.

@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { OgCard } from "@/components/og/OgCard";
 import { getProjectBySlug, getProjectSlugs, getServiceBySlug } from "@/content";
 import { OG_COLORS, OG_CONTENT_TYPE, OG_SIZE, ogFonts } from "@/lib/og";
+import { projectHeading } from "@/lib/projects";
 
 /* Overrides the site card for case studies, which are the pages most likely to
    be linked directly from a proposal. */
@@ -22,7 +23,7 @@ export const contentType = OG_CONTENT_TYPE;
    pretends a nonexistent project is fine. The project is named in `og:title`
    beside this anyway. */
 export const alt =
-  "A dark case study card showing the project title, the service track it belongs to, and its headline result.";
+  "A dark case study card showing the project title, the service it belongs to, and its headline result.";
 
 export default async function Image({ params }: ImageProps) {
   const { slug } = await params;
@@ -48,7 +49,7 @@ export default async function Image({ params }: ImageProps) {
             maxWidth: 940,
           }}
         >
-          {project.title}
+          {projectHeading(project)}
         </div>
 
         {/* Omitted rather than left as an empty row when a project carries no

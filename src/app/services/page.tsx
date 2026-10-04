@@ -6,7 +6,7 @@ import { routeMetadata } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Three engagement tracks: white-label builds for agencies, SaaS products for startups taken from first schema to launch, and Figma designs turned into production Next.js sites.",
+    "Business websites, custom web applications, SaaS development and Figma to Next.js builds for businesses, startups and agencies in New Zealand, Australia and internationally.",
   ...routeMetadata("/services"),
 };
 
@@ -20,8 +20,8 @@ export default function ServicesPage() {
         <PageHeader
           id="services-heading"
           eyebrow="Services"
-          heading="Three ways to work with me"
-          lead="What each track delivers, and how a project runs from the first call to handover."
+          heading="What I Can Build"
+          lead="Whether you need a professional website, custom business software or a new SaaS product, I can help turn the idea into a production-ready application."
         />
         <div className="mt-12">
           <ServicesDetail />

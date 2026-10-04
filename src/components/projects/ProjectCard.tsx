@@ -83,7 +83,10 @@ export function ProjectCard({
             href={`/projects/${project.slug}`}
             className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none"
           >
-            {project.title}
+            <span className="block font-mono text-xs font-normal uppercase tracking-[0.16em] text-brand">
+              {project.name}
+            </span>{" "}
+            <span className="mt-2 block">{project.title}</span>
           </Link>
         </Title>
 

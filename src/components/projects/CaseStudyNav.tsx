@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import type { AdjacentProjects } from "@/content";
+import { projectHeading } from "@/lib/projects";
 
 type CaseStudyNavProps = {
   adjacent: AdjacentProjects;
@@ -34,7 +35,7 @@ export function CaseStudyNav({ adjacent }: CaseStudyNavProps) {
                 Previous
               </span>
               <span className="mt-2.5 block font-heading text-base font-semibold tracking-tight">
-                {previous.title}
+                {projectHeading(previous)}
               </span>
             </Link>
           </li>
@@ -48,7 +49,7 @@ export function CaseStudyNav({ adjacent }: CaseStudyNavProps) {
                 <ArrowRightIcon className="size-3.5" aria-hidden="true" />
               </span>
               <span className="mt-2.5 block text-right font-heading text-base font-semibold tracking-tight">
-                {next.title}
+                {projectHeading(next)}
               </span>
             </Link>
           </li>

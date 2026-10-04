@@ -1,4 +1,5 @@
 import type { ProfileLink, ProfileLinkKey } from "@/content";
+import type { ProjectType } from "@/lib/validation/contact";
 
 export type ContactLink = {
   key: ProfileLinkKey;
@@ -82,4 +83,11 @@ export function formatFromHeader(name: string, address: string): string {
     .trim();
 
   return display === "" ? address : `"${display}" <${address}>`;
+}
+
+/** The contact form's URL, with a project type to preselect when one is given.
+ *  The type is a fixed slug from `PROJECT_TYPES`, so it needs no encoding, and
+ *  the form ignores any value it does not recognise. */
+export function enquiryHref(type?: ProjectType): string {
+  return type === undefined ? "/contact" : `/contact?type=${type}`;
 }

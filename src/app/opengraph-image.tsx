@@ -13,7 +13,7 @@ export const contentType = OG_CONTENT_TYPE;
 
 /* Describes the card, which is what a screen reader user gets instead of it.
    Not a copy of the page title: the title is already read out beside it. */
-export const alt = `A dark title card for ${getProfile().name}, freelance software engineer, showing the tagline "${getProfile().headline}" above the service tracks.`;
+export const alt = `A dark title card for ${getProfile().name}, ${getProfile().role.toLowerCase()} in Wellington, New Zealand, showing the tagline "${getProfile().headline}" above the four services.`;
 
 export default async function Image() {
   const profile = getProfile();
@@ -21,14 +21,14 @@ export default async function Image() {
 
   return new ImageResponse(
     (
-      <OgCard eyebrow="Freelance software engineer">
+      <OgCard eyebrow={profile.role}>
         {/* A line per sentence, as in the hero. Satori only lays out several
             children inside a flex container, hence the column. */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            fontSize: 68,
+            fontSize: 60,
             lineHeight: 1.12,
             letterSpacing: "-0.02em",
             maxWidth: 900,
@@ -39,17 +39,17 @@ export default async function Image() {
           ))}
         </div>
 
-        <div style={{ display: "flex", gap: 16, marginTop: 44 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 40 }}>
           {services.map((service) => (
             <div
               key={service.slug}
               style={{
                 display: "flex",
-                padding: "14px 24px",
+                padding: "12px 20px",
                 borderRadius: 14,
                 border: `1px solid ${OG_COLORS.border}`,
                 backgroundColor: OG_COLORS.card,
-                fontSize: 24,
+                fontSize: 22,
                 color: OG_COLORS.foreground,
               }}
             >

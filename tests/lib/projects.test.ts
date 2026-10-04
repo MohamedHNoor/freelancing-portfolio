@@ -16,34 +16,33 @@ import type { Project, Service, ServiceSlug } from "@/types/content";
 
 const SERVICES: readonly Service[] = [
   {
-    slug: "figma-to-nextjs",
-    name: "Figma to production Next.js",
-    forWho: "",
+    slug: "figma-to-production",
+    name: "Figma to Production",
     summary: "",
-    deliverables: [],
-    typicalTimeline: "",
-    process: [],
+    lists: [{ label: "Includes", items: ["A thing"] }],
+    cta: "Start",
+    enquiryType: "figma-to-nextjs",
     order: 1,
   },
   {
-    slug: "startup-saas",
-    name: "SaaS for startups",
-    forWho: "",
+    slug: "saas-development",
+    name: "SaaS Development",
     summary: "",
-    deliverables: [],
-    typicalTimeline: "",
-    process: [],
+    lists: [{ label: "Can include", items: ["A thing"] }],
+    cta: "Start",
+    enquiryType: "saas-product",
     order: 2,
   },
 ];
 
 const BASE_PROJECT: Project = {
   slug: "base",
+  name: "Base Co",
   title: "A title",
   summary: "A summary",
   role: "Sole developer",
   period: "2025",
-  category: "figma-to-nextjs",
+  category: "figma-to-production",
   stack: ["Next.js"],
   featured: true,
   isPlaceholder: false,
@@ -55,12 +54,13 @@ const BASE_PROJECT: Project = {
 
 const BASE_CARD: ProjectCardData = {
   slug: "base",
+  name: "Base Co",
   title: "A title",
   summary: "A summary",
   role: "Sole developer",
   period: "2025",
-  category: "figma-to-nextjs",
-  categoryLabel: "Figma to production Next.js",
+  category: "figma-to-production",
+  categoryLabel: "Figma to Production",
   stack: ["Next.js"],
   isPlaceholder: false,
   cover: { src: "/cover.png", alt: "", width: 1200, height: 750 },
@@ -76,7 +76,7 @@ describe("toProjectCardData", () => {
       summary: "Role-aware interfaces.",
       role: "Front end and API",
       period: "2024 to 2025",
-      category: "startup-saas",
+      category: "saas-development",
       stack: ["React", "PostgreSQL"],
       isPlaceholder: true,
       metrics: [{ label: "Audit coverage", value: "Every read", evidence: "Append-only log" }],
@@ -85,12 +85,13 @@ describe("toProjectCardData", () => {
 
     expect(toProjectCardData(project, SERVICES)).toEqual({
       slug: "records-platform",
+      name: "Base Co",
       title: "Clinician-facing records platform",
       summary: "Role-aware interfaces.",
       role: "Front end and API",
       period: "2024 to 2025",
-      category: "startup-saas",
-      categoryLabel: "SaaS for startups",
+      category: "saas-development",
+      categoryLabel: "SaaS Development",
       stack: ["React", "PostgreSQL"],
       isPlaceholder: true,
       cover: { src: "/projects/records.png", alt: "A screenshot", width: 1200, height: 750 },
@@ -102,7 +103,7 @@ describe("toProjectCardData", () => {
     const project: Project = {
       ...BASE_PROJECT,
       links: { live: "https://example.com", repo: "https://example.com/repo" },
-      caseStudy: [{ heading: "Problem", body: ["Something went wrong."] }],
+      caseStudy: [{ heading: "The Problem", body: ["Something went wrong."] }],
     };
 
     const card = toProjectCardData(project, SERVICES);
@@ -113,11 +114,11 @@ describe("toProjectCardData", () => {
 
   it("resolves the category label from the matching service", () => {
     const card = toProjectCardData(
-      { ...BASE_PROJECT, category: "figma-to-nextjs" },
+      { ...BASE_PROJECT, category: "figma-to-production" },
       SERVICES,
     );
 
-    expect(card.categoryLabel).toBe("Figma to production Next.js");
+    expect(card.categoryLabel).toBe("Figma to Production");
   });
 
   it("throws naming the project and the category when no service matches", () => {
@@ -136,23 +137,23 @@ describe("toProjectCardData", () => {
 describe("getCategoryFacets", () => {
   it("returns a repeated category only once", () => {
     const facets = getCategoryFacets([
-      { ...BASE_CARD, slug: "a", category: "startup-saas", categoryLabel: "Platforms" },
-      { ...BASE_CARD, slug: "b", category: "startup-saas", categoryLabel: "Platforms" },
+      { ...BASE_CARD, slug: "a", category: "saas-development", categoryLabel: "Platforms" },
+      { ...BASE_CARD, slug: "b", category: "saas-development", categoryLabel: "Platforms" },
     ]);
 
-    expect(facets).toEqual([{ slug: "startup-saas", label: "Platforms" }]);
+    expect(facets).toEqual([{ slug: "saas-development", label: "Platforms" }]);
   });
 
   it("keeps first-appearance order rather than sorting", () => {
     const facets = getCategoryFacets([
-      { ...BASE_CARD, slug: "a", category: "startup-saas", categoryLabel: "Platforms" },
-      { ...BASE_CARD, slug: "b", category: "figma-to-nextjs", categoryLabel: "Figma" },
-      { ...BASE_CARD, slug: "c", category: "startup-saas", categoryLabel: "Platforms" },
+      { ...BASE_CARD, slug: "a", category: "saas-development", categoryLabel: "Platforms" },
+      { ...BASE_CARD, slug: "b", category: "figma-to-production", categoryLabel: "Figma" },
+      { ...BASE_CARD, slug: "c", category: "saas-development", categoryLabel: "Platforms" },
     ]);
 
     expect(facets).toEqual([
-      { slug: "startup-saas", label: "Platforms" },
-      { slug: "figma-to-nextjs", label: "Figma" },
+      { slug: "saas-development", label: "Platforms" },
+      { slug: "figma-to-production", label: "Figma" },
     ]);
   });
 
@@ -201,9 +202,9 @@ describe("getStackFacets", () => {
 
 describe("filterProjects", () => {
   const cards: readonly ProjectCardData[] = [
-    { ...BASE_CARD, slug: "figma-site", category: "figma-to-nextjs", stack: ["Next.js", "Vercel"] },
-    { ...BASE_CARD, slug: "health", category: "startup-saas", stack: ["React", "PostgreSQL"] },
-    { ...BASE_CARD, slug: "finance", category: "startup-saas", stack: ["Node.js", "PostgreSQL"] },
+    { ...BASE_CARD, slug: "figma-site", category: "figma-to-production", stack: ["Next.js", "Vercel"] },
+    { ...BASE_CARD, slug: "health", category: "saas-development", stack: ["React", "PostgreSQL"] },
+    { ...BASE_CARD, slug: "finance", category: "saas-development", stack: ["Node.js", "PostgreSQL"] },
   ];
 
   const slugs = (result: readonly ProjectCardData[]) =>
@@ -216,7 +217,7 @@ describe("filterProjects", () => {
   });
 
   it("filters by category alone", () => {
-    const result = filterProjects(cards, { category: "startup-saas", stack: null });
+    const result = filterProjects(cards, { category: "saas-development", stack: null });
 
     expect(slugs(result)).toEqual(["health", "finance"]);
   });
@@ -229,7 +230,7 @@ describe("filterProjects", () => {
 
   it("applies both filters together as an AND", () => {
     const result = filterProjects(cards, {
-      category: "startup-saas",
+      category: "saas-development",
       stack: "Node.js",
     });
 
@@ -238,7 +239,7 @@ describe("filterProjects", () => {
 
   it("returns an empty array for a combination nothing matches", () => {
     const result = filterProjects(cards, {
-      category: "figma-to-nextjs",
+      category: "figma-to-production",
       stack: "PostgreSQL",
     });
 
@@ -263,7 +264,7 @@ describe("filterProjects", () => {
   it("does not mutate its input", () => {
     const before = JSON.stringify(cards);
 
-    filterProjects(cards, { category: "startup-saas", stack: "PostgreSQL" });
+    filterProjects(cards, { category: "saas-development", stack: "PostgreSQL" });
 
     expect(JSON.stringify(cards)).toBe(before);
   });

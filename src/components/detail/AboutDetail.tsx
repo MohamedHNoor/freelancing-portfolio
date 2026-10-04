@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { StatusPill } from "@/components/primitives/StatusPill";
 import { getProfile, getProfileLinks } from "@/content";
 import { toContactLink } from "@/lib/links";
@@ -6,6 +7,12 @@ import { toContactLink } from "@/lib/links";
    No `Reveal`: this is the reason the page exists, and Reveal server-renders
    `opacity: 0`, so wrapping it would make the content depend on JavaScript
    having run. */
+const BACKGROUND_LINKS = [
+  { label: "Experience", href: "/experience" },
+  { label: "Technology", href: "/skills" },
+  { label: "Resume", href: "/resume" },
+] as const;
+
 export function AboutDetail() {
   const profile = getProfile();
   const links = getProfileLinks()
@@ -33,12 +40,19 @@ export function AboutDetail() {
           <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
             Availability
           </dt>
-          <dd className="mt-2">
+          <dd className="mt-2 space-y-2">
             <StatusPill status={profile.availability.status} />
+            <p className="text-muted-foreground">
+              {profile.availability.detail}
+            </p>
           </dd>
         </div>
-        {/* Renders nothing today: every `profile.links` value is the empty
-            string, and `getProfileLinks()` drops what is not supplied. */}
+        <div>
+          <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            Working with clients in
+          </dt>
+          <dd className="mt-2">{profile.serviceArea.join(" · ")}</dd>
+        </div>
         {links.length > 0 ? (
           <div>
             <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
@@ -60,6 +74,27 @@ export function AboutDetail() {
             </dd>
           </div>
         ) : null}
+        {/* The background pages left the primary navigation, so this is
+            where a reader who wants the detail finds them. */}
+        <div>
+          <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            Background
+          </dt>
+          <dd className="mt-2">
+            <ul role="list" className="space-y-1.5">
+              {BACKGROUND_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="rounded-sm underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </div>
       </dl>
     </div>
   );
