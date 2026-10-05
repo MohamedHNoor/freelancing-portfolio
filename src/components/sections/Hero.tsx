@@ -49,28 +49,29 @@ export function Hero() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
               <StatusPill status={profile.availability.status} />
-              {profile.availability.detail ? (
-                <span className="text-sm text-muted-foreground">
-                  {profile.availability.detail}
-                </span>
-              ) : null}
+              {/* The location rather than the availability detail: the pill
+                  already says available, and Wellington is what a New
+                  Zealand or Australian visitor is checking for. */}
+              <span className="text-sm text-muted-foreground">
+                {profile.location}
+              </span>
             </div>
 
             {/* The largest contentful element. Never animated, never starting
                 from opacity 0, and the only place a visitor confirms whose
                 site this is, because the header carries the mark alone.
 
-                One line per sentence. The sizes are the largest at which
-                "Design files to production." still fits on one line with the
-                web font loaded: `7vw` holds it on phones down to 320px, and
-                `lg` and `xl` fit the column beside the code card at 486 of
-                496px and 608 of 624px. A longer first sentence needs these
-                re-measured, or it wraps to three lines. The space
-                between the lines keeps the sentences apart in the heading's
-                accessible name. */}
+                One line per sentence, and the headline is one sentence, so it
+                wraps naturally under `text-balance` instead of breaking at a
+                full stop. The sizes were set for the earlier two-sentence
+                headline; re-measure them if the wrap ever leaves a single word
+                on a line. The space between the lines keeps sentences apart in
+                the heading's accessible name. */}
             <h1 className="mt-7">
+              {/* The name stays in the heading because the header carries the
+                  mark alone. */}
               <span className="block font-mono text-sm uppercase tracking-[0.22em] text-brand">
-                {profile.name}
+                {profile.name} · {profile.role}
               </span>{" "}
               <span className="mt-4 block text-balance font-heading text-[clamp(1.45rem,7vw,2rem)] font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-[2.5rem] xl:text-[3.125rem]">
                 {headlineLines(profile.headline).map((line, index) => (
@@ -85,11 +86,14 @@ export function Hero() {
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
               {profile.shortBio}
             </p>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
+              {profile.supportingLine}
+            </p>
 
             <div className="mt-9 flex flex-wrap gap-3">
               <Button asChild className="h-11 gap-2 px-5 text-[0.95rem]">
                 <Link href="/contact">
-                  Start a project
+                  Start a Project
                   <ArrowUpRightIcon className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
@@ -98,9 +102,13 @@ export function Hero() {
                 variant="outline"
                 className="h-11 px-5 text-[0.95rem]"
               >
-                <Link href="#projects">See case studies</Link>
+                <Link href="#work">View My Work</Link>
               </Button>
             </div>
+
+            <p className="mt-6 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+              {profile.primaryStack.join(" · ")}
+            </p>
 
             {marks.length > 0 ? (
               <TechMarquee

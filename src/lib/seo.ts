@@ -1,18 +1,24 @@
 import type { Metadata, MetadataRoute } from "next";
 import { getProfile } from "@/content";
-import { NAV_ITEMS, joinSiteUrl, type NavItem } from "@/lib/site";
+import {
+  BACKGROUND_LINKS,
+  NAV_ITEMS,
+  joinSiteUrl,
+  type NavItem,
+} from "@/lib/site";
 
 /** Every static route this site owns, in the order the sitemap lists them.
  *
  *  Separate from `NAV_ITEMS` because the two answer different questions: the
- *  navigation is what a visitor is offered, and this is what exists. `/` is not
- *  in the navigation, and a future unlisted route would still belong here.
- *  `buildSitemapEntries` guards that this never drifts below the navigation. */
+ *  navigation is what a visitor is offered, and this is what exists. A future
+ *  unlisted route would still belong here. `buildSitemapEntries` guards that
+ *  this never drifts below the navigation or the footer's background links. */
 export const ROUTE_PATHS = [
   "/",
-  "/about",
   "/services",
   "/projects",
+  "/process",
+  "/about",
   "/skills",
   "/experience",
   "/resume",
@@ -65,7 +71,7 @@ export function routeMetadata(
  *  its input the same way and for the same reason. */
 export function assertRoutesCoverNavigation(
   routes: readonly string[],
-  navItems: readonly NavItem[] = NAV_ITEMS,
+  navItems: readonly NavItem[] = [...NAV_ITEMS, ...BACKGROUND_LINKS],
 ): void {
   for (const item of navItems) {
     if (item.href.includes("#")) {

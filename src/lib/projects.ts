@@ -13,6 +13,7 @@ import type {
  *  study into the client payload just to decide which cards to show. */
 export type ProjectCardData = {
   slug: string;
+  name: string;
   title: string;
   summary: string;
   role: string;
@@ -30,6 +31,13 @@ export type CategoryFacet = {
   slug: ServiceSlug;
   label: string;
 };
+
+/** The product name and what was built, as one line: "TravelGrid Africa:
+ *  Travel Commerce Platform". For every place a project is named in a single
+ *  string, such as a page title, structured data or a link to the case study. */
+export function projectHeading(project: Pick<Project, "name" | "title">): string {
+  return `${project.name}: ${project.title}`;
+}
 
 export type ProjectLinkKey = "live" | "repo";
 
@@ -81,6 +89,7 @@ export function toProjectCardData(
 
   return {
     slug: project.slug,
+    name: project.name,
     title: project.title,
     summary: project.summary,
     role: project.role,

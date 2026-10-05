@@ -74,7 +74,7 @@ export function ProjectFilter({
 }: ProjectFilterProps) {
   return (
     <div className="space-y-6">
-      <FilterGroup id="filter-track" label="Track">
+      <FilterGroup id="filter-service" label="Service">
         <li>
           <OptionButton
             pressed={value.category === null}

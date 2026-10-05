@@ -24,7 +24,10 @@ const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const HOME_TITLE = `${getProfile().name} - Freelance software engineer`;
+/* The title carries the location a local search matches on. The social card
+   is set by the home page itself, because a page's `openGraph` replaces this
+   one rather than merging into it. */
+const HOME_TITLE = `${getProfile().name} | ${getProfile().role} in Wellington, NZ`;
 
 /* `metadataBase` is what lets every route below declare its canonical, its
    `og:url` and its social image as a path and have Next resolve them against
@@ -46,7 +49,7 @@ export const metadata: Metadata = {
      add. */
   title: {
     default: HOME_TITLE,
-    template: `%s - ${getProfile().name}`,
+    template: `%s | ${getProfile().name}`,
   },
   description: SITE.description,
   openGraph: {

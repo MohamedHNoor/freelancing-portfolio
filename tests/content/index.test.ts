@@ -3,6 +3,7 @@ import {
   assertContentInvariants,
   getAdjacentProjects,
   getFeaturedProjects,
+  getFeaturedSkillGroups,
   getPlaceholderProjects,
   getProfile,
   getProfileLinks,
@@ -13,17 +14,19 @@ import {
   getServiceBySlug,
   getServices,
   getSkillGroups,
+  orderServices,
   getTechnologyMarks,
   sortRolesByStartDesc,
   type ContentInput,
   uniqueSkills,
 } from "@/content";
-import type {
-  CaseStudySection,
-  Project,
-  Role,
-  Service,
-  SkillGroup,
+import {
+  CASE_STUDY_HEADINGS,
+  type CaseStudySection,
+  type Project,
+  type Role,
+  type Service,
+  type SkillGroup,
 } from "@/types/content";
 
 /* Fixtures rather than seed content for anything order- or failure-related.
@@ -44,21 +47,18 @@ function role(id: string, start: string, end = "present"): Role {
   };
 }
 
-const CANONICAL_CASE_STUDY: readonly CaseStudySection[] = [
-  { heading: "Problem", body: [] },
-  { heading: "Approach", body: [] },
-  { heading: "Architecture", body: [] },
-  { heading: "Outcome", body: [] },
-];
+const CANONICAL_CASE_STUDY: readonly CaseStudySection[] =
+  CASE_STUDY_HEADINGS.map((heading) => ({ heading, body: [] }));
 
 function project(overrides: Partial<Project> = {}): Project {
   return {
     slug: "fixture-project",
+    name: "Fixture Co",
     title: "Fixture",
     summary: "",
     role: "",
     period: "",
-    category: "figma-to-nextjs",
+    category: "figma-to-production",
     stack: [],
     featured: false,
     isPlaceholder: true,
@@ -72,13 +72,12 @@ function project(overrides: Partial<Project> = {}): Project {
 
 function service(overrides: Partial<Service> = {}): Service {
   return {
-    slug: "figma-to-nextjs",
+    slug: "figma-to-production",
     name: "Fixture",
-    forWho: "",
     summary: "",
-    deliverables: [],
-    typicalTimeline: "",
-    process: [],
+    lists: [{ label: "Includes", items: ["A thing"] }],
+    cta: "Start",
+    enquiryType: "figma-to-nextjs",
     order: 1,
     ...overrides,
   };
@@ -88,15 +87,17 @@ function content(overrides: Partial<ContentInput> = {}): ContentInput {
   return {
     profile: {
       name: "Fixture",
+      role: "",
       headline: "",
       specialisms: [],
       shortBio: "",
-      closing: "",
+      supportingLine: "",
+      primaryStack: [],
       longBio: [],
       availability: { status: "available", detail: "" },
       location: "",
+      serviceArea: [],
       links: { email: "", github: "", linkedin: "", cv: "" },
-      proofPoints: [],
     },
     services: [service()],
     projects: [project()],
@@ -196,17 +197,43 @@ describe("getRoles", () => {
   });
 });
 
-describe("getServices", () => {
+describe("orderServices", () => {
   it("orders by the order field rather than array order", () => {
-    // The seed file deliberately lists order 2 before order 1.
-    expect(getServices().map((entry) => entry.order)).toEqual([1, 2, 3]);
-    expect(getServices()[0].slug).toBe("agency-builds");
+    const sorted = orderServices([
+      service({ slug: "saas-development", order: 3 }),
+      service({ slug: "business-websites", order: 1 }),
+      service({ slug: "web-applications", order: 2 }),
+    ]);
+    // Explicit expected sequence, not re-derived with the same sort.
+    expect(sorted.map((entry) => entry.slug)).toEqual([
+      "business-websites",
+      "web-applications",
+      "saas-development",
+    ]);
+  });
+
+  it("does not mutate its input", () => {
+    const input = [
+      service({ slug: "saas-development", order: 2 }),
+      service({ slug: "business-websites", order: 1 }),
+    ];
+    orderServices(input);
+    expect(input.map((entry) => entry.slug)).toEqual([
+      "saas-development",
+      "business-websites",
+    ]);
+  });
+});
+
+describe("getServices", () => {
+  it("returns the shipped services in order", () => {
+    expect(getServices()[0].slug).toBe("business-websites");
   });
 });
 
 describe("getServiceBySlug", () => {
   it("returns the matching service", () => {
-    expect(getServiceBySlug("startup-saas")?.slug).toBe("startup-saas");
+    expect(getServiceBySlug("saas-development")?.slug).toBe("saas-development");
   });
 
   it("returns undefined for an unknown slug without throwing", () => {
@@ -292,8 +319,8 @@ describe("assertContentInvariants", () => {
     expect(() =>
       assertContentInvariants(
         content({
-          services: [service({ slug: "figma-to-nextjs" })],
-          projects: [project({ category: "startup-saas" })],
+          services: [service({ slug: "figma-to-production" })],
+          projects: [project({ category: "saas-development" })],
         }),
       ),
     ).toThrow(/no matching service/);
@@ -306,10 +333,9 @@ describe("assertContentInvariants", () => {
           projects: [
             project({
               caseStudy: [
-                { heading: "Approach", body: [] },
-                { heading: "Problem", body: [] },
-                { heading: "Architecture", body: [] },
-                { heading: "Outcome", body: [] },
+                { heading: "The Problem", body: [] },
+                { heading: "Overview", body: [] },
+                ...CANONICAL_CASE_STUDY.slice(2),
               ],
             }),
           ],
@@ -322,7 +348,7 @@ describe("assertContentInvariants", () => {
     expect(() =>
       assertContentInvariants(
         content({
-          projects: [project({ caseStudy: [{ heading: "Problem", body: [] }] })],
+          projects: [project({ caseStudy: CANONICAL_CASE_STUDY.slice(0, 9) })],
         }),
       ),
     ).toThrow(/in that order/);
@@ -340,17 +366,14 @@ describe("assertContentInvariants", () => {
     ).toThrow(/metric "Speed".*has no evidence/);
   });
 
-  it("rejects a proof point with no evidence", () => {
-    const base = content();
+  it("rejects a service that lists nothing it includes", () => {
     expect(() =>
-      assertContentInvariants({
-        ...base,
-        profile: {
-          ...base.profile,
-          proofPoints: [{ value: "100", label: "Score", evidence: "" }],
-        },
-      }),
-    ).toThrow(/proof point "Score" has no evidence/);
+      assertContentInvariants(
+        content({
+          services: [service({ lists: [{ label: "Includes", items: [] }] })],
+        }),
+      ),
+    ).toThrow(/lists nothing it includes/);
   });
 
   it("rejects a duplicate service order", () => {
@@ -358,8 +381,8 @@ describe("assertContentInvariants", () => {
       assertContentInvariants(
         content({
           services: [
-            service({ slug: "figma-to-nextjs", order: 1 }),
-            service({ slug: "startup-saas", order: 1 }),
+            service({ slug: "figma-to-production", order: 1 }),
+            service({ slug: "saas-development", order: 1 }),
           ],
         }),
       ),
@@ -468,5 +491,24 @@ describe("getTechnologyMarks", () => {
 
   it("truncates to the limit and keeps the leading order", () => {
     expect(getTechnologyMarks(4)).toEqual(marks.slice(0, 4));
+  });
+});
+
+describe("getFeaturedSkillGroups", () => {
+  it("keeps only featured entries and drops groups left empty", () => {
+    const groups = getFeaturedSkillGroups();
+    expect(groups.length).toBeGreaterThan(0);
+    for (const entry of groups) {
+      expect(entry.skills.length).toBeGreaterThan(0);
+      for (const skill of entry.skills) {
+        expect("featured" in skill && skill.featured).toBe(true);
+      }
+    }
+  });
+
+  it("never features a practice, which is not a technology", () => {
+    expect(getFeaturedSkillGroups().map((entry) => entry.id)).not.toContain(
+      "practices",
+    );
   });
 });

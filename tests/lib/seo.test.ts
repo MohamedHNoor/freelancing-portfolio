@@ -63,15 +63,25 @@ describe("assertRoutesCoverNavigation", () => {
   it("holds for the real navigation and the real route list", () => {
     expect(() => assertRoutesCoverNavigation(ROUTE_PATHS)).not.toThrow();
   });
+
+  /* The footer's background links left the primary navigation, so the guard
+     covers them separately rather than letting one drop out of the sitemap. */
+  it("covers the footer's background links by default", () => {
+    const withoutResume = ROUTE_PATHS.filter((path) => path !== "/resume");
+    expect(() => assertRoutesCoverNavigation(withoutResume)).toThrow(
+      /"Resume" points at \/resume/,
+    );
+  });
 });
 
 describe("buildSitemapEntries", () => {
   it("lists the static routes first, then one URL per project", () => {
     expect(buildSitemapEntries(ORIGIN, ROUTE_PATHS, SLUGS)).toEqual([
       { url: "https://example.com" },
-      { url: "https://example.com/about" },
       { url: "https://example.com/services" },
       { url: "https://example.com/projects" },
+      { url: "https://example.com/process" },
+      { url: "https://example.com/about" },
       { url: "https://example.com/skills" },
       { url: "https://example.com/experience" },
       { url: "https://example.com/resume" },

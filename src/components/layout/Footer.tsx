@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/icons/Logo";
 import { getProfile, getProfileLinks } from "@/content";
 import { toContactLink } from "@/lib/links";
-import { NAV_ITEMS } from "@/lib/site";
+import { BACKGROUND_LINKS, NAV_ITEMS } from "@/lib/site";
 
 export function Footer() {
   const profile = getProfile();
@@ -39,8 +39,11 @@ export function Footer() {
             <Logo className="size-10" id="logo-footer" />
             <span className="sr-only">{profile.name}</span>
           </Link>
+          <p className="text-sm font-medium">{profile.name}</p>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            {profile.closing}
+            {profile.role}
+            <br />
+            {profile.location}
           </p>
         </div>
 
@@ -52,7 +55,7 @@ export function Footer() {
             Pages
           </p>
           <ul className="mt-4 grid grid-cols-2 gap-x-8 gap-y-1">
-            {NAV_ITEMS.map((item) => (
+            {[...NAV_ITEMS, ...BACKGROUND_LINKS].map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -98,7 +101,7 @@ export function Footer() {
 
       <div className="border-t border-border">
         <p className="mx-auto w-full max-w-6xl px-4 py-5 text-xs text-muted-foreground sm:px-6 lg:px-8">
-          &copy; {year} {profile.name}. Built with Next.js and Tailwind CSS.
+          &copy; {year} {profile.name}. All rights reserved.
         </p>
       </div>
     </footer>

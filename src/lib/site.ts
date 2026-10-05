@@ -7,7 +7,11 @@ export type NavItem = {
    the content layer; read them with `getProfile()` from `@/content`. */
 export const SITE = {
   description:
-    "Freelance software engineer building white-label Next.js sites for agencies, taking startup SaaS products from first schema to launch on React, Node and Postgres, and turning Figma designs into fast, accessible sites.",
+    "Mohamed Noor is a Wellington-based full-stack web developer building modern websites, custom web applications and SaaS products for businesses, startups and agencies across New Zealand, Australia and internationally.",
+  /** The home page's social card. Shorter than the description: it is read
+   *  beside a name in a message thread, not in a search result. */
+  shareDescription:
+    "Modern websites and custom web applications for businesses, startups and agencies. Based in Wellington, New Zealand.",
 } as const;
 
 /** Where the site is assumed to run when `NEXT_PUBLIC_SITE_URL` is not
@@ -127,14 +131,32 @@ export function absoluteUrl(path: string): string {
    at the pages because that is what a proposal links to directly, and because
    the page carries the full content while the section carries a summary.
 
+   "Work" is the label for `/projects`, whose URL stays so existing links keep
+   working. Skills, experience and the resume left the navigation when the site
+   moved to six items; they keep their routes and are linked from `/about`.
+
    Route items are what `NavLink` can mark `aria-current="page"`; it treats
    anything containing `#` as an anchor and never marks it. */
 export const NAV_ITEMS: readonly NavItem[] = [
-  { label: "About", href: "/about" },
+  { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
-  { label: "Projects", href: "/projects" },
-  { label: "Skills", href: "/skills" },
-  { label: "Experience", href: "/experience" },
-  { label: "Resume", href: "/resume" },
+  { label: "Work", href: "/projects" },
+  { label: "Process", href: "/process" },
+  { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
+
+/* The background pages that left the primary navigation. Every page's footer
+   and `/about` link them, so the resume a recruiter prints is never more than
+   one link away. The sitemap guard covers them as well as `NAV_ITEMS`. */
+export const BACKGROUND_LINKS: readonly NavItem[] = [
+  { label: "Technology", href: "/skills" },
+  { label: "Experience", href: "/experience" },
+  { label: "Resume", href: "/resume" },
+];
+
+/** The one call to action the whole site repeats. */
+export const PRIMARY_CTA: NavItem = {
+  label: "Start a Project",
+  href: "/contact",
+};

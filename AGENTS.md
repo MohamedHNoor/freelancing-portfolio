@@ -7,10 +7,12 @@ this file, so there is a single source of truth.
 
 ## What this is
 
-A personal portfolio site for a freelance developer, built to convert cold
-traffic into qualified enquiries. It leads with two niches, white-label builds
-for design and digital agencies and SaaS products for startups, and keeps Figma
-to Next.js website builds as a third track. Because the
+A personal portfolio site for a full-stack web developer in Wellington, New
+Zealand, built to turn search, LinkedIn and GitHub traffic into project
+enquiries through one path: portfolio, case study, Start a Project, enquiry. It
+sells four services, business websites, custom web applications, SaaS
+development and Figma to production, to businesses, startups, agencies and
+entrepreneurs across New Zealand, Australia and internationally. Because the
 developer has no reviews yet, the site has to prove capability from the work
 itself, so its own performance and accessibility scores are build gates rather
 than goals. See `blueprint/project-plan.md` for the full rationale.
@@ -284,8 +286,8 @@ the module under test.
 
 ### Budgets
 
-Set in feature 12 and re-measured on 2026-09-28, after the agency and startup
-SaaS repositioning, against `npm run build && npm start`: Chromium, desktop
+Set in feature 12 and re-measured on 2026-10-05, after the full-stack
+repositioning, against `npm run build && npm start`: Chromium, desktop
 viewport, one fresh browser context per route so nothing is served from cache,
 and no scrolling, so lazy images and link prefetches below the fold stay out of
 the total.
@@ -296,19 +298,25 @@ re-measure, load a route with a cold cache and sum `transferSize` by type.
 
 | Budget | Measured | Ceiling |
 |---|---|---|
-| Transferred JS per route | 260.5 KB, the same on all ten routes | 300 KB |
-| Total transferred page weight | 462-528 KB, `/` the heaviest | 600 KB |
+| Transferred JS per route | 263.9-269.6 KB, the most on `/projects` and the case studies | 300 KB |
+| Total transferred page weight | 438-500 KB, `/` the heaviest | 600 KB |
 | Fonts (three families, all routes) | 109.5 KB | 130 KB |
-| CSS (all routes) | 13 KB | 25 KB |
+| CSS (all routes) | 13.1 KB | 25 KB |
 | Project cover, source file in `public/` | 45-52 KB (WebP) | 80 KB |
 | Project cover, as served through `next/image` | 2.4 KB | 10 KB |
 
-JS had already drifted from feature 12's 243 KB to 257 KB before the
-repositioning; its technology icons added the last 3 KB. The home page grew more,
-from 496 KB to 528 KB, because every mark in the hero row is drawn twice there
-and again in the skills section. That is why only the technologies a buyer scans
-for carry an icon in `src/content/skills.ts`. The cover rows were not re-measured;
-the covers have not changed since feature 14.
+JS drifted from feature 12's 243 KB to 260.5 KB with the first repositioning,
+and to 263.9-269.6 KB with the second, which added the header and mobile-menu
+Start a Project button and the service and case study calls to action. The home
+page got lighter, from 528 KB to 500 KB, because the experience section and the
+proof-point strip left it, even though it gained six summary sections. Only the
+technologies a buyer scans for carry an icon in `src/content/skills.ts`, because
+every mark in the hero row is drawn twice there and again in the technology
+section. The portfolio cover was re-captured with the new hero: 47 KB as WebP.
+
+A case study page transfers 32 to 42 KB of image, more than the served-cover
+ceiling below, because it renders its cover at full width with `priority`. That
+predates this measurement; the ceiling was set against the project cards.
 
 The served cover figure is the one that matters for a visitor: `next/image`
 resizes and re-encodes the source, so a 52 KB source arrives at a few KB. The
@@ -324,26 +332,26 @@ way, so the source format only affects repository weight.
 Fonts are the largest fixed cost on every route and are the first place to look
 if the total ceiling is ever threatened.
 
-**Lighthouse 12, mobile preset, against `npm run build && npm start`,** two runs
-per route on 2026-09-28, which agreed on every score:
+**Lighthouse 13.4, mobile preset, against `npm run build && npm start`,** two
+runs per route on 2026-10-05:
 
 | Route | Perf | A11y | Best practices | SEO |
 |---|---|---|---|---|
-| `/` | 90 | 100 | 100 | 100 |
-| `/projects/travelgrid-africa` | 91 | 100 | 100 | 100 |
-| `/contact` | 93 | 100 | 100 | 100 |
+| `/` | 88, 90 | 100 | 100 | 100 |
+| `/projects/travelgrid-africa` | 95, 95 | 100 | 100 | 100 |
+| `/contact` | 90, 93 | 100 | 100 | 100 |
 
-Single runs vary by a few points, so compare pairs rather than one run: an
-earlier run of `/` the same day scored 87 and 89. Feature 12 measured 92, 97 and
-93, the middle one on a seeded placeholder case study that no longer exists.
+Single runs vary by a few points, so compare pairs rather than one run. On
+2026-09-28, Lighthouse 12 measured 90, 91 and 93 on the same routes.
 
-CLS is 0 everywhere and TBT stays at or under 90 ms; the performance gap is
-entirely LCP (3.2 to 3.6 s), and entirely simulated download contention. Feature
-12 measured LCP at 108 ms in a real browser. The mobile preset simulates Slow 4G
-and a 4x CPU, so the critical path costs seconds of render delay that a real
-visitor on a fast connection never sees.
+CLS is 0 everywhere and TBT stays at or under 20 ms; the performance gap is
+entirely LCP (2.9 to 4.0 s), and entirely simulated download contention. In a
+real browser at mobile viewport, LCP measured 88 ms on `/` and 76 ms on a case
+study and `/contact`. The mobile preset simulates Slow 4G and a 4x CPU, so the
+critical path costs seconds of render delay that a real visitor on a fast
+connection never sees.
 
-All three routes are therefore below the 95 target locally. This is byte-bound, not a
+The home page and `/contact` are therefore below the 95 target locally. This is byte-bound, not a
 defect: fonts are `font-display: swap`, TTFB is 10 ms, and nothing above the fold
 animates in. Re-measure against the Vercel deployment before treating it as a
 real shortfall, because Brotli on HTML, JS and CSS shrinks exactly the transfer

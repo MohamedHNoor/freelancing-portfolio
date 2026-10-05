@@ -3,8 +3,9 @@ import { Logo } from "@/components/icons/Logo";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { NavLink } from "@/components/layout/NavLink";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { Button } from "@/components/ui/button";
 import { getProfile } from "@/content";
-import { NAV_ITEMS } from "@/lib/site";
+import { NAV_ITEMS, PRIMARY_CTA } from "@/lib/site";
 
 export function Header() {
   const profile = getProfile();
@@ -38,6 +39,9 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-0.5">
+          <Button asChild size="sm" className="mr-1 h-9 px-3.5">
+            <Link href={PRIMARY_CTA.href}>{PRIMARY_CTA.label}</Link>
+          </Button>
           <ThemeToggle />
           <MobileNav name={profile.name} />
         </div>

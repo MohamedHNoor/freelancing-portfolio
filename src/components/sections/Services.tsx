@@ -1,15 +1,18 @@
+import Link from "next/link";
+import { ArrowRightIcon, CheckIcon } from "lucide-react";
 import { Reveal } from "@/components/primitives/Reveal";
 import { Section } from "@/components/primitives/Section";
 import { SectionLink } from "@/components/primitives/SectionLink";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getServices } from "@/content";
+import { enquiryHref } from "@/lib/links";
 
-/* A summary of all three tracks. What each one delivers and how a project actually
-   runs lives at `/services`; repeating them here would put the same content on
-   two URLs and cost the home page the scroll it has to earn.
+/* How many of a service's first list to show here. The full lists live at
+   `/services`; repeating them would put the same content on two URLs and
+   cost the home page the scroll it has to earn. */
+const PREVIEW_ITEMS = 4;
 
-   Order comes from `getServices()`, which sorts by `order` and puts the agency
-   track first. Do not sort again here. */
 export function Services() {
   const services = getServices();
 
@@ -21,42 +24,69 @@ export function Services() {
     <Section
       id="services"
       label="Services"
-      heading="Three ways to work with me"
-      lead="All three run the same way: small reviewable pieces, a staging URL you can open at any point, and a handover that leaves you able to change things without me."
+      heading="What I Can Build"
+      lead="Whether you need a professional website, custom business software or a new SaaS product, I can help turn the idea into a production-ready application."
     >
-      <ul role="list" className="grid gap-6 lg:grid-cols-3">
-        {services.map((service) => (
-          <li key={service.slug} className="min-w-0">
-            {/* One Reveal per panel, so each track enters on its own scroll
-                position rather than all waiting on the tallest one. `h-full`
-                lets the card's own `h-full` reach the grid row, so the three
-                panels end level. */}
-            <Reveal className="h-full">
-              <Card className="h-full [--card-spacing:--spacing(6)] sm:[--card-spacing:--spacing(8)]">
-                <CardContent className="min-w-0">
-                  <h3 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
-                    {service.name}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {service.forWho}
-                  </p>
-                  <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-                    {service.summary}
-                  </p>
-                  <dl className="mt-6">
-                    <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                      Typical timeline
-                    </dt>
-                    <dd className="mt-2 text-sm">{service.typicalTimeline}</dd>
-                  </dl>
-                </CardContent>
-              </Card>
-            </Reveal>
-          </li>
-        ))}
-      </ul>
+      <ul role="list" className="grid gap-6 md:grid-cols-2">
+        {services.map((service) => {
+          const [preview] = service.lists;
 
-      <SectionLink href="/services">See what each track includes</SectionLink>
+          return (
+            <li key={service.slug} className="min-w-0">
+              <Reveal className="h-full">
+                <Card className="h-full [--card-spacing:--spacing(6)] sm:[--card-spacing:--spacing(8)]">
+                  <CardContent className="flex h-full min-w-0 flex-col">
+                    <h3 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
+                      {service.name}
+                    </h3>
+                    <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+                      {service.summary}
+                    </p>
+                    {preview !== undefined && preview.items.length > 0 ? (
+                      <>
+                        <p
+                          id={`${service.slug}-preview`}
+                          className="mt-6 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground"
+                        >
+                          {preview.label}
+                        </p>
+                        <ul
+                          role="list"
+                          aria-labelledby={`${service.slug}-preview`}
+                          className="mt-3 space-y-2"
+                        >
+                          {preview.items.slice(0, PREVIEW_ITEMS).map((item) => (
+                            <li key={item} className="flex gap-3 text-sm">
+                              <CheckIcon
+                                className="mt-0.5 size-4 shrink-0 text-brand"
+                                aria-hidden="true"
+                              />
+                              <span className="min-w-0">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : null}
+                    <div className="mt-auto pt-8">
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="h-10 gap-2 px-4"
+                      >
+                        <Link href={enquiryHref(service.enquiryType)}>
+                          {service.cta}
+                          <ArrowRightIcon className="size-4" aria-hidden="true" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Reveal>
+            </li>
+          );
+        })}
+      </ul>
+      <SectionLink href="/services">See every service in detail</SectionLink>
     </Section>
   );
 }

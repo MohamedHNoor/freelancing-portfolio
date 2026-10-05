@@ -7,33 +7,6 @@
 > finding is `open` or `fixed`, then archives resolved findings with the work
 > and resets this file.
 
-### F-06 [P3] fixed - The fallback comment on /contact is contradicted by its own commit
-
-**File:** src/app/contact/page.tsx:34
-**Found:** 2026-09-09 by /audit (scope: current; lens: quality)
-**Why it matters:** The comment states the fallback "renders only when an address
-is supplied, which is not the case today: every value in `profile.links` is the
-empty string." The same commit sets `email`, `github` and `linkedin` to real
-values in src/content/profile.ts:33, and the served page at
-http://localhost:3000/contact does render `mailto:info@mohamedhnoor.com`. A
-comment that is actively wrong about the code beside it is worse than none, and
-this one describes the feature's headline open risk as still open when the commit
-closed it. The same claim is carried in the spec's "Carried forward" section.
-
-**Suggested fix:** Cut the "which is not the case today" clause and the sentence
-after it; the first line already says everything the reader needs. Update the
-spec's Carried forward note in the same edit.
-**Resolution:** Fixed in step 10. The `/contact` comment now states that an address is supplied and explains why the guard remains (an empty value must render nothing rather than a dead `mailto:`). The identical stale claim in `src/app/resume/page.tsx` was corrected in the same step; the reviewer cited one instance but it was one defect in two files. The spec's live-tense claim was rewritten to record that the fallback problem was resolved during the feature.
-
-**Re-reviewed 2026-09-09 by /audit (independent; scope: current; lens: quality, security, performance, tests): not closed.** The two code comments are repaired and verified. `src/app/contact/page.tsx:34-38` and `src/app/resume/page.tsx:30-33` now describe the tree, and the running dev server confirms the behaviour they claim: `/contact` returns 200 and renders `mailto:info@mohamedhnoor.com`.
-
-The spec half of the repair was not done, and this finding's own Suggested fix named it ("Update the spec's Carried forward note in the same edit"):
-
-- `blueprint/context/current-feature.md:458-461` still reads "**The fallback still renders nothing.** `profile.links.email` is the empty string, so a visitor who hits the failure path has no way to make contact." The same delta sets `email: "info@mohamedhnoor.com"` at `src/content/profile.ts:33`, so the claim is false in the tree it ships with.
-- `blueprint/context/current-feature.md:348-352` now contradicts itself inside one paragraph: "**Resolved during the feature:** a real address was supplied, and the fallback now renders. Until the user supplies a real address, a visitor who hits the fail-closed path has **no way to make contact at all**". The repair inserted the first sentence and left the second standing.
-
-Step 10's done-when was "neither statement is contradicted by the tree", and one still is. The defect is the same one F-06 describes, a stale claim about the fallback, so this keeps its existing ID rather than gaining a new one. Stays `fixed`. P3, so it does not block `/complete`.
-
 ### F-07 [P2] open - Every visitor shares one rate-limit bucket when `x-forwarded-for` is absent or its first element is empty
 
 **File:** src/actions/contact.ts:136
@@ -80,6 +53,10 @@ none. Whichever is chosen, add tests for a missing header, an empty leftmost
 element, and a normal appended chain, since none of those three is covered today.
 **Resolution:**
 
+**Re-reviewed 2026-10-05 by /audit (independent; scope: current; d9304aa..c3db156): still open.** `src/actions/contact.ts` is in this delta (new fields, honeypot rename, labelled email body), but the limiter key is unchanged and now sits at line 147: `forwardedFor?.split(",")[0]?.trim() ?? "unknown"`. `tests/actions/contact.test.ts` still sets one well-formed address per test, so neither the absent-header nor the empty-element path is exercised. P2, does not block `/complete`.
+
+**Re-reviewed 2026-10-05 by /audit (independent; scope: current; lens: quality, security, performance, tests; d9304aa..ee226e0): still open.** The repair checkpoint did not touch the limiter. `src/actions/contact.ts:146-147` still keys on `forwardedFor?.split(",")[0]?.trim() ?? "unknown"`, and `tests/actions/contact.test.ts` never sets `forwardedFor` to `null` or to a value with an empty first element (every assignment is a well-formed address from `freshIp()` or a fixed IP). P2, does not block `/complete`.
+
 ### F-08 [P3] open - Source comments narrate the previous implementation and the review that replaced it
 
 **File:** src/actions/contact.ts:44
@@ -117,4 +94,98 @@ stay: a regression test should say which regression it guards.
 **Suggested fix:** Keep the sentence that states the current decision and drop
 the sentences describing what the code used to do. At `src/lib/rate-limit.ts:29`
 that is roughly two lines instead of ten.
+**Resolution:**
+
+**Re-reviewed 2026-10-05 by /audit (independent; scope: current; d9304aa..c3db156): still open.** This delta rewrote the honeypot comment at `src/actions/contact.ts:116-121` from past-tense narration into a present-tense rule, which is the shape this finding asks for. The other cited narration remains: `src/actions/contact.ts:47-61` ("Keying it to `email` and `message` alone was wrong", "The previous version used a literal U+0000") and `src/lib/links.ts:58-59` ("An earlier version enumerated the dangerous characters"). `src/lib/rate-limit.ts` is untouched by this delta and was not re-read for closure. The delta also adds two small instances of the same pattern: `src/lib/validation/contact.ts:151` ("It was `company` until that became a real field.") and the header of `src/content/projects.ts:7-12`, which narrates how TravelGrid's figures used to differ. P3, does not block `/complete`.
+
+**Re-reviewed 2026-10-05 by /audit (independent; scope: current; lens: quality, security, performance, tests; d9304aa..ee226e0): still open.** Unchanged by the repair checkpoint. The narration is still at `src/actions/contact.ts:47-61`, `src/lib/links.ts:58-63`, `src/lib/rate-limit.ts:31-33` and `src/lib/validation/contact.ts:151`. The repair's own new comments (the honeypot `data-*` hints in `ContactForm.tsx:265-267`, `PointGrid`'s `reveal` prop, `BACKGROUND_LINKS`) state current behaviour and add no new instance. P3, does not block `/complete`.
+
+### F-14 [P2] open - /resume still describes the replaced three-track positioning in its search and social descriptions
+
+**File:** src/app/resume/page.tsx:20
+**Found:** 2026-10-05 by /audit (independent; scope: current; lens: quality)
+**Why it matters:** The fix exists to replace the three narrow tracks, and its SEO
+bullet calls for "the brief's titles and descriptions". `/resume`'s `description`
+still reads "Experience, stack and selected work for a freelance software engineer
+building white-label sites for agencies, SaaS products for startups, and Figma to
+Next.js sites." `routeMetadata` copies it into Open Graph and Twitter, so the
+prerendered `resume.html` carries the old positioning in its `description`,
+`og:description` and `twitter:description` meta tags, and again in the embedded
+page payload. The same file is in this delta (its
+subtitle moved from the headline to `profile.role`), so the page was touched and
+this line was missed. It is the snippet a search result or a LinkedIn share of the
+resume shows, which is the start of the conversion path the fix is built around.
+F-12 corrected the leftovers it named; this one was not among them. A sweep of the
+built HTML finds no other instance: the remaining "white-label" on `/` is the
+Agencies audience card, as the spec intends.
+**Suggested fix:** Rewrite the description in the new positioning, for example
+"Resume of Mohamed Noor, a full-stack web developer in Wellington, New Zealand:
+experience, technology and selected work." No code change beyond the string.
+**Resolution:**
+
+### F-15 [P3] open - The "seven steps" ordered list on /process announces eight items, the eighth being the call to action
+
+**File:** src/components/primitives/PointGrid.tsx:57
+**Found:** 2026-10-05 by /audit (independent; scope: current; lens: quality)
+**Why it matters:** `PointGrid` renders `trailing` as one more `<li>` inside the
+same list. On `/process` that list is the numbered `<ol>` of steps, labelled by
+the `sr-only` heading "The seven steps" (`src/app/process/page.tsx:38-48`). The
+prerendered `/process` has 8 `<li>` in that `<ol>`, so a screen reader announces
+"list, 8 items" under a heading that says seven, and reads the Start a Project
+card as item 8 of the process. `PointCard`'s own comment
+(`PointGrid.tsx:67`, "Decorative: an `ol` already announces position") relies on
+the list position being the step number, which the trailing item breaks. Sighted
+users see 01 to 07 and an unnumbered card, so the two audiences get different
+structures. Not a WCAG A or AA failure, which is why an axe run would not flag it,
+but `coding-standards.md` treats accessibility semantics on this site as a
+product claim. On `/`, `Reasons` uses an unordered list, where the extra item is
+harmless.
+**Suggested fix:** Keep the trailing cell out of the list: render the list and
+the trailing cell as siblings inside one grid wrapper (the `ol` as
+`display: contents`, or a wrapping `div` that owns the grid), or accept
+`trailing` only when `numbered` is false. The visual layout stays the same.
+**Resolution:**
+
+### F-16 [P3] open - The one-business-day reply promise is hard-coded in five places, and its comment says to change it "in both places"
+
+**File:** src/components/sections/FinalCta.tsx:12
+**Found:** 2026-10-05 by /audit (independent; scope: current; lens: quality)
+**Why it matters:** `FinalCta` says "The reply time is a commitment, not a
+flourish, and it is repeated on `/contact`. If it stops being true, change it in
+both places first." This delta spreads the same commitment to five strings in
+four files: `src/app/contact/page.tsx:11` (metadata) and `:29` (lead),
+`src/components/sections/FinalCta.tsx:23`, `src/components/primitives/StartProjectCard.tsx:18`
+and `src/components/projects/CaseStudyCta.tsx:28`. A maintainer who follows the
+comment updates two and leaves three public pages promising a reply time the
+business no longer keeps. The project's own rule is that a promise on this site
+must stay literally true.
+**Suggested fix:** Hold the reply time once in the content layer (for example
+`profile.replyTime`, or a constant beside `PRIMARY_CTA`) and interpolate it in all
+five strings, then drop the "both places" instruction. Or, at minimum, correct the
+comment to name every location.
+**Resolution:**
+
+### F-17 [P3] unverified - Copy in four places reads as a claim of existing clients across New Zealand, Australia and internationally
+
+**File:** src/components/sections/Location.tsx:15
+**Found:** 2026-10-05 by /audit (independent; scope: current; lens: quality)
+**Why it matters:** `blueprint/project-plan.md:63-65` says "the site never implies
+existing clients in any country", and the code says the same:
+`Location.tsx:3-5` ("without implying clients in any country: it says where the
+work can be, not where it has been") and `src/content/profile.ts:57` ("never a
+claim about where past clients were"). The rendered copy reads the other way:
+`Location.tsx:15` "I'm based in Wellington and work with businesses, startups and
+agencies across New Zealand, Australia and internationally",
+`src/content/approach.ts:28` "working with clients across New Zealand, Australia
+and internationally", `src/app/about/page.tsx:21` "working with businesses,
+startups and agencies across...", and the `/about` label "Working with clients
+in" (`src/components/detail/AboutDetail.tsx:47`). Present-tense "work with ...
+across" is most naturally read as a description of a current client base. This
+reviewer cannot tell whether that is true, and the wording comes from the owner's
+brief, so this is a lead rather than a confirmed defect: either the copy or the
+plan's rule and the two comments are wrong, and only the owner can say which.
+**Suggested fix:** If there are no clients in Australia or abroad yet, reword to
+availability ("available to businesses, startups and agencies across New
+Zealand, Australia and internationally"; label "Available to clients in"). If
+there are, amend the project plan's rule and the two comments so they match.
 **Resolution:**

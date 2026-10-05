@@ -6,7 +6,7 @@ import { routeMetadata } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "How I work: what I build, the three kinds of project I take on, and how a build runs week to week.",
+    "Mohamed Noor is a full-stack web developer in Wellington, New Zealand, building websites and custom web applications on Next.js, React, TypeScript, Node.js and PostgreSQL.",
   ...routeMetadata("/about"),
 };
 
@@ -17,8 +17,8 @@ export default function AboutPage() {
         <PageHeader
           id="about-heading"
           eyebrow="About"
-          heading="How I work"
-          lead="The long version: what I build, and the way a project runs when you hire me."
+          heading="About Mohamed"
+          lead="A full-stack web developer in Wellington, New Zealand, working with businesses, startups and agencies across New Zealand, Australia and internationally."
         />
         {/* The header always renders, because a route that exists must not
             return a blank document. The body carries the same conditional the

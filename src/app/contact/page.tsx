@@ -8,7 +8,7 @@ import { routeMetadata } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Tell me what you are building: a few questions about the project, the timeline, and how to reach you. Every enquiry gets an answer within one business day.",
+    "Start a website or web application project with Mohamed Noor, a full-stack developer in Wellington, New Zealand. Every enquiry gets a reply within one business day.",
   ...routeMetadata("/contact"),
 };
 
@@ -25,8 +25,8 @@ export default function ContactPage() {
         <PageHeader
           id="contact-heading"
           eyebrow="Contact"
-          heading="Tell me what you are building"
-          lead="The questions below exist so the first reply is useful rather than a request for more detail. Every enquiry gets an answer within one business day, and if it is not something I should take on I will tell you rather than string it out."
+          heading="Have a Project in Mind?"
+          lead="Tell me what you're building. Send a project brief, a Figma file, an existing website or a requirements document, or simply explain the idea. I'll review it and suggest a practical way to approach the project, within one business day."
         />
 
         <div className="mt-12">
@@ -40,7 +40,7 @@ export default function ContactPage() {
             empty value must render nothing rather than a dead `mailto:`. */}
         {direct !== undefined ? (
           <p className="mt-10 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Rather not use a form?{" "}
+            Rather email me?{" "}
             <a
               href={direct.href}
               className="rounded-sm underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

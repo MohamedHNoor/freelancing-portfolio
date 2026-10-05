@@ -21,10 +21,11 @@ const { submitContact } = await import("@/actions/contact");
 const valid = {
   name: "Ada Lovelace",
   email: "ada@example.com",
-  projectType: "figma-conversion",
-  timeline: "Next month",
+  projectType: "figma-to-nextjs",
   message: "I have a finished Figma file for six pages and no front-end capacity.",
-  company: "",
+  existingDesign: "figma",
+  timeline: "within-1-month",
+  website: "",
 };
 
 /** A fresh key per test: the limiter store lives at module scope. */
@@ -81,15 +82,15 @@ describe("submitContact, validation", () => {
     expect(sendMock).not.toHaveBeenCalled();
   });
 
-  /* Regression: the honeypot was originally judged from `fieldErrors.company`,
-     so a payload with no `company` key at all produced an error there and was
-     answered with a fake success. Real submissions were silently dropped. */
+  /* Regression: the honeypot was originally judged from the schema's field
+     error, so a payload with no honeypot key at all produced an error there and
+     was answered with a fake success. Real submissions were silently dropped. */
   it("does not mistake a missing honeypot field for a caught bot", async () => {
     const withoutHoneypot: Record<string, unknown> = { ...valid };
-    delete withoutHoneypot.company;
+    delete withoutHoneypot.website;
     const result = await submitContact(withoutHoneypot);
     expect(result.success).toBe(false);
-    expect(result.success === false && result.error.fieldErrors).toHaveProperty("company");
+    expect(result.success === false && result.error.fieldErrors).toHaveProperty("website");
     expect(sendMock).not.toHaveBeenCalled();
   });
 });
@@ -98,9 +99,16 @@ describe("submitContact, the honeypot", () => {
   /* A caught bot gets the success shape. Telling it what tripped teaches it to
      leave the field alone next time. */
   it("looks like a success but sends nothing", async () => {
-    const result = await submitContact({ ...valid, company: "Acme" });
+    const result = await submitContact({ ...valid, website: "https://spam.example" });
     expect(result.success).toBe(true);
     expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  /* `company` was the honeypot until it became a real field. */
+  it("delivers an enquiry that names a company", async () => {
+    const result = await submitContact({ ...valid, company: "Acme" });
+    expect(result.success).toBe(true);
+    expect(sendMock).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -140,9 +148,11 @@ describe("submitContact, delivery", () => {
      field below reaches the sent payload. */
   it.each([
     ["name", { name: "Ada B Lovelace" }],
-    ["projectType", { projectType: "saas-build" as const }],
-    ["timeline", { timeline: "Whenever you have capacity" }],
-    ["budgetRange", { budgetRange: "8k to 12k" }],
+    ["company", { company: "Analytical Engines Ltd" }],
+    ["projectType", { projectType: "saas-product" as const }],
+    ["existingDesign", { existingDesign: "needs-planning" as const }],
+    ["timeline", { timeline: "flexible" as const }],
+    ["budgetRange", { budgetRange: "15k-30k" as const }],
   ])("gives a different key when only %s changes", async (_label, patch) => {
     await submitContact(valid);
     forwardedFor = freshIp();
@@ -166,10 +176,23 @@ describe("submitContact, delivery", () => {
     expect(payload.from).toBe('"Lovelace, Ada" <onboarding@resend.dev>');
   });
 
-  it("labels a missing budget instead of leaving the line blank", async () => {
-    await submitContact({ ...valid, budgetRange: "" });
+  it("labels a missing budget and company instead of leaving the lines blank", async () => {
+    await submitContact({ ...valid, budgetRange: "", company: "" });
     const [payload] = sendMock.mock.calls[0];
     expect(payload.text).toContain("Budget:   not given");
+    expect(payload.text).toContain("Company:  not given");
+  });
+
+  /* The email is read by a person deciding whether to reply, so every coded
+     answer arrives as the label the visitor chose rather than its slug. */
+  it("prints each answer as the label the visitor saw", async () => {
+    await submitContact({ ...valid, company: "Acme", budgetRange: "5k-15k" });
+    const [payload] = sendMock.mock.calls[0];
+    expect(payload.text).toContain("Company:  Acme");
+    expect(payload.text).toContain("Project:  Figma to Next.js Development");
+    expect(payload.text).toContain("Design:   Yes, I have Figma designs");
+    expect(payload.text).toContain("Timeline: Within 1 month");
+    expect(payload.text).toContain("Budget:   NZ$5,000 to NZ$15,000");
   });
 
   it("does not leak the provider error to the caller", async () => {

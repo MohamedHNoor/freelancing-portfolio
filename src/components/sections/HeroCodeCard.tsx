@@ -1,5 +1,5 @@
 import { TypedCode, type CodeToken } from "@/components/sections/TypedCode";
-import { getProfile, getTechnologyMarks } from "@/content";
+import { getProfile } from "@/content";
 
 function entry(indent: string, value: string): CodeToken[] {
   return [
@@ -15,7 +15,6 @@ function entry(indent: string, value: string): CodeToken[] {
    presentational labels; values come from the content layer. */
 export function HeroCodeCard() {
   const profile = getProfile();
-  const stack = getTechnologyMarks(4);
 
   const lines: CodeToken[][] = [
     [
@@ -28,11 +27,16 @@ export function HeroCodeCard() {
       { text: `"${profile.name}"`, tone: "value" },
       { text: ",", tone: "punct" },
     ],
-    [{ text: "  tracks: [" }],
+    [
+      { text: "  role: " },
+      { text: `"${profile.role}"`, tone: "value" },
+      { text: ",", tone: "punct" },
+    ],
+    [{ text: "  builds: [" }],
     ...profile.specialisms.map((slug) => entry("    ", slug)),
     [{ text: "  ]," }],
     [{ text: "  stack: [" }],
-    ...stack.map((skill) => entry("    ", skill.name)),
+    ...profile.primaryStack.map((name) => entry("    ", name)),
     [{ text: "  ]," }],
     [
       { text: "  based: " },

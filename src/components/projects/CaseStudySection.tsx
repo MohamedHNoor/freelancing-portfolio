@@ -2,17 +2,24 @@ import type { CaseStudySection as CaseStudySectionContent } from "@/types/conten
 
 type CaseStudySectionProps = {
   section: CaseStudySectionContent;
+  /** Zero-based position, shown as 01, 02 and so on. */
+  index: number;
 };
+
+/** "The Problem" becomes `case-study-the-problem`: an id cannot hold a space. */
+function sectionId(heading: string): string {
+  return `case-study-${heading.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+}
 
 /* Not wrapped in `Reveal`. Reveal server-renders `opacity: 0`, which its own
    docstring calls a fine trade for decoration below the fold and a bad one for
    anything load-bearing. The case study body is the single thing a client came
    to read, so it must not depend on JavaScript having run.
 
-   The heading sits in a rail beside its prose at `lg`, so the four stages can
+   The heading sits in a rail beside its prose at `lg`, so the ten sections can
    be scanned and jumped between without reading the whole page. */
-export function CaseStudySection({ section }: CaseStudySectionProps) {
-  const headingId = `case-study-${section.heading.toLowerCase()}`;
+export function CaseStudySection({ section, index }: CaseStudySectionProps) {
+  const headingId = sectionId(section.heading);
 
   return (
     <section
@@ -23,6 +30,9 @@ export function CaseStudySection({ section }: CaseStudySectionProps) {
         id={headingId}
         className="font-mono text-xs uppercase tracking-[0.2em] text-brand lg:pt-1.5"
       >
+        <span aria-hidden="true" className="mr-2 text-muted-foreground">
+          {String(index + 1).padStart(2, "0")}
+        </span>
         {section.heading}
       </h2>
 

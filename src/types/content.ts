@@ -1,13 +1,12 @@
-export type ServiceSlug = "agency-builds" | "startup-saas" | "figma-to-nextjs";
+import type { ProjectType } from "@/lib/validation/contact";
+
+export type ServiceSlug =
+  | "business-websites"
+  | "web-applications"
+  | "saas-development"
+  | "figma-to-production";
 
 export type AvailabilityStatus = "available" | "limited" | "unavailable";
-
-/** A number never ships without something a visitor could check. */
-export type ProofPoint = {
-  value: string;
-  label: string;
-  evidence: string;
-};
 
 /** An empty string means "not supplied". Consumers must read these through
  *  `getProfileLinks()` so an unsupplied link renders as nothing rather than as
@@ -26,36 +25,51 @@ export type Availability = {
 
 export type Profile = {
   name: string;
+  /** The job title, as a search result or a resume would print it. */
+  role: string;
   headline: string;
   specialisms: readonly ServiceSlug[];
   /** The canonical one-line description. Read by the hero, the resume and the
    *  `Person` structured data, so it has to stand alone in all three. */
   shortBio: string;
-  /** The footer's closing line. Deliberately not `shortBio`: the footer used to
-   *  render that, which repeated the hero's pitch verbatim at the bottom of
-   *  every page. A closing line should say what the opening did not. */
-  closing: string;
+  /** The hero's second paragraph: how the work spans the stack. */
+  supportingLine: string;
+  /** The technologies named under the hero's buttons, in reading order. */
+  primaryStack: readonly string[];
   longBio: readonly string[];
   availability: Availability;
   location: string;
+  /** Where clients can be, not where clients have been. */
+  serviceArea: readonly string[];
   links: ProfileLinks;
-  proofPoints: readonly ProofPoint[];
 };
 
-export type ProcessStep = {
+/** A titled point with a sentence of detail. Value points, audiences, reasons
+ *  to hire, process steps and payment milestones all share this shape. */
+export type Point = {
   title: string;
   detail: string;
+};
+
+export type ServiceList = {
+  label: string;
+  items: readonly string[];
 };
 
 export type Service = {
   slug: ServiceSlug;
   name: string;
-  forWho: string;
   summary: string;
-  deliverables: readonly string[];
-  /** Duration only. No prices anywhere on this site. */
-  typicalTimeline: string;
-  process: readonly ProcessStep[];
+  /** One or two labelled lists: who it suits, examples, or what it can include. */
+  lists: readonly ServiceList[];
+  /** The service's own call to action. It opens the contact form with this
+   *  service's project type already chosen, which is what earns it a label of
+   *  its own rather than a fifth "Start a Project". */
+  cta: string;
+  /** The contact form's project type this service preselects. */
+  enquiryType: ProjectType;
+  /** Duration only, and only where one has been promised before. No prices. */
+  typicalTimeline?: string;
   order: number;
 };
 
@@ -66,6 +80,9 @@ export type Skill = {
   context: string;
   /** Key into `src/components/icons/`. Feature 5 owns the registry. */
   icon?: string;
+  /** Listed in the home page's technology summary. The rest appear on
+   *  `/skills` only. */
+  featured?: boolean;
 };
 
 export type SkillGroup = {
@@ -94,9 +111,15 @@ export type Metric = {
 };
 
 export const CASE_STUDY_HEADINGS = [
-  "Problem",
-  "Approach",
+  "Overview",
+  "The Problem",
+  "The Solution",
+  "Key Features",
   "Architecture",
+  "Engineering Challenges",
+  "Testing",
+  "Technology",
+  "My Role",
   "Outcome",
 ] as const;
 
@@ -123,6 +146,9 @@ export type ProjectLinks = {
 export type Project = {
   /** Route segment for `/projects/[slug]`. Unique, lowercase kebab-case. */
   slug: string;
+  /** The product or client name, shown above the title. */
+  name: string;
+  /** What was built, in a few words. */
   title: string;
   summary: string;
   role: string;

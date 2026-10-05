@@ -4,9 +4,9 @@ import { PageHeader } from "@/components/primitives/PageHeader";
 import { routeMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Stack",
+  title: "Technology",
   description:
-    "The technologies I build with, grouped by where each one sits in a build, with the context each was actually used in.",
+    "The technologies behind the websites and web applications I build, from Next.js, React and TypeScript to Node.js, PostgreSQL, authentication and payments, with where each was used.",
   ...routeMetadata("/skills"),
 };
 
@@ -19,9 +19,9 @@ export default function SkillsPage() {
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <PageHeader
           id="skills-heading"
-          eyebrow="Stack"
-          heading="What I build with, and where I have used it"
-          lead="Grouped by where each one sits in a build, with the context it was used in. No self-assigned percentages: a score I award myself would not be evidence."
+          eyebrow="Technology"
+          heading="Technology I Work With"
+          lead="Organised by what each one does in a product, with the real work each was used on. No self-assigned percentages: a score I award myself would not be evidence."
         />
         <div className="mt-12">
           <SkillsIndex />
