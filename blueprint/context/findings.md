@@ -100,7 +100,7 @@ that is roughly two lines instead of ten.
 
 **Re-reviewed 2026-10-05 by /audit (independent; scope: current; lens: quality, security, performance, tests; d9304aa..ee226e0): still open.** Unchanged by the repair checkpoint. The narration is still at `src/actions/contact.ts:47-61`, `src/lib/links.ts:58-63`, `src/lib/rate-limit.ts:31-33` and `src/lib/validation/contact.ts:151`. The repair's own new comments (the honeypot `data-*` hints in `ContactForm.tsx:265-267`, `PointGrid`'s `reveal` prop, `BACKGROUND_LINKS`) state current behaviour and add no new instance. P3, does not block `/complete`.
 
-### F-14 [P2] open - /resume still describes the replaced three-track positioning in its search and social descriptions
+### F-14 [P2] fixed - /resume still describes the replaced three-track positioning in its search and social descriptions
 
 **File:** src/app/resume/page.tsx:20
 **Found:** 2026-10-05 by /audit (independent; scope: current; lens: quality)
@@ -121,7 +121,7 @@ Agencies audience card, as the spec intends.
 **Suggested fix:** Rewrite the description in the new positioning, for example
 "Resume of Mohamed Noor, a full-stack web developer in Wellington, New Zealand:
 experience, technology and selected work." No code change beyond the string.
-**Resolution:**
+**Resolution:** Fixed by `/fix` on `fix/resume-description-positioning`. The description now reads "Resume of Mohamed Noor, a full-stack web developer in Wellington, New Zealand, with work history, technology and selected projects on one printable page." The built `resume.html` carries it in `description`, `og:description` and `twitter:description`, and contains no "white-label" text.
 
 ### F-15 [P3] open - The "seven steps" ordered list on /process announces eight items, the eighth being the call to action
 

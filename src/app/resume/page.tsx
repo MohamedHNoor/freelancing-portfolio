@@ -17,7 +17,7 @@ import { routeMetadata } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Resume",
   description:
-    "Experience, stack and selected work for a freelance software engineer building white-label sites for agencies, SaaS products for startups, and Figma to Next.js sites.",
+    "Resume of Mohamed Noor, a full-stack web developer in Wellington, New Zealand, with work history, technology and selected projects on one printable page.",
   ...routeMetadata("/resume"),
 };
 
