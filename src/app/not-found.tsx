@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 /* The root `not-found.tsx`, so it catches both `notFound()` from
    `/projects/[slug]` and any unmatched URL. It renders inside the root layout
    but outside the `(site)` group, so it wraps itself in `SiteChrome` for the
-   header and footer; the skip link comes from the root layout.
+   header, footer, motion provider and skip link.
    `global-not-found.tsx` would have bypassed the layout and forced this file to
    restate `<html>`, `<body>`, the font variables and the theme script.
 

@@ -53,7 +53,8 @@ function cspDirectives({
     /* Same-origin only. The contact Server Action posts back to this origin, and
        Resend is called from the server, never the browser. */
     "connect-src 'self'",
-    "form-action 'self'",
+    /* Hosted Checkout redirects need this origin, including no-JS form posts. */
+    "form-action 'self' https://checkout.stripe.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "object-src 'none'",

@@ -56,7 +56,7 @@ A private, owner-only tool for running the work once it is won. The schema, stat
 machines, payment flow, and rules every item below builds on are in
 `blueprint/dashboard-architecture.md`.
 
-- [ ] 15. **Site and dashboard separation** - the public pages move into their own route
+- [x] 15. **Site and dashboard separation** - the public pages move into their own route
   group with their URLs, static generation, budgets, and behaviour unchanged; the root
   layout keeps only the document shell, and robots and the CSP learn the private paths
   and Stripe Checkout. The route group itself shipped early with the resume rework

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { getProfile } from "@/content";
-import { MotionProvider } from "@/components/layout/MotionProvider";
-import { SkipLink } from "@/components/layout/SkipLink";
 import { SITE, SITE_URL } from "@/lib/site";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
@@ -87,14 +85,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="flex min-h-full flex-col">
-        <MotionProvider>
-          <SkipLink />
-          {/* The header, `<main>` and footer are not here: `SiteChrome` adds
-              them for the `(site)` group and the 404, and `/resume` renders
-              its own document header and `<main>`. Every route still provides
-              the `#main-content` the skip link targets. */}
-          {children}
-        </MotionProvider>
+        {children}
       </body>
     </html>
   );

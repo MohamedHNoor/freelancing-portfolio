@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { MotionProvider } from "@/components/layout/MotionProvider";
+import { SkipLink } from "@/components/layout/SkipLink";
 
 /** The site header, main landmark and footer around a page.
  *
@@ -10,7 +12,8 @@ import { Header } from "@/components/layout/Header";
  *  unmatched URL never enters that group. */
 export function SiteChrome({ children }: { children: ReactNode }) {
   return (
-    <>
+    <MotionProvider>
+      <SkipLink />
       <Header />
       {/* tabIndex -1 so the skip link actually moves focus here. Without it
           the hash navigates but focus stays on body, and a screen reader user
@@ -23,6 +26,6 @@ export function SiteChrome({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
-    </>
+    </MotionProvider>
   );
 }

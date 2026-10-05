@@ -71,11 +71,22 @@ describe("CONTENT_SECURITY_POLICY", () => {
     ["frame-ancestors", "'none'"],
     ["object-src", "'none'"],
     ["base-uri", "'self'"],
-    ["form-action", "'self'"],
+    ["form-action", "'self' https://checkout.stripe.com"],
     ["connect-src", "'self'"],
     ["font-src", "'self'"],
   ])("locks %s to %s", (name, value) => {
     expect(parsed.get(name)).toBe(value);
+  });
+
+  it("allows Stripe Checkout only as a form destination", () => {
+    for (const [name, value] of parsed) {
+      if (name === "form-action") {
+        expect(value).toBe("'self' https://checkout.stripe.com");
+      } else {
+        expect(value, name).not.toContain("stripe");
+      }
+      expect(value, name).not.toContain("*");
+    }
   });
 
   it("upgrades insecure requests", () => {

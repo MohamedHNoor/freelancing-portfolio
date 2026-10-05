@@ -100,29 +100,6 @@ that is roughly two lines instead of ten.
 
 **Re-reviewed 2026-10-05 by /audit (independent; scope: current; lens: quality, security, performance, tests; d9304aa..ee226e0): still open.** Unchanged by the repair checkpoint. The narration is still at `src/actions/contact.ts:47-61`, `src/lib/links.ts:58-63`, `src/lib/rate-limit.ts:31-33` and `src/lib/validation/contact.ts:151`. The repair's own new comments (the honeypot `data-*` hints in `ContactForm.tsx:265-267`, `PointGrid`'s `reveal` prop, `BACKGROUND_LINKS`) state current behaviour and add no new instance. P3, does not block `/complete`.
 
-### F-14 [P2] fixed - /resume still describes the replaced three-track positioning in its search and social descriptions
-
-**File:** src/app/resume/page.tsx:20
-**Found:** 2026-10-05 by /audit (independent; scope: current; lens: quality)
-**Why it matters:** The fix exists to replace the three narrow tracks, and its SEO
-bullet calls for "the brief's titles and descriptions". `/resume`'s `description`
-still reads "Experience, stack and selected work for a freelance software engineer
-building white-label sites for agencies, SaaS products for startups, and Figma to
-Next.js sites." `routeMetadata` copies it into Open Graph and Twitter, so the
-prerendered `resume.html` carries the old positioning in its `description`,
-`og:description` and `twitter:description` meta tags, and again in the embedded
-page payload. The same file is in this delta (its
-subtitle moved from the headline to `profile.role`), so the page was touched and
-this line was missed. It is the snippet a search result or a LinkedIn share of the
-resume shows, which is the start of the conversion path the fix is built around.
-F-12 corrected the leftovers it named; this one was not among them. A sweep of the
-built HTML finds no other instance: the remaining "white-label" on `/` is the
-Agencies audience card, as the spec intends.
-**Suggested fix:** Rewrite the description in the new positioning, for example
-"Resume of Mohamed Noor, a full-stack web developer in Wellington, New Zealand:
-experience, technology and selected work." No code change beyond the string.
-**Resolution:** Fixed by `/fix` on `fix/resume-description-positioning`. The description now reads "Resume of Mohamed Noor, a full-stack web developer in Wellington, New Zealand, with work history, technology and selected projects on one printable page." The built `resume.html` carries it in `description`, `og:description` and `twitter:description`, and contains no "white-label" text.
-
 ### F-15 [P3] open - The "seven steps" ordered list on /process announces eight items, the eighth being the call to action
 
 **File:** src/components/primitives/PointGrid.tsx:57
@@ -189,3 +166,7 @@ availability ("available to businesses, startups and agencies across New
 Zealand, Australia and internationally"; label "Available to clients in"). If
 there are, amend the project plan's rule and the two comments so they match.
 **Resolution:**
+
+## Latest independent audit
+
+Reviewed feature 15 at `fca7c7d5166733a2e19b4c6b5158ba6ccb329fd3` against `main` merge base `6877c456825267a7ffbd97e4037d4cccfdbcd18f` across quality, security, performance and tests. No new findings. F-14 closed from review of the nearby resume metadata; other carried findings were not used as the scope and remain unchanged. Verification evidence and reviewer environment limitations are recorded in `blueprint/context/review.md`.

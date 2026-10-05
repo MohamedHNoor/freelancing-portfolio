@@ -58,7 +58,9 @@
   and `<main>`, and the root `not-found.tsx` renders `SiteChrome` itself. From
   feature 16, sign-in pages live under `src/app/(auth)/` and the dashboard under
   `src/app/dashboard/`. A new route group must provide its own
-  `#main-content`, which the root layout's skip link targets
+  `#main-content` and its own skip link. `SiteChrome` owns the marketing
+  `MotionProvider` and skip link for the site group and root 404. The standalone
+  resume layout adds only its skip link; the root stays a shared document shell
 - Resume components: `src/components/resume/`
 - Server Actions: `src/actions/[feature].ts`
 - Types: `src/types/[feature].ts`
