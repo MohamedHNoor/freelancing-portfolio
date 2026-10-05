@@ -153,3 +153,15 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-pill: 999px;
 }
+
+/* Shared review layout scale. */
+:root {
+  --text-display: 2.5rem;
+  --text-section: 1.125rem;
+  --text-amount: 2.25rem;
+  --control-height: 2.75rem;
+  --border-width: 1px;
+  --focus-width: 2px;
+  --pay-max: 42rem;
+  --summary-width: 21rem;
+}

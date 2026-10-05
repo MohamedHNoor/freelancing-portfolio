@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
-<title>E-commerce Website - Design prototype</title>
+<title>My projects - Design prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
@@ -15,82 +15,81 @@
 <body>
 <a class="btn skip-link" href="#main-content">Skip to content</a>
 <div class="app">
-<aside class="sidebar" aria-label="Admin workspace">
+<aside class="sidebar" aria-label="Client workspace">
 <div class="brand">
 <span class="brand-mark" aria-hidden="true">MN</span>
-<span>Mohamed Noor<small>Business workspace</small>
+<span>Mohamed Noor<small>Client workspace</small>
 </span>
 </div>
 <nav class="nav" aria-label="Main">
-<a href="overview.html">Overview</a>
-<a href="create.html#client-details">Clients</a>
-<a href="project.html" aria-current="page">Projects</a>
-<a href="overview.html#payment-requests">Payments</a>
+<a href="client.html" aria-current="page">My projects</a>
+<a href="client.html#payments">Payments</a>
 </nav>
-<p class="sidebar-note">Your work, from first brief to final payment.</p>
-<div class="sidebar-foot">Mohamed Noor · Administrator</div>
+<p class="sidebar-note">Acme Retail<br>Project updates and payments</p>
+<div class="sidebar-foot">Signed in as Acme Retail</div>
 </aside>
 <div class="main">
 <header class="topbar">
 <nav class="crumbs" aria-label="Breadcrumb">
-<span aria-current="page">E-commerce Website</span>
+<span aria-current="page">My projects</span>
 </nav>
 <button class="btn btn-ghost" data-theme-toggle aria-pressed="false">Light theme</button>
 </header>
 <nav class="preview-nav" aria-label="Prototype screens">
 <span class="preview-label">DESIGN PREVIEW</span>
 <a href="overview.html">Admin overview</a>
-<a href="project.html" aria-current="page">Project</a>
-<a href="client.html">Client view</a>
+<a href="project.html">Project</a>
+<a href="client.html" aria-current="page">Client view</a>
 <a href="create.html">Create project</a>
 <a href="pay.html">Payment</a>
 </nav>
 <nav class="mobile-nav" aria-label="Workspace navigation">
-<a href="overview.html">Overview</a>
-<a href="create.html#client-details">Clients</a>
-<a href="project.html" aria-current="page">Projects</a>
-<a href="overview.html#payment-requests">Payments</a>
+<a href="client.html" aria-current="page">My projects</a>
+<a href="client.html#payments">Payments</a>
 </nav>
 <main id="main-content" tabindex="-1" class="content stack-page">
 <div class="page-head">
 <div>
-<p class="eyebrow">Acme Retail / Project</p>
-<h1 class="hero-title">E-commerce Website</h1>
-<p class="subtitle">A new storefront from design through launch. Delivery target: 30 November 2026.</p>
+<p class="eyebrow">Acme Retail / Client workspace</p>
+<h1 class="hero-title">Your project, in view.</h1>
+<p class="subtitle">Follow delivery, review milestones, and keep track of your payments.</p>
 </div>
-<div class="action-row">
-<span class="pill pill--info">Active</span>
-<a class="btn" href="client.html">Preview client view</a>
+<a class="btn" href="mailto:info@mohamedhnoor.com">Contact Mohamed</a>
 </div>
+<div id="client-states" class="stack-page">
+<div data-when="active">
+<section id="payments" class="card">
+<div class="card-body spread">
+<div>
+<span class="label">Payment to review · Due 10 October</span>
+<h2 class="section-heading">Frontend Development</h2>
+<p class="small muted">INV-2026-00042 · E-commerce Website</p>
 </div>
-<div class="summary-grid">
-<div class="card summary-tile">
-<span class="label">Project value</span>
-<p class="summary-value money">R50,000.00</p>
-<p class="small muted">ZAR · Plan fully allocated</p>
-</div>
-<div class="card summary-tile">
-<span class="label">Received</span>
-<p class="summary-value money">R22,500.00</p>
-<p class="small muted">Deposit and design paid</p>
-</div>
-<div class="card summary-tile">
-<span class="label">Outstanding</span>
-<p class="summary-value money">R27,500.00</p>
-<p class="small muted">Includes R10,000 requested</p>
-</div>
-<div class="card summary-tile">
-<span class="label">Next delivery</span>
-<p class="summary-value">14 October</p>
-<p class="small muted">Backend Development</p>
+<div class="stack">
+<strong class="summary-value money">R10,000.00 ZAR</strong>
+<a class="btn btn-primary" href="pay.html">Review &amp; pay</a>
 </div>
 </div>
-<div class="split-layout">
+</section>
+</div>
+<div data-when="active" class="split-layout">
 <div class="stack-page">
 <section class="card">
 <div class="card-head">
-<h2 class="section-heading">Milestone plan</h2>
-<span class="small muted">5 milestones · 100% allocated</span>
+<div>
+<h2 class="section-heading">E-commerce Website</h2>
+<p class="small muted">Target launch: 30 November 2026</p>
+</div>
+<span class="pill pill--info">In progress</span>
+</div>
+<div class="card-body stack">
+<p>Your storefront design and frontend are finished. Backend development is underway.</p>
+<div class="banner banner--warning">
+<div>
+<strong>A decision is needed from you</strong>
+<p class="small">Please confirm the admin role list so we can finish the Admin API. Reply to Mohamed with the roles your team needs.</p>
+</div>
+</div>
 </div>
 <ol class="milestone-list">
 <li class="milestone-item">
@@ -156,7 +155,6 @@
 <p class="small muted">4 of 5 tasks completed · Due 14 Oct</p>
 </div>
 <div class="action-row">
-<a class="btn" href="#completion">Review work</a>
 </div>
 </li>
 <li class="milestone-item">
@@ -177,42 +175,8 @@
 </li>
 </ol>
 </section>
-<section id="completion" class="card">
-<div class="card-head">
-<h2 class="section-heading">Backend completion</h2>
-<span class="pill pill--warning">1 task blocked</span>
 </div>
-<div class="card-body stack">
-<p>Admin API is waiting on the client's admin role list. The other four tasks are complete.</p>
-<div class="timeline-note">
-<strong>Next action</strong>
-<p class="small muted">Confirm the role list with Acme Retail, then finish the Admin API before marking this milestone complete.</p>
-</div>
-<button class="btn" disabled>Mark milestone complete</button>
-<p class="small muted">Available when all five tasks are complete. Completing work does not mark payment as received.</p>
-</div>
-</section>
-<section class="card">
-<div class="card-head">
-<h2 class="section-heading">Recent activity</h2>
-</div>
-<div class="card-body stack">
-<div class="timeline-note">
-<span class="small muted">3 Oct 2026</span>
-<p>Payment requested for Frontend Development.</p>
-</div>
-<div class="timeline-note">
-<span class="small muted">2 Oct 2026</span>
-<p>Frontend Development marked complete.</p>
-</div>
-<div class="timeline-note">
-<span class="small muted">26 Sep 2026</span>
-<p>R7,500.00 received for UI/UX Design.</p>
-</div>
-</div>
-</section>
-</div>
-<aside class="stack-page" aria-label="Project summary">
+<aside class="stack-page" aria-label="Your project summary">
 <section class="card">
 <div class="card-head">
 <h2 class="section-heading">Project progress</h2>
@@ -241,32 +205,51 @@
 <p class="small muted">Work completion and money received are tracked separately.</p>
 </div>
 </section>
-<section id="request">
 <section class="card">
 <div class="card-head">
-<h2 class="section-heading">Payment request</h2>
+<h2 class="section-heading">Payment summary</h2>
 </div>
 <div class="card-body stack">
-<span class="mono muted">INV-2026-00042</span>
-<p class="summary-value money">R10,000.00 ZAR</p>
-<p class="small muted">Frontend Development · Due 10 Oct 2026</p>
-<span class="pill pill--warning">Payment requested</span>
-<a class="btn btn-primary" href="pay.html">Preview client payment page</a>
-<p class="small muted">Requested 3 Oct · Sent to finance@acmeretail.co.za</p>
+<div class="metric-line">
+<span class="muted">Total agreed</span>
+<strong class="money">R50,000.00</strong>
 </div>
-</section>
+<div class="metric-line">
+<span class="muted">Paid</span>
+<strong class="money">R22,500.00</strong>
+</div>
+<div class="metric-line">
+<span class="muted">Outstanding</span>
+<strong class="money">R27,500.00</strong>
+</div>
+<p class="small muted">All amounts in ZAR. You will receive a receipt for each successful payment.</p>
+</div>
 </section>
 <section class="card">
 <div class="card-head">
-<h2 class="section-heading">Client</h2>
+<h2 class="section-heading">Latest update</h2>
 </div>
 <div class="card-body stack">
-<strong>Acme Retail</strong>
-<p class="small muted">finance@acmeretail.co.za<br>South Africa · ZAR</p>
-<a class="link" href="create.html#client-details">View client details</a>
+<span class="small muted">4 October 2026</span>
+<p>The backend APIs are nearly finished. Once the admin roles are confirmed, we will move into testing.</p>
+<p class="small muted">Mohamed Noor</p>
 </div>
 </section>
 </aside>
+</div>
+<section class="card" data-when="empty">
+<div class="empty-state">
+<p class="eyebrow">Your workspace is ready</p>
+<h2 class="section-heading">No projects to show yet</h2>
+<p class="muted">Your project will appear here once Mohamed has set it up.</p>
+<a class="btn" href="mailto:info@mohamedhnoor.com">Contact Mohamed</a>
+</div>
+</section>
+</div>
+<div class="review-controls" data-state-group="client-states" role="group" aria-label="Preview states">
+<span class="small muted">Preview state:</span>
+<button type="button" data-state="active">Active project</button>
+<button type="button" data-state="empty">No projects yet</button>
 </div>
 </main>
 </div>

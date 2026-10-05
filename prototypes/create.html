@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Create project - Design prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="components.css">
+</head>
+<body>
+<a class="btn skip-link" href="#main-content">Skip to content</a>
+<div class="app">
+<aside class="sidebar" aria-label="Admin workspace">
+<div class="brand">
+<span class="brand-mark" aria-hidden="true">MN</span>
+<span>Mohamed Noor<small>Business workspace</small>
+</span>
+</div>
+<nav class="nav" aria-label="Main">
+<a href="overview.html">Overview</a>
+<a href="create.html#client-details">Clients</a>
+<a href="project.html">Projects</a>
+<a href="overview.html#payment-requests">Payments</a>
+</nav>
+<p class="sidebar-note">Your work, from first brief to final payment.</p>
+<div class="sidebar-foot">Mohamed Noor · Administrator</div>
+</aside>
+<div class="main">
+<header class="topbar">
+<nav class="crumbs" aria-label="Breadcrumb">
+<span aria-current="page">Create project</span>
+</nav>
+<button class="btn btn-ghost" data-theme-toggle aria-pressed="false">Light theme</button>
+</header>
+<nav class="preview-nav" aria-label="Prototype screens">
+<span class="preview-label">DESIGN PREVIEW</span>
+<a href="overview.html">Admin overview</a>
+<a href="project.html">Project</a>
+<a href="client.html">Client view</a>
+<a href="create.html" aria-current="page">Create project</a>
+<a href="pay.html">Payment</a>
+</nav>
+<nav class="mobile-nav" aria-label="Workspace navigation">
+<a href="overview.html">Overview</a>
+<a href="create.html#client-details">Clients</a>
+<a href="project.html">Projects</a>
+<a href="overview.html#payment-requests">Payments</a>
+</nav>
+<main id="main-content" tabindex="-1" class="content stack-page">
+<div class="page-head">
+<div>
+<p class="eyebrow">New engagement</p>
+<h1 class="hero-title">Start with a clear plan.</h1>
+<p class="subtitle">Add your client, define the project, and allocate its milestones before activation.</p>
+</div>
+<a class="btn" href="overview.html">Back to overview</a>
+</div>
+<div id="create-states">
+<div class="banner banner--warning" data-when="invalid" role="alert">
+<div>
+<strong>Check the milestone amounts</strong>
+<p>The plan allocates R47,500.00 of R50,000.00. Allocate the remaining R2,500.00 before activation.</p>
+</div>
+</div>
+<div class="review-form">
+<div class="stack-page">
+<section id="client-details" class="card">
+<div class="card-head">
+<h2 class="section-heading">1. Client details</h2>
+<span class="small muted">Create a client or choose an existing one</span>
+</div>
+<div class="form-section">
+<fieldset>
+<legend class="sr-only">Client details</legend>
+<div class="field-grid">
+<div class="field">
+<label class="field-label" for="client">Client</label>
+<select class="input" id="client">
+<option>New client</option>
+<option>Acme Retail (existing)</option>
+<option>Harbour Digital (existing)</option>
+</select>
+</div>
+<div class="field">
+<label class="field-label" for="company">Company / client name</label>
+<input class="input" id="company" name="company" type="text" value="Acme Retail">
+</div>
+<div class="field">
+<label class="field-label" for="contact">Contact name</label>
+<input class="input" id="contact" name="contact" type="text" value="Sarah Daniels">
+</div>
+<div class="field">
+<label class="field-label" for="email">Billing email</label>
+<input class="input" id="email" name="email" type="email" value="finance@acmeretail.co.za" aria-describedby="email-hint">
+<span class="input-hint" id="email-hint">Payment requests go to this address.</span>
+</div>
+</div>
+</fieldset>
+</div>
+</section>
+<section class="card">
+<div class="card-head">
+<h2 class="section-heading">2. Project details</h2>
+</div>
+<div class="form-section">
+<fieldset>
+<legend class="sr-only">Project details</legend>
+<div class="field-grid">
+<div class="field">
+<label class="field-label" for="name">Project name</label>
+<input class="input" id="name" name="name" type="text" value="E-commerce Website">
+</div>
+<div class="field">
+<label class="field-label" for="currency">Currency</label>
+<select class="input" id="currency">
+<option>ZAR - South African rand</option>
+<option>NZD - New Zealand dollar</option>
+<option>AUD - Australian dollar</option>
+<option>USD - US dollar</option>
+<option>GBP - British pound</option>
+</select>
+</div>
+<div class="field">
+<label class="field-label" for="total">Agreed project total</label>
+<input class="input" id="total" name="total" type="text" value="50000.00" aria-describedby="total-hint">
+<span class="input-hint" id="total-hint">Enter the amount in the selected currency.</span>
+</div>
+<div class="field">
+<label class="field-label" for="target">Expected completion</label>
+<input class="input" id="target" name="target" type="date" value="2026-11-30">
+</div>
+<div class="field field-wide">
+<label class="field-label" for="scope">Project scope</label>
+<textarea class="input" id="scope" rows="3">Design, build and launch a responsive storefront with product management and checkout.</textarea>
+</div>
+</div>
+</fieldset>
+</div>
+</section>
+<section class="card">
+<div class="card-head">
+<h2 class="section-heading">3. Milestone payment plan</h2>
+<span class="small muted">Work and billing are tracked separately</span>
+</div>
+<div class="table-scroll" tabindex="0" aria-label="Milestone editor, scroll horizontally">
+<table class="review-table">
+<caption class="sr-only">Milestone amounts and billing triggers</caption>
+<thead>
+<tr>
+<th scope="col">Milestone</th>
+<th scope="col">Amount (ZAR)</th>
+<th scope="col">Bill when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<label class="sr-only" for="milestone-0">Milestone 1 name</label>
+<input class="input" id="milestone-0" value="Initial deposit">
+</td>
+<td>
+<label class="sr-only" for="amount-0">Milestone 1 amount in ZAR</label>
+<input class="input money" id="amount-0" value="15000.00" inputmode="decimal">
+</td>
+<td>
+<label class="sr-only" for="trigger-0">Milestone 1 billing trigger</label>
+<select class="input" id="trigger-0">
+<option>Upfront</option>
+<option>On completion</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<label class="sr-only" for="milestone-1">Milestone 2 name</label>
+<input class="input" id="milestone-1" value="UI/UX Design">
+</td>
+<td>
+<label class="sr-only" for="amount-1">Milestone 2 amount in ZAR</label>
+<input class="input money" id="amount-1" value="7500.00" inputmode="decimal">
+</td>
+<td>
+<label class="sr-only" for="trigger-1">Milestone 2 billing trigger</label>
+<select class="input" id="trigger-1">
+<option>On completion</option>
+<option>Upfront</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<label class="sr-only" for="milestone-2">Milestone 3 name</label>
+<input class="input" id="milestone-2" value="Frontend Development">
+</td>
+<td>
+<label class="sr-only" for="amount-2">Milestone 3 amount in ZAR</label>
+<input class="input money" id="amount-2" value="10000.00" inputmode="decimal">
+</td>
+<td>
+<label class="sr-only" for="trigger-2">Milestone 3 billing trigger</label>
+<select class="input" id="trigger-2">
+<option>On completion</option>
+<option>Upfront</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<label class="sr-only" for="milestone-3">Milestone 4 name</label>
+<input class="input" id="milestone-3" value="Backend Development">
+</td>
+<td>
+<label class="sr-only" for="amount-3">Milestone 4 amount in ZAR</label>
+<input class="input money" id="amount-3" value="10000.00" inputmode="decimal">
+</td>
+<td>
+<label class="sr-only" for="trigger-3">Milestone 4 billing trigger</label>
+<select class="input" id="trigger-3">
+<option>On completion</option>
+<option>Upfront</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<label class="sr-only" for="milestone-4">Milestone 5 name</label>
+<input class="input" id="milestone-4" value="Testing and Launch">
+</td>
+<td>
+<label class="sr-only" for="amount-4">Milestone 5 amount in ZAR</label>
+<input class="input money" id="amount-4" value="7500.00" inputmode="decimal" data-when="balanced">
+<input class="input money" aria-label="Milestone 5 amount in ZAR, incomplete plan" value="5000.00" inputmode="decimal" data-when="invalid">
+</td>
+<td>
+<label class="sr-only" for="trigger-4">Milestone 5 billing trigger</label>
+<select class="input" id="trigger-4">
+<option>On completion</option>
+<option>Upfront</option>
+</select>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="caption-note">The deposit is billed upfront. Other milestones are billable after work completion.</p>
+</section>
+</div>
+<aside class="stack-page" aria-label="Plan review">
+<section class="card">
+<div class="card-head">
+<h2 class="section-heading">Review your plan</h2>
+</div>
+<div class="card-body stack">
+<div class="metric-line">
+<span>Project total</span>
+<strong class="money">R50,000.00</strong>
+</div>
+<div class="metric-line" data-when="balanced">
+<span>Allocated</span>
+<strong class="money">R50,000.00</strong>
+</div>
+<div class="metric-line" data-when="invalid">
+<span>Allocated</span>
+<strong class="money">R47,500.00</strong>
+</div>
+<div class="banner banner--success" data-when="balanced">
+<div>
+<strong>Plan balances exactly</strong>
+<p class="small">5 milestones · 100% allocated</p>
+</div>
+</div>
+<div class="banner banner--warning" data-when="invalid">
+<div>
+<strong>R2,500.00 still unallocated</strong>
+<p class="small">Adjust the plan before activation.</p>
+</div>
+</div>
+<p class="small muted">Save as a draft to review later. Activate when the scope and payment plan are agreed with the client.</p>
+<a class="btn" href="project.html">Preview saved draft</a>
+<a class="btn btn-primary" href="project.html" data-when="balanced">Preview active project</a>
+<button class="btn" disabled data-when="invalid" aria-describedby="activation-hint">Activate project</button>
+<p class="small muted" id="activation-hint" data-when="invalid">Activation is unavailable until the plan balances.</p>
+</div>
+</section>
+<p class="small muted">Design preview only. Inputs are illustrative; nothing is saved or sent.</p>
+</aside>
+</div>
+</div>
+<div class="review-controls" data-state-group="create-states" role="group" aria-label="Preview states">
+<span class="small muted">Preview state:</span>
+<button type="button" data-state="balanced">Balanced plan</button>
+<button type="button" data-state="invalid">Allocation error</button>
+</div>
+</main>
+</div>
+</div>
+<script>
+ document.querySelectorAll('[data-theme-toggle]').forEach(b => b.addEventListener('click', () => { const dark = document.documentElement.classList.toggle('dark'); b.setAttribute('aria-pressed', String(!dark)); b.textContent = dark ? 'Light theme' : 'Dark theme'; }));
+ document.querySelectorAll('[data-state-group]').forEach(group => { const buttons = group.querySelectorAll('[data-state]'); const scope = document.getElementById(group.dataset.stateGroup); function show(state) { scope.querySelectorAll('[data-when]').forEach(el => { el.hidden = !el.dataset.when.split(' ').includes(state); }); buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state))); } buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.state))); show(buttons[0].dataset.state); });
+</script>
+</body></html>
