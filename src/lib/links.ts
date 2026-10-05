@@ -36,6 +36,14 @@ export function toContactLink(link: ProfileLink): ContactLink {
   return { key: link.key, href, label: stripScheme(href) };
 }
 
+/** How an address reads as link text: no scheme, no leading `www.`, no
+ *  trailing slash. The resume prints these, where the shorter form is the one
+ *  a reader can type from paper. Case in the path is kept, since a GitHub or
+ *  LinkedIn handle is matched as written. */
+export function displayUrl(url: string): string {
+  return stripScheme(url.trim()).replace(/^www\./i, "");
+}
+
 /** Drops the scheme and any trailing slash, so `https://github.com/x/` reads as
  *  `github.com/x`. Only the leading scheme is removed; a colon later in the
  *  value, such as a port, survives. */

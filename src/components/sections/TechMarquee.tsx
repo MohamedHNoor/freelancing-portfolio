@@ -18,14 +18,14 @@ const LABEL_ID = "hero-stack-label";
  *
  *  The row scrolls on a 62s infinite loop, which WCAG 2.1 SC 2.2.2 (Pause,
  *  Stop, Hide, Level A) says needs a mechanism to stop. It used to have only
- *  `hover:[animation-play-state:paused]`, and the chips are plain `li` elements
+ *  `hover:paused`, and the chips are plain `li` elements
  *  with nothing focusable inside, so a keyboard-only visitor had no route to
  *  that state and no way to stop the motion at all.
  *
  *  `Hero` stays a server component because of this split. Putting `useState` in
- *  `Hero` would drag the headline, the calls to action and the code card into
- *  the client bundle, and the headline's neighbouring paragraph is the largest
- *  contentful element on the page. */
+ *  `Hero` would drag the headline, the calls to action and the showcase into
+ *  the client bundle, and the headline is the page's largest contentful
+ *  element. */
 export function TechMarquee({ marks }: { marks: readonly Mark[] }) {
   const [paused, setPaused] = useState(false);
 
@@ -45,8 +45,7 @@ export function TechMarquee({ marks }: { marks: readonly Mark[] }) {
         {/* Hidden rather than disabled under reduced motion, because there is
             no animation left to control: the track is already `animate-none`.
             Done in CSS instead of by reading the media query during render,
-            which would make the server and client markup disagree. `TypedCode`
-            documents the same trap. */}
+            which would make the server and client markup disagree. */}
         <Button
           type="button"
           variant="ghost"
@@ -67,12 +66,12 @@ export function TechMarquee({ marks }: { marks: readonly Mark[] }) {
       {/* Two identical copies scrolled by exactly one copy width, so the loop is
           seamless. Reduced motion stops the scroll and wraps the single visible
           copy instead. */}
-      <div className="relative mt-4 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] motion-reduce:[mask-image:none]">
+      <div className="relative mt-4 overflow-hidden mask-[linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] motion-reduce:mask-none">
         <div
           /* Hovering still pauses it for a mouse user. An explicit pause is an
              inline style so it wins over that hover rule rather than fighting
              it: while paused the pointer cannot restart the scroll by leaving. */
-          className="flex w-max animate-marquee hover:[animation-play-state:paused] motion-reduce:w-full motion-reduce:animate-none motion-reduce:flex-wrap"
+          className="flex w-max animate-marquee hover:paused motion-reduce:w-full motion-reduce:animate-none motion-reduce:flex-wrap"
           style={paused ? { animationPlayState: "paused" } : undefined}
         >
           <TechRow marks={marks} labelledBy={LABEL_ID} />

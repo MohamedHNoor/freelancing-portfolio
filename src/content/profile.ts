@@ -19,20 +19,11 @@ export const profile = {
      naturally rather than forcing a break. */
   headline: "Websites and Web Applications Built for Your Business",
 
-  /* Service order. The hero code card prints these slugs, so they are visible
-     copy as well as keys. */
-  specialisms: [
-    "business-websites",
-    "web-applications",
-    "saas-development",
-    "figma-to-production",
-  ],
+  /* Must appear in `headline` exactly as written, or the build fails. */
+  headlineEmphasis: "Your Business",
 
   shortBio:
     "I build fast, modern websites and custom web applications for businesses, startups and agencies.",
-
-  supportingLine:
-    "From Figma designs to production-ready Next.js websites, or from SaaS ideas to fully deployed products, I handle the development from frontend to backend.",
 
   primaryStack: ["Next.js", "React", "TypeScript", "Node.js", "PostgreSQL"],
 
@@ -64,6 +55,17 @@ export const profile = {
     alt: "Mohamed Noor in a dark wool coat and white shirt, with a harbour city and hills behind.",
     width: 800,
     height: 800,
+  },
+
+  /* The full composition, which also paints a copy of the hero's own text on
+     its left and a service strip along its bottom. `HeroShowcase` crops both
+     away, so the dimensions here are the whole file's. Generated at this size;
+     the original PNG is the source and this WebP is derived from it. */
+  heroShowcase: {
+    src: "/assets/hero-showcase.webp",
+    alt: "Selected web and mobile development projects by Mohamed Noor",
+    width: 1690,
+    height: 931,
   },
 
   /* Public content, deliberately here rather than in `.env`. These render on

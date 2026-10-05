@@ -20,8 +20,12 @@ import { buildPersonJsonLd } from "@/lib/structured-data";
 /* The title and description come from the root layout. The social card is
    declared here because `routeMetadata` gives the page its own `openGraph`,
    which replaces the layout's instead of merging into it: without these two
-   fields the card would fall back to the search title. */
-const route = routeMetadata("/", { ownImage: true });
+   fields the card would fall back to the search title.
+
+   No `ownImage`: this page sits in the `(site)` group, a different segment from
+   the root `opengraph-image.tsx`, so the file no longer reaches it and the card
+   has to be attached like it is on every other route. */
+const route = routeMetadata("/");
 
 export const metadata: Metadata = {
   ...route,

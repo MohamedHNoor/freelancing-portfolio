@@ -24,7 +24,7 @@ export type Availability = {
 };
 
 /** The intrinsic size lets `next/image` reserve the box before the file loads. */
-export type Portrait = {
+export type ImageAsset = {
   src: string;
   alt: string;
   width: number;
@@ -36,12 +36,12 @@ export type Profile = {
   /** The job title, as a search result or a resume would print it. */
   role: string;
   headline: string;
-  specialisms: readonly ServiceSlug[];
+  /** A phrase inside `headline` that the hero sets in the highlight
+   *  gradient. Empty means nothing is emphasised. */
+  headlineEmphasis: string;
   /** The canonical one-line description. Read by the hero, the resume and the
    *  `Person` structured data, so it has to stand alone in all three. */
   shortBio: string;
-  /** The hero's second paragraph: how the work spans the stack. */
-  supportingLine: string;
   /** The technologies named under the hero's buttons, in reading order. */
   primaryStack: readonly string[];
   longBio: readonly string[];
@@ -49,7 +49,10 @@ export type Profile = {
   location: string;
   /** Where clients can be, not where clients have been. */
   serviceArea: readonly string[];
-  portrait: Portrait;
+  /** The About section and `/about`. */
+  portrait: ImageAsset;
+  /** The hero's right-hand visual. */
+  heroShowcase: ImageAsset;
   links: ProfileLinks;
 };
 
@@ -92,6 +95,9 @@ export type Skill = {
   /** Listed in the home page's technology summary. The rest appear on
    *  `/skills` only. */
   featured?: boolean;
+  /** Listed on `/resume`, which keeps to the technologies that sharpen the
+   *  positioning rather than every one in this file. */
+  resume?: boolean;
 };
 
 export type SkillGroup = {
@@ -171,4 +177,40 @@ export type Project = {
   metrics: readonly Metric[];
   cover: ProjectCover;
   caseStudy: readonly CaseStudySection[];
+};
+
+/** A role as the resume tells it, for an employer rather than a client. The
+ *  dates are not repeated here: they come from the matching `Role`. */
+export type ResumeEntry = {
+  /** A `Role.id` in `experience.ts`. */
+  roleId: string;
+  title: string;
+  organisation: string;
+  location: string;
+  highlights: readonly string[];
+  /** Skill names from `skills.ts`. Empty prints no technology line. */
+  technologies: readonly string[];
+};
+
+/** A project as the resume tells it: engineering evidence, not a sales pitch.
+ *  The name, stack, role and period come from the matching `Project`. */
+export type ResumeProject = {
+  /** A `Project.slug` in `projects.ts`. */
+  slug: string;
+  /** Replaces the project's own name where the resume needs another form. */
+  name?: string;
+  subtitle: string;
+  description: string;
+  highlights: readonly string[];
+};
+
+export type Resume = {
+  /** The title a recruiter searches for. `Profile.role` is the client-facing
+   *  one the rest of the site uses. */
+  title: string;
+  summary: string;
+  experience: readonly ResumeEntry[];
+  /** Training, kept apart from employment so it never reads as a job. */
+  development: readonly ResumeEntry[];
+  projects: readonly ResumeProject[];
 };

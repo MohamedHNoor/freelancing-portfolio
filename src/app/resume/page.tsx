@@ -1,251 +1,238 @@
 import type { Metadata } from "next";
-import { DownloadIcon } from "lucide-react";
+import { Fragment } from "react";
+import { DotList } from "@/components/resume/DotList";
+import { ResumeItem } from "@/components/resume/ResumeItem";
+import { ResumeSection } from "@/components/resume/ResumeSection";
+import { ResumeToolbar } from "@/components/resume/ResumeToolbar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
-  getFeaturedProjects,
+  type DatedResumeEntry,
   getProfile,
   getProfileLinks,
-  getRoles,
-  getSkillGroups,
+  getResume,
+  getResumeDevelopment,
+  getResumeExperience,
+  getResumeProjects,
+  getResumeSkillGroups,
 } from "@/content";
 import { PRESENT, formatRoleEnd, formatYearMonth } from "@/lib/dates";
-import { PrintButton } from "@/components/resume/PrintButton";
-import { toContactLink } from "@/lib/links";
+import { displayUrl, toContactLink } from "@/lib/links";
 import { routeMetadata } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Resume",
+  title: `${getResume().title} Resume`,
   description:
-    "Resume of Mohamed Noor, a full-stack web developer in Wellington, New Zealand, with work history, technology and selected projects on one printable page.",
+    "Resume of Mohamed Noor, a full-stack software engineer in Wellington, New Zealand, working in React, Next.js, TypeScript, Node.js, Ruby on Rails and PostgreSQL: experience, technical skills and selected projects.",
   ...routeMetadata("/resume"),
 };
 
+/* Dates come from `src/lib/dates.ts`, which exists so there is exactly one date
+   format on this site. A hyphen rather than a dash, per the writing rules. */
+function DateRange({ start, end }: Pick<DatedResumeEntry, "start" | "end">) {
+  return (
+    <>
+      <time dateTime={start}>{formatYearMonth(start)}</time>
+      {" - "}
+      {end === PRESENT ? (
+        "Present"
+      ) : (
+        <time dateTime={end}>{formatRoleEnd(end)}</time>
+      )}
+    </>
+  );
+}
+
+function RoleItem({ entry }: { entry: DatedResumeEntry }) {
+  return (
+    <ResumeItem
+      heading={entry.title}
+      aside={<DateRange start={entry.start} end={entry.end} />}
+      meta={`${entry.organisation} · ${entry.location}`}
+      highlights={entry.highlights}
+      technologies={entry.technologies}
+    />
+  );
+}
+
+/* A standalone document: no site header or footer. This route sits outside
+   the `(site)` group for exactly that reason, so it supplies its own header and
+   the `<main>` the skip link targets. The same markup prints; the print rules
+   in `globals.css` turn it into a white A4 sheet whatever the theme. */
 export default function ResumePage() {
   const profile = getProfile();
-  const roles = getRoles();
-  const skillGroups = getSkillGroups();
-  const projects = getFeaturedProjects();
+  const resume = getResume();
+  const experience = getResumeExperience();
+  const development = getResumeDevelopment();
+  const projects = getResumeProjects();
+  const skillGroups = getResumeSkillGroups();
 
-  /* `cv` drives the download rather than the contact line, so it is filtered
-     out here. `getProfileLinks()` has already dropped anything unsupplied, so
-     this carries whatever is set: email, GitHub and LinkedIn today, with `cv`
-     still empty until a PDF exists in `public/`. */
+  /* `getProfileLinks()` has already dropped anything unsupplied. The CV drives
+     a download rather than the contact line, and the portfolio goes after the
+     email, which is the order a recruiter reaches for them. */
   const profileLinks = getProfileLinks();
-  const contactLinks = profileLinks
+  const cv = profileLinks.find((link) => link.key === "cv");
+  const [email, ...profiles] = profileLinks
     .filter((link) => link.key !== "cv")
     .map(toContactLink);
-  const cv = profileLinks.find((link) => link.key === "cv");
+  const contacts = [
+    ...(email === undefined ? [] : [{ key: "email", href: email.href }]),
+    { key: "portfolio", href: SITE_URL },
+    ...profiles.map(({ key, href }) => ({ key, href })),
+  ];
 
   return (
-    <div className="py-12 sm:py-14 lg:py-16">
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        {/* Narrower than the container it sits in. This is a document rather
-            than a page of sections, and a resume read at the full 1152px would
-            run well past a comfortable measure. */}
-        <article className="mx-auto w-full max-w-4xl">
+    <>
+      <ResumeToolbar name={profile.name} cvHref={cv?.href} />
+
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="flex-1 focus:outline-none"
+      >
+        <article
+          data-resume=""
+          className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 sm:py-12 print:max-w-none print:p-0"
+        >
           <header>
-            <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+            <h1 className="font-heading text-[2rem] font-semibold leading-tight tracking-tight sm:text-[2.5rem] print:text-[22pt]">
               {profile.name}
             </h1>
-            {/* The job title, not the marketing headline: this is the page that
-                gets printed and filed. */}
-            <p className="mt-3 text-lg text-muted-foreground">
-              {profile.role}
+            <p className="mt-1 font-heading text-lg font-medium text-brand sm:text-xl print:text-[13pt]">
+              {resume.title}
             </p>
 
+            <p className="mt-3 text-sm text-muted-foreground print:mt-1.5 print:text-[9.5pt]">
+              {profile.location}
+            </p>
+            {/* Every address is its own link text, because on paper the href
+                is invisible. Each dot trails the item before it, so a wrapped
+                line never opens with one, and it is real text so a PDF's text
+                layer keeps the items apart. Stacked on a phone it is dropped. */}
             <ul
               role="list"
-              className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground"
+              className="mt-1 flex flex-col gap-1 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-0 print:text-[9.5pt]"
             >
-              <li>{profile.location}</li>
-              {contactLinks.map((link) => (
-                <li key={link.key}>
-                  {/* The address is the link text, not a word like "GitHub".
-                      Printed on paper the href is invisible, so a label would
-                      leave the reader nothing to type. */}
+              {contacts.map((contact, index) => (
+                <li key={contact.key}>
                   <a
-                    href={link.href}
-                    className="rounded-sm underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    href={contact.href}
+                    className="rounded-sm underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    {link.label}
+                    {displayUrl(contact.href)}
                   </a>
+                  {index < contacts.length - 1 ? (
+                    <span aria-hidden="true" className="hidden px-2 sm:inline">
+                      ·
+                    </span>
+                  ) : null}
                 </li>
               ))}
             </ul>
-            {/* Two routes to a PDF. The print button always works; the
-                download appears only once a CV file is actually supplied,
-                which is the same content-driven rule the project live and
-                repository links follow. */}
-            <div
-              data-print-hidden=""
-              className="mt-8 flex flex-wrap gap-3"
-            >
-              <PrintButton />
-              {cv !== undefined ? (
-                <Button
-                  asChild
-                  variant="outline"
-                  className="h-11 gap-2 px-5 text-[0.95rem]"
-                >
-                  <a href={cv.href} download>
-                    <DownloadIcon className="size-4" aria-hidden="true" />
-                    Download CV
-                  </a>
-                </Button>
-              ) : null}
-            </div>
           </header>
 
-          <p className="mt-8 text-base leading-relaxed text-muted-foreground">
-            {profile.shortBio}
-          </p>
-
-          {roles.length > 0 ? (
-            <section aria-labelledby="resume-experience" className="mt-12">
-              <h2
-                id="resume-experience"
-                className="border-b border-border pb-3 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
-              >
-                Experience
-              </h2>
-
-              {/* `getRoles()` is already sorted newest first by the content
-                  layer, and dates come from `src/lib/dates.ts`, which exists so
-                  there is exactly one date format on this site. Do not re-sort
-                  and do not format them any other way here. */}
-              <ol role="list" className="mt-6 space-y-8">
-                {roles.map((role) => (
-                  <li key={role.id} className="break-inside-avoid">
-                    <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-                      <h3 className="font-heading text-base font-semibold tracking-tight">
-                        {role.title}
-                        <span className="text-muted-foreground"> at </span>
-                        {role.company}
-                      </h3>
-                      <p className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                        <time dateTime={role.start}>
-                          {formatYearMonth(role.start)}
-                        </time>
-                        {" - "}
-                        {role.end === PRESENT ? (
-                          "Present"
-                        ) : (
-                          <time dateTime={role.end}>
-                            {formatRoleEnd(role.end)}
-                          </time>
-                        )}
-                      </p>
-                    </div>
-
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {role.summary}
-                    </p>
-
-                    {role.impact.length > 0 ? (
-                      <ul
-                        role="list"
-                        className="mt-3 list-outside list-disc space-y-1.5 pl-5 marker:text-brand"
-                      >
-                        {role.impact.map((point) => (
-                          <li
-                            key={point}
-                            className="pl-1 text-sm leading-relaxed text-muted-foreground"
-                          >
-                            {point}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-
-                    {role.stack.length > 0 ? (
-                      <p className="mt-3 text-sm text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          Stack:{" "}
-                        </span>
-                        {role.stack.join(", ")}
-                      </p>
-                    ) : null}
-                  </li>
-                ))}
-              </ol>
-            </section>
-          ) : null}
+          <ResumeSection id="summary" title="Professional Summary">
+            <p className="text-sm leading-relaxed sm:text-[0.9375rem] print:text-[10pt] print:leading-snug">
+              {resume.summary}
+            </p>
+          </ResumeSection>
 
           {skillGroups.length > 0 ? (
-            <section aria-labelledby="resume-skills" className="mt-12">
-              <h2
-                id="resume-skills"
-                className="border-b border-border pb-3 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
-              >
-                Skills
-              </h2>
-
-              {/* Names only. The usage context under each technology is the
-                  entire point of the Skills section on the site, and it is
-                  wrong here: a resume is scanned for a match in seconds, and
-                  thirty context lines would bury the names doing that work.
-                  This is deliberate, not an omission. */}
-              <dl className="mt-6 space-y-4">
+            <ResumeSection id="skills" title="Technical Skills">
+              <dl className="space-y-2.5 print:space-y-1">
                 {skillGroups.map((group) => (
                   <div
                     key={group.id}
-                    className="break-inside-avoid gap-x-4 sm:grid sm:grid-cols-[minmax(0,9rem)_minmax(0,1fr)]"
+                    className="break-inside-avoid sm:grid sm:grid-cols-[12.5rem_minmax(0,1fr)] sm:gap-x-4"
                   >
-                    <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground sm:pt-0.5">
+                    <dt className="text-sm font-semibold print:text-[9.5pt]">
                       {group.label}
                     </dt>
-                    <dd className="mt-1 text-sm leading-relaxed sm:mt-0">
-                      {group.skills.map((skill) => skill.name).join(", ")}
+                    <dd className="text-sm leading-relaxed text-muted-foreground print:text-[9.5pt] print:leading-snug">
+                      <DotList items={group.skills.map((skill) => skill.name)} />
                     </dd>
                   </div>
                 ))}
               </dl>
-            </section>
+            </ResumeSection>
           ) : null}
 
-          {projects.length > 0 ? (
-            <section aria-labelledby="resume-projects" className="mt-12">
-              <h2
-                id="resume-projects"
-                className="border-b border-border pb-3 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
-              >
-                Selected work
-              </h2>
-
-              <ul role="list" className="mt-6 space-y-6">
-                {projects.map((project) => (
-                  <li key={project.slug} className="break-inside-avoid">
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <h3 className="font-heading text-base font-semibold tracking-tight">
-                        {project.title}
-                      </h3>
-                      {/* Driven by the flag, exactly as on the cards and the
-                          case studies. A resume is the artifact people forward
-                          and check, so an unmarked example would do the most
-                          damage here. */}
-                      {project.isPlaceholder ? (
-                        <Badge variant="outline">Example project</Badge>
-                      ) : null}
-                    </div>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {project.summary}
-                    </p>
-                    {project.stack.length > 0 ? (
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          Stack:{" "}
-                        </span>
-                        {project.stack.join(", ")}
-                      </p>
-                    ) : null}
+          {experience.length > 0 ? (
+            <ResumeSection id="experience" title="Professional Experience">
+              <ul role="list" className="space-y-6 print:space-y-3">
+                {experience.map((entry) => (
+                  <li key={entry.roleId}>
+                    <RoleItem entry={entry} />
                   </li>
                 ))}
               </ul>
-            </section>
+            </ResumeSection>
+          ) : null}
+
+          {projects.length > 0 ? (
+            <ResumeSection id="projects" title="Selected Projects">
+              <ul role="list" className="space-y-6 print:space-y-3">
+                {projects.map((project) => {
+                  const caseStudy = new URL(project.path, SITE_URL).href;
+                  return (
+                    <li key={project.slug}>
+                      <ResumeItem
+                        heading={
+                          <>
+                            {project.name}
+                            <span className="font-normal text-muted-foreground">
+                              {" · "}
+                              {project.subtitle}
+                            </span>
+                            {/* Driven by the flag, as on the cards and case
+                                studies. A resume is the artifact people forward
+                                and check, so an unmarked example would do the
+                                most damage here. */}
+                            {project.isPlaceholder ? (
+                              <Fragment>
+                                {" "}
+                                <Badge variant="outline">Example project</Badge>
+                              </Fragment>
+                            ) : null}
+                          </>
+                        }
+                        aside={project.period}
+                        meta={project.role}
+                        description={project.description}
+                        highlights={project.highlights}
+                        technologies={project.stack}
+                        footer={
+                          <p className="mt-2 text-sm text-muted-foreground print:mt-1 print:text-[9.5pt]">
+                            Case study:{" "}
+                            <a
+                              href={caseStudy}
+                              className="rounded-sm underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              {displayUrl(caseStudy)}
+                            </a>
+                          </p>
+                        }
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            </ResumeSection>
+          ) : null}
+
+          {development.length > 0 ? (
+            <ResumeSection id="development" title="Professional Development">
+              <ul role="list" className="space-y-6 print:space-y-3">
+                {development.map((entry) => (
+                  <li key={entry.roleId}>
+                    <RoleItem entry={entry} />
+                  </li>
+                ))}
+              </ul>
+            </ResumeSection>
           ) : null}
         </article>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }

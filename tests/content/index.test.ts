@@ -10,12 +10,17 @@ import {
   getProjectBySlug,
   getProjectSlugs,
   getProjects,
+  getResumeDevelopment,
+  getResumeExperience,
+  getResumeProjects,
+  getResumeSkillGroups,
   getRoles,
   getServiceBySlug,
   getServices,
   getSkillGroups,
   orderServices,
   getTechnologyMarks,
+  pickSkills,
   sortRolesByStartDesc,
   type ContentInput,
   uniqueSkills,
@@ -24,6 +29,8 @@ import {
   CASE_STUDY_HEADINGS,
   type CaseStudySection,
   type Project,
+  type Resume,
+  type ResumeEntry,
   type Role,
   type Service,
   type SkillGroup,
@@ -89,20 +96,51 @@ function content(overrides: Partial<ContentInput> = {}): ContentInput {
       name: "Fixture",
       role: "",
       headline: "",
-      specialisms: [],
+      headlineEmphasis: "",
       shortBio: "",
-      supportingLine: "",
       primaryStack: [],
       longBio: [],
       availability: { status: "available", detail: "" },
       location: "",
       serviceArea: [],
       portrait: { src: "", alt: "", width: 1, height: 1 },
+      heroShowcase: { src: "", alt: "", width: 1, height: 1 },
       links: { email: "", github: "", linkedin: "", cv: "" },
     },
     services: [service()],
     projects: [project()],
     roles: [role("a", "2024-01")],
+    skillGroups: [
+      {
+        id: "frontend",
+        label: "Frontend",
+        skills: [{ name: "React", context: "" }],
+      },
+    ],
+    resume: resume(),
+    ...overrides,
+  };
+}
+
+function resume(overrides: Partial<Resume> = {}): Resume {
+  return {
+    title: "",
+    summary: "",
+    experience: [],
+    development: [],
+    projects: [],
+    ...overrides,
+  };
+}
+
+function resumeEntry(overrides: Partial<ResumeEntry> = {}): ResumeEntry {
+  return {
+    roleId: "a",
+    title: "Engineer",
+    organisation: "Fixture",
+    location: "",
+    highlights: [],
+    technologies: [],
     ...overrides,
   };
 }
@@ -310,6 +348,87 @@ describe("assertContentInvariants", () => {
     ).toThrow(/duplicate project slug "twice"/);
   });
 
+  it("accepts a headline emphasis that appears in the headline", () => {
+    const base = content();
+    expect(() =>
+      assertContentInvariants({
+        ...base,
+        profile: { ...base.profile, headline: "Built for You", headlineEmphasis: "for You" },
+      }),
+    ).not.toThrow();
+  });
+
+  /* A phrase edited in one place and not the other would otherwise just stop
+     being highlighted, with nothing to say why. */
+  it("rejects a headline emphasis missing from the headline and names it", () => {
+    const base = content();
+    expect(() =>
+      assertContentInvariants({
+        ...base,
+        profile: { ...base.profile, headline: "Built for You", headlineEmphasis: "for Them" },
+      }),
+    ).toThrow(/headline emphasis "for Them" does not appear/);
+  });
+
+  it("accepts a resume whose role, technology and project all resolve", () => {
+    expect(() =>
+      assertContentInvariants(
+        content({
+          resume: resume({
+            experience: [resumeEntry({ technologies: ["React"] })],
+            development: [resumeEntry()],
+            projects: [
+              {
+                slug: "fixture-project",
+                subtitle: "",
+                description: "",
+                highlights: [],
+              },
+            ],
+          }),
+        }),
+      ),
+    ).not.toThrow();
+  });
+
+  it("rejects a resume entry naming a role that does not exist", () => {
+    expect(() =>
+      assertContentInvariants(
+        content({
+          resume: resume({ development: [resumeEntry({ roleId: "ghost" })] }),
+        }),
+      ),
+    ).toThrow(/names role "ghost", which does not exist/);
+  });
+
+  /* The rule that keeps the resume honest: it may only name a technology the
+     site already has evidence for in skills.ts. */
+  it("rejects a resume technology that is not in skills.ts", () => {
+    expect(() =>
+      assertContentInvariants(
+        content({
+          resume: resume({
+            experience: [resumeEntry({ technologies: ["Kubernetes"] })],
+          }),
+        }),
+      ),
+    ).toThrow(/lists "Kubernetes", which is not in skills\.ts/);
+  });
+
+  it("rejects a resume project that does not exist", () => {
+    expect(() =>
+      assertContentInvariants(
+        content({
+          resume: resume({
+            projects: [
+              { slug: "missing", subtitle: "", description: "", highlights: [] },
+            ],
+          }),
+        }),
+      ),
+    ).toThrow(/resume project "missing" does not exist/);
+  });
+
   it("rejects a slug that is not lowercase kebab-case", () => {
     expect(() =>
       assertContentInvariants(content({ projects: [project({ slug: "Not Kebab" })] })),
@@ -511,5 +630,89 @@ describe("getFeaturedSkillGroups", () => {
     expect(getFeaturedSkillGroups().map((entry) => entry.id)).not.toContain(
       "practices",
     );
+  });
+});
+
+describe("pickSkills", () => {
+  const groups = [
+    {
+      id: "a",
+      label: "A",
+      skills: [
+        { name: "Kept", context: "", resume: true },
+        { name: "Dropped", context: "" },
+      ],
+    },
+    { id: "b", label: "B", skills: [{ name: "Also dropped", context: "" }] },
+  ];
+
+  it("keeps only the skills the predicate accepts, in order", () => {
+    expect(
+      pickSkills(groups, (skill) => skill.resume === true)[0].skills.map(
+        (skill) => skill.name,
+      ),
+    ).toEqual(["Kept"]);
+  });
+
+  it("drops a group the predicate leaves empty", () => {
+    expect(
+      pickSkills(groups, (skill) => skill.resume === true).map((group) => group.id),
+    ).toEqual(["a"]);
+  });
+});
+
+describe("getResumeSkillGroups", () => {
+  it("keeps only resume entries and drops groups left empty", () => {
+    const groups = getResumeSkillGroups();
+    expect(groups.length).toBeGreaterThan(0);
+    for (const entry of groups) {
+      expect(entry.skills.length).toBeGreaterThan(0);
+      for (const skill of entry.skills) {
+        expect("resume" in skill && skill.resume).toBe(true);
+      }
+    }
+  });
+
+  it("leaves supporting tools off the resume", () => {
+    const names = getResumeSkillGroups().flatMap((group) =>
+      group.skills.map((skill) => skill.name),
+    );
+    for (const name of ["Webpack", "Vite", "Figma", "styled-components"]) {
+      expect(names).not.toContain(name);
+    }
+  });
+});
+
+describe("resume entries", () => {
+  it("takes each entry's dates from the role it names", () => {
+    for (const entry of [...getResumeExperience(), ...getResumeDevelopment()]) {
+      const role = getRoles().find((candidate) => candidate.id === entry.roleId);
+      expect(role).toBeDefined();
+      expect(entry.start).toBe(role?.start);
+      expect(entry.end).toBe(role?.end);
+    }
+  });
+
+  it("keeps training out of the experience list", () => {
+    expect(getResumeExperience().map((entry) => entry.roleId)).not.toContain(
+      "microverse",
+    );
+  });
+});
+
+describe("getResumeProjects", () => {
+  it("joins each project's stack and case study path", () => {
+    for (const entry of getResumeProjects()) {
+      const project = getProjectBySlug(entry.slug);
+      expect(project).toBeDefined();
+      expect(entry.stack).toEqual(project?.stack);
+      expect(entry.path).toBe(`/projects/${entry.slug}`);
+    }
+  });
+
+  it("prints a name override when one is set, and the project's name otherwise", () => {
+    const [travel, site] = getResumeProjects();
+    expect(travel.name).toBe(getProjectBySlug("travelgrid-africa")?.name);
+    expect(site.name).toBe("MohamedHNoor.com");
   });
 });

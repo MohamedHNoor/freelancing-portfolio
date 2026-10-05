@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { getProfile } from "@/content";
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { SITE, SITE_URL } from "@/lib/site";
@@ -91,14 +89,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <MotionProvider>
           <SkipLink />
-          <Header />
-          {/* tabIndex -1 so the skip link actually moves focus here.
-             Without it the hash navigates but focus stays on body, and a
-             screen reader user tabs from the top again. */}
-          <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
-            {children}
-          </main>
-          <Footer />
+          {/* The header, `<main>` and footer are not here: `SiteChrome` adds
+              them for the `(site)` group and the 404, and `/resume` renders
+              its own document header and `<main>`. Every route still provides
+              the `#main-content` the skip link targets. */}
+          {children}
         </MotionProvider>
       </body>
     </html>

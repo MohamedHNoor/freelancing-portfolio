@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { enquiryHref, formatFromHeader, toContactLink } from "@/lib/links";
+import {
+  displayUrl,
+  enquiryHref,
+  formatFromHeader,
+  toContactLink,
+} from "@/lib/links";
 import type { ProfileLink } from "@/content";
 import { PROJECT_TYPES, projectTypeFromQuery } from "@/lib/validation/contact";
 
@@ -160,5 +165,39 @@ describe("enquiryHref", () => {
       const search = enquiryHref(type).slice("/contact".length);
       expect(projectTypeFromQuery(search)).toBe(type);
     }
+  });
+});
+
+describe("displayUrl", () => {
+  it("drops the scheme, a leading www. and a trailing slash", () => {
+    expect(displayUrl("https://www.mohamedhnoor.com/")).toBe("mohamedhnoor.com");
+  });
+
+  it("keeps the path and its case", () => {
+    expect(displayUrl("https://github.com/MohamedHNoor")).toBe(
+      "github.com/MohamedHNoor",
+    );
+  });
+
+  it("drops www. from an address with no scheme", () => {
+    expect(displayUrl("www.linkedin.com/in/mohamedhnoor")).toBe(
+      "linkedin.com/in/mohamedhnoor",
+    );
+  });
+
+  it("only drops www. at the start of the host", () => {
+    expect(displayUrl("https://example.com/www.page")).toBe(
+      "example.com/www.page",
+    );
+  });
+
+  it("reads a mailto: address as the bare address", () => {
+    expect(displayUrl("mailto:info@mohamedhnoor.com")).toBe(
+      "info@mohamedhnoor.com",
+    );
+  });
+
+  it("ignores surrounding whitespace", () => {
+    expect(displayUrl("  https://example.com  ")).toBe("example.com");
   });
 });

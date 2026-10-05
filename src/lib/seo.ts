@@ -45,8 +45,9 @@ export type RouteMetadataOptions = {
   /** `article` for a case study, which is a written piece about one project
    *  rather than a page of the site itself. */
   type?: "website" | "article";
-  /** The route's segment has its own `opengraph-image` file. The site card is
-   *  then left off, because an explicit image here would replace that file's. */
+  /** The route's segment has its own `opengraph-image` file, as a case study
+   *  does. The site card is then left off, because an explicit image here would
+   *  replace that file's. */
   ownImage?: boolean;
 };
 
@@ -60,8 +61,9 @@ export type RouteMetadataOptions = {
  *  because a page's `openGraph` replaces the layout's object outright instead
  *  of merging into it, so a partial object here would drop `og:type`,
  *  `og:site_name` and `og:image` from every route that used it. The root
- *  image file only reaches `/`, which shares its segment. Next copies the
- *  image into `twitter:image`, since no route sets one.
+ *  image file reaches no page by its segment, because every page sits in a
+ *  route group, so each route attaches it here. Next copies the image into
+ *  `twitter:image`, since no route sets one.
  *
  *  With `ownImage`, the `images` key is left out rather than set to
  *  `undefined`: an explicit `undefined` blocks the segment's image file too. */

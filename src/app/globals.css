@@ -11,8 +11,11 @@
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", monospace;
   --font-heading: var(--font-space-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
   --color-brand: var(--brand);
+  --color-highlight-start: var(--highlight-start);
+  --color-highlight-end: var(--highlight-end);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --animate-marquee: marquee 62s linear infinite;
+  --animate-showcase-in: showcase-in 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -79,6 +82,13 @@
      violet that passes AA as a label is not the violet used as a button fill. */
   --brand: oklch(0.48 0.2 288);
 
+  /* The hero headline's emphasised phrase: violet into magenta. Deeper than
+     the dark pair, because both ends are text and must hold 4.5:1 on the
+     near-white page; the headline is semibold, not bold, so it does not
+     qualify for the large-text 3:1. */
+  --highlight-start: oklch(0.48 0.22 290);
+  --highlight-end: oklch(0.52 0.23 318);
+
   --chart-1: oklch(0.5 0.21 288);
   --chart-2: oklch(0.6 0.15 265);
   --chart-3: oklch(0.68 0.13 310);
@@ -118,6 +128,9 @@
   --input: oklch(0.5 0.03 285);
   --ring: oklch(0.78 0.14 288);
   --brand: oklch(0.78 0.14 288);
+
+  --highlight-start: oklch(0.7 0.19 292);
+  --highlight-end: oklch(0.83 0.12 315);
 
   --chart-1: oklch(0.78 0.14 288);
   --chart-2: oklch(0.7 0.13 265);
@@ -161,6 +174,17 @@
   }
 }
 
+/* The hero showcase's single entrance. CSS rather than Motion's `Reveal`:
+   that server-renders opacity 0 and waits for hydration, which would hold the
+   largest thing above the fold back until the JavaScript ran. A keyframe starts
+   at first paint. The reduced-motion baseline below collapses it. */
+@keyframes showcase-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
 /* One baseline so Radix, tw-animate-css, and every later Motion entrance
    collapse without per-component work. */
 @media (prefers-reduced-motion: reduce) {
@@ -184,10 +208,22 @@
    Colours are forced rather than inherited. The `dark` class stays on `html`
    when a visitor prints from the default theme, so without this the sheet is
    either near-black ink edge to edge or invisible text on white. */
+/* A4, the paper the resume is printed on in New Zealand and Australia. The
+   margins leave room for a printer's unprintable edge without wasting the top
+   of the first sheet. */
+@page {
+  size: A4;
+  margin: 14mm 15mm;
+}
+
 @media print {
+  /* `color-scheme` as well as the tokens: the dark theme's `color-scheme: dark`
+     paints the page margins dark when background graphics are switched on,
+     even with every token set to white. */
   html,
   :root,
   :root.dark {
+    color-scheme: light;
     --background: white;
     --foreground: black;
     --card: white;
@@ -228,10 +264,18 @@
   }
 
   /* Keep an entry whole rather than letting a role or a project straddle two
-     sheets. `break-inside-avoid` in the markup pairs with this. */
-  li,
-  section {
+     sheets. `break-inside-avoid` in the markup pairs with this. Not `section`:
+     holding a whole section together moves it onto the next sheet when it
+     does not fit, leaving a gap at the foot of the one before. */
+  li {
     break-inside: avoid;
+  }
+
+  /* Never one stranded line of a paragraph or bullet at a page edge. */
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
   }
 
   h1,
@@ -242,5 +286,20 @@
 
   a {
     text-decoration: underline;
+  }
+
+  /* The resume prints in a static system face rather than the site's web
+     fonts. Chrome writes those variable fonts into the PDF so that the text
+     layer reads back broken, "Reac t" and "Welling t on" in PDFKit, which is
+     what Preview copies and searches with; in Helvetica Neue every keyword
+     reads back whole. That text layer is what an applicant tracking system
+     parses, so it outranks the brand faces on paper. Unlayered, so it wins
+     over the font utilities without `!important`.
+
+     Wide tracking reads back as spaced-out letters too, so the resume's
+     uppercase labels tighten it in print through `print:tracking-*`. */
+  [data-resume],
+  [data-resume] * {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 }

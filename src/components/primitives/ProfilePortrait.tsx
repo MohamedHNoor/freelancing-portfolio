@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import type { Portrait } from "@/types/content";
+import type { ImageAsset } from "@/types/content";
 
 type ProfilePortraitProps = {
-  portrait: Portrait;
+  portrait: ImageAsset;
   /** Only where the portrait can be above the fold. Lazy is right on the home
    *  page, where the About section sits far below it. */
   loading?: "eager" | "lazy";

@@ -32,6 +32,8 @@ const PAIRS: readonly (readonly [string, string, number])[] = [
   ["muted-foreground", "card", AA_TEXT],
   ["brand", "background", AA_TEXT],
   ["brand", "card", AA_TEXT],
+  ["highlight-start", "background", AA_TEXT],
+  ["highlight-end", "background", AA_TEXT],
   ["primary-foreground", "primary", AA_TEXT],
   ["secondary-foreground", "secondary", AA_TEXT],
   ["accent-foreground", "accent", AA_TEXT],

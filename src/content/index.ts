@@ -4,6 +4,9 @@ import {
   type Profile,
   type ProfileLinks,
   type Project,
+  type Resume,
+  type ResumeEntry,
+  type ResumeProject,
   type Role,
   type Service,
   type ServiceSlug,
@@ -21,6 +24,7 @@ import {
 import { roles } from "./experience";
 import { profile } from "./profile";
 import { projects } from "./projects";
+import { resume } from "./resume";
 import { services } from "./services";
 import { skillGroups } from "./skills";
 
@@ -36,6 +40,23 @@ export type AdjacentProjects = {
   next?: Project;
 };
 
+/** A resume entry with the dates of the role it names. */
+export type DatedResumeEntry = ResumeEntry & {
+  start: string;
+  end: string;
+};
+
+/** A resume project joined to its project: the name to print, the stack, and
+ *  the case study path. */
+export type ResumeProjectEntry = Omit<ResumeProject, "name"> & {
+  name: string;
+  stack: readonly string[];
+  role: string;
+  period: string;
+  path: string;
+  isPlaceholder: boolean;
+};
+
 /** What the invariant check reads. Taken as a parameter rather than closed over
  *  so the failure cases are testable with deliberately broken content. */
 export type ContentInput = {
@@ -43,6 +64,8 @@ export type ContentInput = {
   services: readonly Service[];
   projects: readonly Project[];
   roles: readonly Role[];
+  skillGroups: readonly SkillGroup[];
+  resume: Resume;
 };
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -71,6 +94,13 @@ export function sortRolesByStartDesc(input: readonly Role[]): readonly Role[] {
 /** Throws on any content error. Called at module scope below, so a violation
  *  fails `npm run build` during static generation rather than rendering wrong. */
 export function assertContentInvariants(content: ContentInput): void {
+  const { headline, headlineEmphasis } = content.profile;
+  if (headlineEmphasis !== "" && !headline.includes(headlineEmphasis)) {
+    throw new Error(
+      `Content: headline emphasis "${headlineEmphasis}" does not appear in the headline`,
+    );
+  }
+
   const seenOrders = new Set<number>();
   for (const service of content.services) {
     if (seenOrders.has(service.order)) {
@@ -141,9 +171,58 @@ export function assertContentInvariants(content: ContentInput): void {
       );
     }
   }
+
+  assertResumeReferences(content);
 }
 
-assertContentInvariants({ profile, services, projects, roles });
+/* The resume restates the rest of the content layer for another reader, so
+   every reference has to land: a role for the dates, a project for the stack,
+   and a `skills.ts` entry for each technology, which is what stops the resume
+   naming one the site has no evidence for. */
+function assertResumeReferences(content: ContentInput): void {
+  const roleIds = new Set(content.roles.map((role) => role.id));
+  const projectSlugs = new Set(content.projects.map((project) => project.slug));
+  const skillNames = new Set(
+    content.skillGroups.flatMap((group) =>
+      group.skills.map((skill) => skill.name),
+    ),
+  );
+
+  for (const entry of [
+    ...content.resume.experience,
+    ...content.resume.development,
+  ]) {
+    if (!roleIds.has(entry.roleId)) {
+      throw new Error(
+        `Content: resume entry "${entry.title}" names role "${entry.roleId}", which does not exist`,
+      );
+    }
+    for (const technology of entry.technologies) {
+      if (!skillNames.has(technology)) {
+        throw new Error(
+          `Content: resume entry "${entry.title}" lists "${technology}", which is not in skills.ts`,
+        );
+      }
+    }
+  }
+
+  for (const item of content.resume.projects) {
+    if (!projectSlugs.has(item.slug)) {
+      throw new Error(
+        `Content: resume project "${item.slug}" does not exist`,
+      );
+    }
+  }
+}
+
+assertContentInvariants({
+  profile,
+  services,
+  projects,
+  roles,
+  skillGroups,
+  resume,
+});
 
 /* The production deploy gate, beside the content invariants because it is the
    same kind of rule: content that must never reach a build. This one is scoped
@@ -257,18 +336,71 @@ export function getTechnologyMarks(limit?: number): readonly Skill[] {
   return typeof limit === "number" ? all.slice(0, limit) : all;
 }
 
-/** The home page's technology summary: each purpose group with only its
- *  featured entries, and groups with none dropped. `/skills` reads the full
- *  groups through `getSkillGroups()`. */
-export function getFeaturedSkillGroups(): readonly SkillGroup[] {
-  return skillGroups
-    .map((group) => ({
-      ...group,
-      skills: group.skills.filter(
-        (skill: Skill) => "featured" in skill && skill.featured === true,
-      ),
-    }))
+/** Each group cut down to the skills `keep` accepts, with groups left empty
+ *  dropped. Takes its input so the rule is testable against fixtures. */
+export function pickSkills(
+  groups: readonly SkillGroup[],
+  keep: (skill: Skill) => boolean,
+): readonly SkillGroup[] {
+  return groups
+    .map((group) => ({ ...group, skills: group.skills.filter(keep) }))
     .filter((group) => group.skills.length > 0);
+}
+
+/** The home page's technology summary. `/skills` reads the full groups
+ *  through `getSkillGroups()`. */
+export function getFeaturedSkillGroups(): readonly SkillGroup[] {
+  return pickSkills(skillGroups, (skill) => skill.featured === true);
+}
+
+export function getResume(): Resume {
+  return resume;
+}
+
+export function getResumeSkillGroups(): readonly SkillGroup[] {
+  return pickSkills(skillGroups, (skill) => skill.resume === true);
+}
+
+/** The invariants guarantee the role exists; this narrows the type. */
+function roleFor(entry: ResumeEntry): Role {
+  const match = roles.find((role) => role.id === entry.roleId);
+  if (match === undefined) {
+    throw new Error(`Content: no role "${entry.roleId}"`);
+  }
+  return match;
+}
+
+function dated(entries: readonly ResumeEntry[]): readonly DatedResumeEntry[] {
+  return entries.map((entry) => {
+    const { start, end } = roleFor(entry);
+    return { ...entry, start, end };
+  });
+}
+
+export function getResumeExperience(): readonly DatedResumeEntry[] {
+  return dated(resume.experience);
+}
+
+export function getResumeDevelopment(): readonly DatedResumeEntry[] {
+  return dated(resume.development);
+}
+
+export function getResumeProjects(): readonly ResumeProjectEntry[] {
+  return resume.projects.map((item: ResumeProject) => {
+    const project = projects.find((entry) => entry.slug === item.slug);
+    if (project === undefined) {
+      throw new Error(`Content: no project "${item.slug}"`);
+    }
+    return {
+      ...item,
+      name: item.name ?? project.name,
+      stack: project.stack,
+      role: project.role,
+      period: project.period,
+      path: `/projects/${project.slug}`,
+      isPlaceholder: project.isPlaceholder,
+    };
+  });
 }
 
 export function getValuePoints(): readonly Point[] {
