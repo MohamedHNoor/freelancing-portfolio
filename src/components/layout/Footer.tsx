@@ -36,7 +36,7 @@ export function Footer() {
             href="/"
             className="inline-flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
           >
-            <Logo className="size-10" id="logo-footer" />
+            <Logo />
             <span className="sr-only">{profile.name}</span>
           </Link>
           <p className="text-sm font-medium">{profile.name}</p>

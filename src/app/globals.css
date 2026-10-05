@@ -79,11 +79,6 @@
      violet that passes AA as a label is not the violet used as a button fill. */
   --brand: oklch(0.48 0.2 288);
 
-  /* Logo mark: the two halves of the split M. Darker in the light theme so the
-     letterform does not wash out against a near-white surface. */
-  --logo-from: oklch(0.5 0.21 288);
-  --logo-to: oklch(0.5 0.17 250);
-
   --chart-1: oklch(0.5 0.21 288);
   --chart-2: oklch(0.6 0.15 265);
   --chart-3: oklch(0.68 0.13 310);
@@ -123,9 +118,6 @@
   --input: oklch(0.5 0.03 285);
   --ring: oklch(0.78 0.14 288);
   --brand: oklch(0.78 0.14 288);
-
-  --logo-from: oklch(0.72 0.17 291);
-  --logo-to: oklch(0.7 0.14 250);
 
   --chart-1: oklch(0.78 0.14 288);
   --chart-2: oklch(0.7 0.13 265);

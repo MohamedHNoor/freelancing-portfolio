@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfilePortrait } from "@/components/primitives/ProfilePortrait";
 import { StatusPill } from "@/components/primitives/StatusPill";
 import { getProfile, getProfileLinks } from "@/content";
 import { toContactLink } from "@/lib/links";
@@ -24,73 +25,85 @@ export function AboutDetail() {
         </div>
       ) : null}
 
-      <dl className="space-y-6 text-sm lg:border-l lg:border-border lg:pl-8">
-        <div>
-          <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-            Based
-          </dt>
-          <dd className="mt-2">{profile.location}</dd>
-        </div>
-        <div>
-          <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-            Availability
-          </dt>
-          <dd className="mt-2 space-y-2">
-            <StatusPill status={profile.availability.status} />
-            <p className="text-muted-foreground">
-              {profile.availability.detail}
-            </p>
-          </dd>
-        </div>
-        <div>
-          <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-            Working with clients in
-          </dt>
-          <dd className="mt-2">{profile.serviceArea.join(" · ")}</dd>
-        </div>
-        {links.length > 0 ? (
+      {/* The same split as the home section: below `lg` the portrait leads,
+          from `lg` it heads the side column. */}
+      <div className="contents lg:block lg:space-y-8 lg:border-l lg:border-border lg:pl-8">
+        {/* Eager, because stacked it sits just under the page header, where a
+            lazy load would delay the Largest Contentful Paint. */}
+        <ProfilePortrait
+          portrait={profile.portrait}
+          loading="eager"
+          className="order-first"
+        />
+
+        <dl className="space-y-6 text-sm">
           <div>
             <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-              Elsewhere
+              Based
+            </dt>
+            <dd className="mt-2">{profile.location}</dd>
+          </div>
+          <div>
+            <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+              Availability
+            </dt>
+            <dd className="mt-2 space-y-2">
+              <StatusPill status={profile.availability.status} />
+              <p className="text-muted-foreground">
+                {profile.availability.detail}
+              </p>
+            </dd>
+          </div>
+          <div>
+            <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+              Working with clients in
+            </dt>
+            <dd className="mt-2">{profile.serviceArea.join(" · ")}</dd>
+          </div>
+          {links.length > 0 ? (
+            <div>
+              <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                Elsewhere
+              </dt>
+              <dd className="mt-2">
+                <ul role="list" className="space-y-1.5">
+                  {links.map((link) => (
+                    <li key={link.key}>
+                      <a
+                        href={link.href}
+                        className="rounded-sm underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ) : null}
+          {/* The background pages left the primary navigation, so this is
+              where a reader who wants the detail finds them. */}
+          <div>
+            <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+              Background
             </dt>
             <dd className="mt-2">
               <ul role="list" className="space-y-1.5">
-                {links.map((link) => (
-                  <li key={link.key}>
-                    <a
+                {BACKGROUND_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <Link
                       href={link.href}
                       className="rounded-sm underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </dd>
           </div>
-        ) : null}
-        {/* The background pages left the primary navigation, so this is
-            where a reader who wants the detail finds them. */}
-        <div>
-          <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-            Background
-          </dt>
-          <dd className="mt-2">
-            <ul role="list" className="space-y-1.5">
-              {BACKGROUND_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="rounded-sm underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </dd>
-        </div>
-      </dl>
+        </dl>
+      </div>
     </div>
   );
 }

@@ -23,6 +23,14 @@ export type Availability = {
   detail: string;
 };
 
+/** The intrinsic size lets `next/image` reserve the box before the file loads. */
+export type Portrait = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
 export type Profile = {
   name: string;
   /** The job title, as a search result or a resume would print it. */
@@ -41,6 +49,7 @@ export type Profile = {
   location: string;
   /** Where clients can be, not where clients have been. */
   serviceArea: readonly string[];
+  portrait: Portrait;
   links: ProfileLinks;
 };
 

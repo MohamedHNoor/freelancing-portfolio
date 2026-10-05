@@ -57,6 +57,15 @@ export const profile = {
   /* Where the work can be, never a claim about where past clients were. */
   serviceArea: ["New Zealand", "Australia", "International"],
 
+  /* A WebP resized from the original 1254px PNG, which was 2.1 MB. The box
+     is at most 240px wide, so 800px still covers a 3x screen. */
+  portrait: {
+    src: "/assets/mohamed-noor.webp",
+    alt: "Mohamed Noor in a dark wool coat and white shirt, with a harbour city and hills behind.",
+    width: 800,
+    height: 800,
+  },
+
   /* Public content, deliberately here rather than in `.env`. These render on
      the site, so they belong in version control where a fresh clone and a
      deploy both have them.

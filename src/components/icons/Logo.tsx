@@ -1,50 +1,39 @@
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+
 type LogoProps = {
   className?: string;
-  /* Namespaces the clip paths so several instances on one page cannot collide
-     on a duplicate element id. */
-  id?: string;
+  /** Eager in the header, which is above the fold on every page. */
+  loading?: "eager" | "lazy";
 };
 
-/* A filled letterform rather than a stroked one: at favicon size a stroke loses
-   its thin parts, a solid shape does not. */
-const M_PATH =
-  "M3 27 L3 5 L9.2 5 L16 14.2 L22.8 5 L29 5 L29 27 L23.6 27 L23.6 13.2 L17.1 21.9 L14.9 21.9 L8.4 13.2 L8.4 27 Z";
+/** MHN wordmark. Decorative, because every place it appears pairs it with the
+ *  name in visually hidden text. */
+/* Both theme variants are rendered and CSS shows one, because the theme is a
+   class the pre-paint script sets, not `prefers-color-scheme`, so `<picture>`
+   cannot choose. The hidden one costs under 2 KB. As `<img>` rather than
+   inline SVG, the two files' identical gradient ids cannot collide.
 
-/** MHN mark: a solid M split down the centre into two tones, one per service
- *  track. Decorative, because every place it appears pairs it with the name in
- *  visually hidden text. */
-/* The glyph occupies roughly 70% of the viewBox height, which gives the mark
-   its clear space. The box is therefore deliberately larger than the optical
-   size: size-10 renders a 28px M, the right weight in a 64px header. */
-export function Logo({ className = "size-10", id = "logo" }: LogoProps) {
-  const leftClip = `${id}-left`;
-  const rightClip = `${id}-right`;
-
+   `width` is the 1200 x 420 viewBox scaled to `h-10`, rounded. */
+export function Logo({ className, loading }: LogoProps) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      className={className}
-      aria-hidden="true"
-      focusable="false"
-    >
-      <defs>
-        <clipPath id={leftClip}>
-          <rect x="0" y="0" width="16" height="32" />
-        </clipPath>
-        <clipPath id={rightClip}>
-          <rect x="16" y="0" width="16" height="32" />
-        </clipPath>
-      </defs>
-      <path
-        d={M_PATH}
-        className="[fill:var(--logo-from)]"
-        clipPath={`url(#${leftClip})`}
+    <>
+      <Image
+        src="/assets/mhn-primary-light.svg"
+        alt=""
+        width={114}
+        height={40}
+        loading={loading}
+        className={cn("h-10 w-auto dark:hidden", className)}
       />
-      <path
-        d={M_PATH}
-        className="[fill:var(--logo-to)]"
-        clipPath={`url(#${rightClip})`}
+      <Image
+        src="/assets/mhn-primary-dark.svg"
+        alt=""
+        width={114}
+        height={40}
+        loading={loading}
+        className={cn("hidden h-10 w-auto dark:block", className)}
       />
-    </svg>
+    </>
   );
 }

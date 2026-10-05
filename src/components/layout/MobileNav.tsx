@@ -37,7 +37,7 @@ export function MobileNav({ name }: { name: string }) {
       <SheetContent side="right" className="w-[min(20rem,85vw)] gap-0">
         <SheetHeader className="border-b border-border p-5">
           <SheetTitle className="flex items-center">
-            <Logo className="size-10" id="logo-mobile" />
+            <Logo />
             {/* Radix needs a real title; the mark alone would leave the dialog
                 without an accessible name. */}
             <span className="sr-only">{name}</span>

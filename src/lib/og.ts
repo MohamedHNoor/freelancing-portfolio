@@ -31,9 +31,9 @@ export const OG_COLORS = {
   accent: "#28263c",
   /** `--border`, oklch(1 0 0 / 12%) */
   border: "rgba(255, 255, 255, 0.12)",
-  /** `--logo-from` and `--logo-to`, already literal hex in `src/app/icon.svg` */
-  logoFrom: "#a78eff",
-  logoTo: "#53a3f2",
+  /** The violet-to-lilac gradient in `public/assets/mhn-primary-dark.svg` */
+  logoFrom: "#9b7bff",
+  logoTo: "#d6b5ff",
 } as const;
 
 export const OG_FONT_FAMILY = "Space Grotesk";
@@ -51,6 +51,21 @@ export async function loadBrandFont(): Promise<Buffer> {
     join(process.cwd(), "src/assets/fonts/SpaceGrotesk-Bold.ttf"),
   );
   return brandFont;
+}
+
+let markDataUri: string | undefined;
+
+/** The dark favicon mark as a data URI for the card's `<img>`. satori cannot
+ *  resolve a site-relative path, and reading the file keeps the card on the
+ *  same artwork as the favicon instead of a copy of its paths. */
+export async function loadMark(): Promise<string> {
+  if (markDataUri === undefined) {
+    const svg = await readFile(
+      join(process.cwd(), "public/assets/mhn-favicon-dark.svg"),
+    );
+    markDataUri = `data:image/svg+xml;base64,${svg.toString("base64")}`;
+  }
+  return markDataUri;
 }
 
 /** The `fonts` option for `ImageResponse`. One weight: the card is display type

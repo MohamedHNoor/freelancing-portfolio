@@ -1,3 +1,4 @@
+import { ProfilePortrait } from "@/components/primitives/ProfilePortrait";
 import { Reveal } from "@/components/primitives/Reveal";
 import { Section } from "@/components/primitives/Section";
 import { SectionLink } from "@/components/primitives/SectionLink";
@@ -10,41 +11,52 @@ import { getProfile } from "@/content";
    URL problem. */
 export function About() {
   const profile = getProfile();
-  /* Two paragraphs, not one: the opening alone is two lines, which left the
-     column beside the location and availability mostly empty. */
+  /* Two paragraphs, which with the details row under them come out about as
+     tall as the portrait beside them. */
   const opening = profile.longBio.slice(0, 2);
 
   return (
     <Section id="about" label="About" heading="About Mohamed">
       <Reveal>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16">
-          {opening.length > 0 ? (
-            <div className="max-w-2xl space-y-4 text-base leading-relaxed text-muted-foreground">
-              {opening.map((paragraph) => (
-                <p key={paragraph.slice(0, 48)}>{paragraph}</p>
-              ))}
-            </div>
-          ) : null}
+          {/* The details sit under the bio rather than under the portrait, as
+              they do on `/about`: stacked beside a two-paragraph summary, the
+              side column ran about 250px past the text. */}
+          <div className="max-w-2xl">
+            {opening.length > 0 ? (
+              <div className="space-y-4 text-base leading-relaxed text-muted-foreground">
+                {opening.map((paragraph) => (
+                  <p key={paragraph.slice(0, 48)}>{paragraph}</p>
+                ))}
+              </div>
+            ) : null}
 
-          <dl className="space-y-6 text-sm lg:border-l lg:border-border lg:pl-8">
-            <div>
-              <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                Location
-              </dt>
-              <dd className="mt-2">{profile.location}</dd>
-            </div>
-            <div>
-              <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                Availability
-              </dt>
-              <dd className="mt-2 space-y-2">
-                <StatusPill status={profile.availability.status} />
-                <p className="text-muted-foreground">
-                  {profile.availability.detail}
-                </p>
-              </dd>
-            </div>
-          </dl>
+            <dl className="mt-8 grid gap-6 border-t border-border pt-8 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                  Location
+                </dt>
+                <dd className="mt-2">{profile.location}</dd>
+              </div>
+              <div>
+                <dt className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                  Availability
+                </dt>
+                <dd className="mt-2 space-y-2">
+                  <StatusPill status={profile.availability.status} />
+                  <p className="text-muted-foreground">
+                    {profile.availability.detail}
+                  </p>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          {/* Leads the stacked layout, so it does not arrive after the bio. */}
+          <ProfilePortrait
+            portrait={profile.portrait}
+            className="order-first lg:order-0"
+          />
         </div>
 
         <SectionLink href="/about">Read more about me</SectionLink>

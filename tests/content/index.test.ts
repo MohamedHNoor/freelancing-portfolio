@@ -97,6 +97,7 @@ function content(overrides: Partial<ContentInput> = {}): ContentInput {
       availability: { status: "available", detail: "" },
       location: "",
       serviceArea: [],
+      portrait: { src: "", alt: "", width: 1, height: 1 },
       links: { email: "", github: "", linkedin: "", cv: "" },
     },
     services: [service()],

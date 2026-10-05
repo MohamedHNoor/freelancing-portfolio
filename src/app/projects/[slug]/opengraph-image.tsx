@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { OgCard } from "@/components/og/OgCard";
 import { getProjectBySlug, getProjectSlugs, getServiceBySlug } from "@/content";
-import { OG_COLORS, OG_CONTENT_TYPE, OG_SIZE, ogFonts } from "@/lib/og";
+import { OG_COLORS, OG_CONTENT_TYPE, OG_SIZE, loadMark, ogFonts } from "@/lib/og";
 import { projectHeading } from "@/lib/projects";
 
 /* Overrides the site card for case studies, which are the pages most likely to
@@ -35,6 +35,7 @@ export default async function Image({ params }: ImageProps) {
     (
       <OgCard
         eyebrow={service?.name ?? project.category}
+        mark={await loadMark()}
         /* The same marker the page itself carries in `CaseStudyHeader`. A card
            without it would present seeded work as delivered work in the one
            place a reader sees before opening the page that says otherwise. */

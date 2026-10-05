@@ -1,8 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <defs>
-    <clipPath id="l"><rect x="0" y="0" width="16" height="32"/></clipPath>
-    <clipPath id="r"><rect x="16" y="0" width="16" height="32"/></clipPath>
-  </defs>
-  <path d="M3 27 L3 5 L9.2 5 L16 14.2 L22.8 5 L29 5 L29 27 L23.6 27 L23.6 13.2 L17.1 21.9 L14.9 21.9 L8.4 13.2 L8.4 27 Z" fill="#a78eff" clip-path="url(#l)"/>
-  <path d="M3 27 L3 5 L9.2 5 L16 14.2 L22.8 5 L29 5 L29 27 L23.6 27 L23.6 13.2 L17.1 21.9 L14.9 21.9 L8.4 13.2 L8.4 27 Z" fill="#53a3f2" clip-path="url(#r)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<!-- public/assets/mhn-favicon-light.svg and -dark.svg in one file, switched on
+     the OS theme, which is what the browser's tab strip follows. -->
+<style>.dark{display:none}@media (prefers-color-scheme:dark){.light{display:none}.dark{display:inline}}</style>
+<defs>
+<linearGradient id="fg-light" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B966EA"/><stop offset=".55" stop-color="#5425C9"/><stop offset="1" stop-color="#23133F"/></linearGradient>
+<linearGradient id="fg-dark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D6B5FF"/><stop offset=".55" stop-color="#9B7BFF"/><stop offset="1" stop-color="#EDE8FF"/></linearGradient>
+</defs>
+<g class="light">
+<rect x="4" y="4" width="120" height="120" rx="28" fill="#F8F7FC"/>
+<path d="M28 92V35h16l20 23 20-23h16v57H84V59L64 82 44 59v33Z" fill="#23133F"/>
+<path d="M28 35h16l20 23 20-23h16L64 79Z" fill="url(#fg-light)"/>
+</g>
+<g class="dark">
+<rect x="4" y="4" width="120" height="120" rx="28" fill="#171323"/>
+<path d="M28 92V35h16l20 23 20-23h16v57H84V59L64 82 44 59v33Z" fill="#EDE8FF"/>
+<path d="M28 35h16l20 23 20-23h16L64 79Z" fill="url(#fg-dark)"/>
+</g>
 </svg>

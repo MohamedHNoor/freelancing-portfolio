@@ -19,7 +19,7 @@ export function Header() {
           href="/"
           className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
         >
-          <Logo className="size-10" id="logo-header" />
+          <Logo loading="eager" />
           <span className="sr-only">{profile.name}</span>
         </Link>
 

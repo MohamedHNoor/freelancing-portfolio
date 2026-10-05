@@ -18,6 +18,9 @@ export type OgCardProps = {
   eyebrow: string;
   /** Optional second marker beside the eyebrow, such as the placeholder flag. */
   badge?: string;
+  /** From `loadMark()`. A prop because satori renders synchronously and the
+   *  file has to be read first. */
+  mark: string;
   children: React.ReactNode;
 };
 
@@ -25,7 +28,7 @@ export type OgCardProps = {
  *
  *  Every card on this site is built from it, so the site card and a case study
  *  card cannot drift into looking like two different sites. */
-export function OgCard({ eyebrow, badge, children }: OgCardProps) {
+export function OgCard({ eyebrow, badge, mark, children }: OgCardProps) {
   const profile = getProfile();
 
   return (
@@ -41,8 +44,7 @@ export function OgCard({ eyebrow, badge, children }: OgCardProps) {
         fontFamily: OG_FONT_FAMILY,
       }}
     >
-      {/* The same violet-to-blue split the logo mark uses, as a rule across the
-          top. It is what makes the card recognisable at thumbnail size, where
+      {/* The logo's violet-to-lilac gradient, as a rule across the top. It is what makes the card recognisable at thumbnail size, where
           the type is too small to read. */}
       <div
         style={{
@@ -63,7 +65,10 @@ export function OgCard({ eyebrow, badge, children }: OgCardProps) {
         <div
           style={{ display: "flex", alignItems: "center", gap: 20 }}
         >
-          <Mark />
+          {/* The favicon mark, tile and all. A plain `<img>` because
+              `next/image` does not exist inside satori. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={mark} alt="" width={60} height={60} />
           <div style={{ display: "flex", fontSize: 30 }}>{profile.name}</div>
           <div style={{ display: "flex", flex: 1 }} />
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -95,29 +100,6 @@ export function OgCard({ eyebrow, badge, children }: OgCardProps) {
           <div style={{ display: "flex" }}>{new URL(SITE_URL).host}</div>
         </div>
       </div>
-    </div>
-  );
-}
-
-/** The logo mark as a tile. The site draws its split M with two clipped paths,
- *  which satori does not reproduce reliably, so the same two brand colours are
- *  carried as a gradient behind the letterform instead. */
-function Mark() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 60,
-        height: 60,
-        borderRadius: 16,
-        backgroundImage: `linear-gradient(135deg, ${OG_COLORS.logoFrom}, ${OG_COLORS.logoTo})`,
-        color: OG_COLORS.background,
-        fontSize: 36,
-      }}
-    >
-      M
     </div>
   );
 }

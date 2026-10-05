@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { OgCard } from "@/components/og/OgCard";
 import { getProfile, getServices } from "@/content";
 import { headlineLines } from "@/lib/headline";
-import { OG_COLORS, OG_CONTENT_TYPE, OG_SIZE, ogFonts } from "@/lib/og";
+import { OG_COLORS, OG_CONTENT_TYPE, OG_SIZE, loadMark, ogFonts } from "@/lib/og";
 import { SITE_CARD_ALT } from "@/lib/seo";
 
 /* The site card. Only `/` picks this file up directly, because it shares the
@@ -21,7 +21,7 @@ export default async function Image() {
 
   return new ImageResponse(
     (
-      <OgCard eyebrow={profile.role}>
+      <OgCard eyebrow={profile.role} mark={await loadMark()}>
         {/* A line per sentence, as in the hero. Satori only lays out several
             children inside a flex container, hence the column. */}
         <div
