@@ -289,8 +289,9 @@ the module under test.
 Set in feature 12 and re-measured on 2026-10-06, after the hero showcase and
 the resume rework, against `npm run build && npm start`: Chromium, a 1280 x 800
 desktop viewport, one fresh browser context per route so nothing is served from cache,
-and no scrolling, so lazy images and link prefetches below the fold stay out of
-the total.
+and no scrolling. Measurements wait for network idle and include preloaded images
+and automatic link prefetches that actually transfer during that initial load.
+Values labelled KB below use 1024 bytes per KB.
 
 **The Turbopack build output reports no size columns**, so these numbers come
 from the browser (`performance.getEntriesByType`), not from the build. To
@@ -299,18 +300,20 @@ re-measure, load a route with a cold cache and sum `transferSize` by type.
 | Budget | Measured | Ceiling |
 |---|---|---|
 | Transferred JS per route | 255.4 KB on every site page, 225.6 KB on `/resume` | 300 KB |
-| Total transferred page weight | 393.6-569.8 KB, `/` the heaviest | 600 KB |
+| Total transferred page weight | 392.1-598.0 KB, `/` the heaviest | 600 KB |
 | Fonts (three families, all routes) | 109.5 KB | 130 KB |
 | CSS (all routes) | 14.6 KB | 25 KB |
 | Project cover, source file in `public/` | 46-52 KB (WebP) | 80 KB |
 | Project cover, as served through `next/image` | 13.6-16.1 KB at 640px on `/projects`, **over** | 10 KB |
-| Hero showcase, as served on `/` | 66.7 KB on a desktop, 126.1 KB on a 3x phone | none set |
+| Hero showcase, as served on `/` | 66.7 KB on desktop; earlier 3x phone run: 126.1 KB | none set |
 
 JS drifted from feature 12's 243 KB to 263.9-269.6 KB across two
 repositionings, then fell to 255.4 KB when the hero showcase replaced the typing
 code card, a client component. `/resume` carries 225.6 KB because it has no site
-header, footer or technology row. The home page grew from 500 KB to 570 KB,
-almost all of it the showcase image, which leaves 30 KB under the total ceiling.
+header, footer or technology row. The fresh cold-cache home load is 598.0 KB,
+including 47.9 KB of automatic route prefetches and the 66.7 KB showcase. This
+leaves about 2 KB under the total ceiling; the earlier 570 KB figure used a
+different capture point and must not be treated as the current headroom.
 Only the technologies a buyer scans for carry an icon in `src/content/skills.ts`,
 because every mark in the hero row is drawn twice there and again in the
 technology section. The portfolio cover still shows the code-card hero it was
