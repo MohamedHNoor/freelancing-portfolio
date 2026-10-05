@@ -82,8 +82,9 @@ never sign in.
 The home page, in order. Each section is a scannable summary linking to its own page:
 
 - Hero: the role and location, the headline "Websites and Web Applications Built for Your
-  Business", what the developer builds, Start a Project and View My Work, availability,
-  and the primary stack
+  Business" with "Your Business" highlighted, what the developer builds, Start a Project
+  and View My Work, availability, the primary stack, and a showcase of delivered projects
+  on screens as visual proof of work
 - Four value points under the hero: full-stack, production-ready, direct communication,
   New Zealand based
 - What I Can Build: four services, business websites, custom web applications, SaaS
@@ -109,8 +110,9 @@ Pages and the rest of the site:
   payment schedule agreed per project and no percentages published
 - A project index filterable by service and technology
 - Technical skills grouped by purpose, with the context each was used in
-- Professional experience as a dated timeline, and a print-optimized resume plus a
-  downloadable CV
+- Professional experience as a dated timeline, and a resume written for recruiters and
+  employers rather than clients: a standalone page without the site navigation, which
+  prints to A4, plus a downloadable CV
 - Contact: "Have a Project in Mind?", with a form asking for name, email, company, what is
   being built (eight project types), a description, whether a design exists, an optional
   budget range, and a timeline, plus a direct email address. Every enquiry gets a reply
@@ -153,14 +155,18 @@ full design is in `blueprint/dashboard-architecture.md`.
 The public site has no database. All of its content is typed TypeScript modules under
 `src/content/`, imported at build time so every public page can be statically generated.
 
-- `profile` - name, role, headline, specialisms, short and long bio, the primary stack,
-  availability status, location, service area, social and contact links
+- `profile` - name, role, headline and the phrase in it that is highlighted, short and
+  long bio, the primary stack, availability status, location, service area, the About
+  portrait and the hero showcase image, social and contact links
 - `services` - slug, name, summary, one or two labelled lists, a call to action with the
   project type it preselects, and a typical timeline only where one has been promised
 - `approach` - the value points, audiences, reasons to hire, process steps and milestones
 - `skills` - groups by purpose with per-technology usage context, and which ones the home
-  page features
+  page features and the resume lists
 - `experience` - roles with company, title, period, summary, and impact points
+- `resume` - the same history told to an employer: a title, a summary, experience and
+  training entries that take their dates from `experience`, and project entries that take
+  their stack from `projects`. It may only name a technology `skills` has evidence for
 - `projects` - slug, product name, title, summary, role, period, stack, featured flag,
   links, outcome metrics, a placeholder flag, and the ten case study sections
 - Contact submissions are not stored. They are validated and forwarded by email.
@@ -200,7 +206,8 @@ stored; Stripe holds them.
   Email templates sent through Resend, and dnd-kit for accessible reordering
 
 Server components by default. Client components only for the theme toggle, mobile
-navigation, contact form, project filter, and animation wrappers on the public site, and
+navigation, contact form, project filter, the technology row's pause control, the
+resume's print button, and animation wrappers on the public site, and
 for forms, the task list, and dialogs in the dashboard.
 
 ## 6. Monetize - How will this make money?
@@ -225,8 +232,8 @@ public site.
 ## 7. UI/UX - How should this look and feel?
 
 Reference: `design/website-ui-design.png`. Dark, layered near-black surfaces with a violet
-accent, a code-editor motif in the hero, section eyebrow labels, and card-based content
-blocks. Confident and technical, not playful.
+accent, a showcase of delivered projects in the hero, section eyebrow labels, and
+card-based content blocks. Confident and technical, not playful.
 
 Kept from the reference: the palette, the hero composition, the eyebrow-and-heading section
 rhythm, and the card language.

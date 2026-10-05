@@ -32,8 +32,9 @@
 - Only use `'use client'` when needed: interactivity, hooks, browser APIs
 - Keep client components small and push them to the leaves. The known client
   islands are the animation provider, theme toggle, mobile navigation, contact
-  form, and project filter on the public site, and forms, the task list, dialogs,
-  and the copy-link button in the dashboard
+  form, project filter, the technology row's pause control, and the resume's
+  print button on the public site, and forms, the task list, dialogs, and the
+  copy-link button in the dashboard
 - Use Server Actions for form submission
 - Every public route should be statically generated. Use `generateStaticParams`
   for dynamic routes and check the build output route table to confirm. The
@@ -51,9 +52,14 @@
 - Bespoke primitives: `src/components/primitives/ComponentName.tsx`
 - Layout chrome: `src/components/layout/`
 - Page sections: `src/components/sections/`
-- Pages: `src/app/[route]/page.tsx`. From feature 15, public pages live under
-  `src/app/(site)/`, sign-in pages under `src/app/(auth)/`, and the dashboard
-  under `src/app/dashboard/`
+- Pages: public pages live under `src/app/(site)/[route]/page.tsx`, whose layout
+  wraps them in `SiteChrome` (header, `<main id="main-content">`, footer).
+  `/resume` sits outside the group as a standalone document with its own header
+  and `<main>`, and the root `not-found.tsx` renders `SiteChrome` itself. From
+  feature 16, sign-in pages live under `src/app/(auth)/` and the dashboard under
+  `src/app/dashboard/`. A new route group must provide its own
+  `#main-content`, which the root layout's skip link targets
+- Resume components: `src/components/resume/`
 - Server Actions: `src/actions/[feature].ts`
 - Types: `src/types/[feature].ts`
 - Content: `src/content/[collection].ts`
@@ -90,11 +96,25 @@
 - No inline styles
 - Dark mode is the default; light mode is a supported option. Both palettes must
   be kept working
+- Images ship from `public/` as WebP derivatives sized for their largest box
+  (covers in `public/projects/`, the rest in `public/assets/`). Keep source
+  originals out of `public/`, since everything in it deploys. A crop belongs in
+  CSS when the file must stay whole, as with the hero showcase
+- Print: `globals.css` turns any page into black on white A4 and hides
+  `[data-print-hidden]`. The resume (`[data-resume]`) prints in Helvetica Neue,
+  not the web fonts: Chrome writes the site's variable fonts into PDFs with a text
+  layer that reads back broken, and an applicant tracking system parses that
+  layer. Tighten letter-spacing on uppercase labels in print for the same reason
 
 ## Animation
 
-- Motion only, imported as the code-split `m` component from `motion/react-m`
-  inside the app-level `<LazyMotion features={domAnimation} strict>`
+- Motion for component animation, imported as the code-split `m` component from
+  `motion/react-m` inside the app-level `<LazyMotion features={domAnimation}
+  strict>`
+- CSS keyframes in `globals.css` (`--animate-*`) only where an animation must not
+  wait for hydration: the technology row, and the hero showcase's entrance, which
+  `Reveal` would hold at opacity 0 until the JavaScript ran. The reduced-motion
+  baseline in `globals.css` collapses them
 - `strict` is on deliberately: importing the full `motion` component is an error,
   because it silently undoes the code splitting
 - Animate `transform` and `opacity` only, never layout properties
@@ -109,6 +129,11 @@
   hard-coding copy inline
 - A project with `isPlaceholder: true` is seeded example content and must never
   reach production
+- `src/content/resume.ts` restates the history for employers. It references
+  roles, projects and skills rather than copying them, and the content
+  invariants reject a reference that does not resolve. Every technology it names
+  must exist in `skills.ts`, which is the evidence for it, and every claim must
+  already be made somewhere in the content layer
 
 ## Data Fetching and Actions
 

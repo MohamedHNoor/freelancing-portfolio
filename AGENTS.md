@@ -286,9 +286,9 @@ the module under test.
 
 ### Budgets
 
-Set in feature 12 and re-measured on 2026-10-05, after the full-stack
-repositioning, against `npm run build && npm start`: Chromium, desktop
-viewport, one fresh browser context per route so nothing is served from cache,
+Set in feature 12 and re-measured on 2026-10-06, after the hero showcase and
+the resume rework, against `npm run build && npm start`: Chromium, a 1280 x 800
+desktop viewport, one fresh browser context per route so nothing is served from cache,
 and no scrolling, so lazy images and link prefetches below the fold stay out of
 the total.
 
@@ -298,30 +298,40 @@ re-measure, load a route with a cold cache and sum `transferSize` by type.
 
 | Budget | Measured | Ceiling |
 |---|---|---|
-| Transferred JS per route | 263.9-269.6 KB, the most on `/projects` and the case studies | 300 KB |
-| Total transferred page weight | 438-500 KB, `/` the heaviest | 600 KB |
+| Transferred JS per route | 255.4 KB on every site page, 225.6 KB on `/resume` | 300 KB |
+| Total transferred page weight | 393.6-569.8 KB, `/` the heaviest | 600 KB |
 | Fonts (three families, all routes) | 109.5 KB | 130 KB |
-| CSS (all routes) | 13.1 KB | 25 KB |
-| Project cover, source file in `public/` | 45-52 KB (WebP) | 80 KB |
-| Project cover, as served through `next/image` | 2.4 KB | 10 KB |
+| CSS (all routes) | 14.6 KB | 25 KB |
+| Project cover, source file in `public/` | 46-52 KB (WebP) | 80 KB |
+| Project cover, as served through `next/image` | 13.6-16.1 KB at 640px on `/projects`, **over** | 10 KB |
+| Hero showcase, as served on `/` | 66.7 KB on a desktop, 126.1 KB on a 3x phone | none set |
 
-JS drifted from feature 12's 243 KB to 260.5 KB with the first repositioning,
-and to 263.9-269.6 KB with the second, which added the header and mobile-menu
-Start a Project button and the service and case study calls to action. The home
-page got lighter, from 528 KB to 500 KB, because the experience section and the
-proof-point strip left it, even though it gained six summary sections. Only the
-technologies a buyer scans for carry an icon in `src/content/skills.ts`, because
-every mark in the hero row is drawn twice there and again in the technology
-section. The portfolio cover was re-captured with the new hero: 47 KB as WebP.
+JS drifted from feature 12's 243 KB to 263.9-269.6 KB across two
+repositionings, then fell to 255.4 KB when the hero showcase replaced the typing
+code card, a client component. `/resume` carries 225.6 KB because it has no site
+header, footer or technology row. The home page grew from 500 KB to 570 KB,
+almost all of it the showcase image, which leaves 30 KB under the total ceiling.
+Only the technologies a buyer scans for carry an icon in `src/content/skills.ts`,
+because every mark in the hero row is drawn twice there and again in the
+technology section. The portfolio cover still shows the code-card hero it was
+captured with, and needs re-capturing.
+
+The hero showcase (`public/assets/hero-showcase.webp`, 138 KB) is not a cover, so
+the 80 KB source ceiling does not apply, and it has no ceiling of its own yet. It
+is cropped in CSS from the whole render, and on a phone, where it sits just below
+the fold, it loads at full resolution.
 
 A case study page transfers 32 to 42 KB of image, more than the served-cover
 ceiling below, because it renders its cover at full width with `priority`. That
 predates this measurement; the ceiling was set against the project cards.
 
 The served cover figure is the one that matters for a visitor: `next/image`
-resizes and re-encodes the source, so a 52 KB source arrives at a few KB. The
-source ceiling exists so a future real screenshot cannot be committed at several
-megabytes and quietly rely on that conversion.
+resizes and re-encodes the source, and the covers arrive at 13.6 to 16.1 KB at
+the cards' 640px width. That is over the 10 KB ceiling, which dates from the
+seeded gradient panels; real screenshots carry text that does not compress as
+far. Lowering the cover quality or resetting the ceiling for screenshots is a
+decision still to make. The source ceiling exists so a future real screenshot
+cannot be committed at several megabytes and quietly rely on that conversion.
 
 Covers are WebP rather than PNG since feature 14. The real screenshots that
 replaced the seeded gradient panels do not fit 80 KB as PNG: the same capture is
@@ -342,18 +352,24 @@ runs per route on 2026-10-05:
 | `/contact` | 90, 93 | 100 | 100 | 100 |
 
 Single runs vary by a few points, so compare pairs rather than one run. On
-2026-09-28, Lighthouse 12 measured 90, 91 and 93 on the same routes.
+2026-09-28, Lighthouse 12 measured 90, 91 and 93 on the same routes. Not re-run
+since the hero showcase and the resume rework on 2026-10-06, because Lighthouse
+is not installed locally. Re-run `/` first: the showcase is new weight on the
+first screen, about 126 KB at the mobile preset's density.
 
 CLS is 0 everywhere and TBT stays at or under 20 ms; the performance gap is
 entirely LCP (2.9 to 4.0 s), and entirely simulated download contention. In a
 real browser at mobile viewport, LCP measured 88 ms on `/` and 76 ms on a case
-study and `/contact`. The mobile preset simulates Slow 4G and a 4x CPU, so the
+study and `/contact`. On 2026-10-06, after the hero change, a 390px phone at 3x
+measured about 104 ms on `/`, the LCP being the bio paragraph. The mobile preset
+simulates Slow 4G and a 4x CPU, so the
 critical path costs seconds of render delay that a real visitor on a fast
 connection never sees.
 
 The home page and `/contact` are therefore below the 95 target locally. This is byte-bound, not a
-defect: fonts are `font-display: swap`, TTFB is 10 ms, and nothing above the fold
-animates in. Re-measure against the Vercel deployment before treating it as a
+defect: fonts are `font-display: swap`, TTFB is 10 ms, and the only thing above the
+fold that animates in is the hero showcase, whose CSS entrance starts at first
+paint and which is not the LCP element. Re-measure against the Vercel deployment before treating it as a
 real shortfall, because Brotli on HTML, JS and CSS shrinks exactly the transfer
 sizes the simulation is pricing. Fonts are already woff2 and will not shrink.
 

@@ -2,6 +2,11 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* The build history quotes class names, including ones the code no longer uses,
+   and Tailwind scans the whole repository for candidates. Without this, those
+   records compile into dead rules in the shipped stylesheet. */
+@source not "../../blueprint";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

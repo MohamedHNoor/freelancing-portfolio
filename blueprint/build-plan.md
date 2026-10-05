@@ -59,7 +59,10 @@ machines, payment flow, and rules every item below builds on are in
 - [ ] 15. **Site and dashboard separation** - the public pages move into their own route
   group with their URLs, static generation, budgets, and behaviour unchanged; the root
   layout keeps only the document shell, and robots and the CSP learn the private paths
-  and Stripe Checkout
+  and Stripe Checkout. The route group itself shipped early with the resume rework
+  (`blueprint/history/fixes/recruiter-resume.md`): the pages are in `(site)` and `/resume`
+  deliberately stays outside it. Still to do: robots, the CSP, and moving `MotionProvider`
+  and `SkipLink` out of the root layout if the dashboard should not carry them
 - [ ] 16. **Owner sign-in** - the Neon and Drizzle foundation, Better Auth email and
   password sign-in with verification and reset emails through Resend, registration limited
   to the owner's address, and the protected dashboard shell

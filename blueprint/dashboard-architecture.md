@@ -565,12 +565,13 @@ Each schema is shared by its react-hook-form form and its server action, followi
 
 ```
 src/app/
-  layout.tsx                      html/body/fonts/theme script only (site chrome moves out)
-  not-found.tsx                   renders the extracted <SiteChrome> so 404s keep header/footer
+  layout.tsx                      html/body/fonts/theme script, plus MotionProvider and SkipLink for now
+  not-found.tsx                   renders the extracted <SiteChrome> so 404s keep header/footer (shipped)
   robots.ts                       + disallow /dashboard, /pay/, /payment/, /login, /register, /api/
   sitemap.ts, opengraph-image.tsx, icon.svg   unchanged
-  (site)/layout.tsx               MotionProvider + SkipLink + Header + <main> + Footer
-  (site)/page.tsx, about/, services/, projects/, projects/[slug]/, skills/, experience/, resume/, contact/   (moved; URLs unchanged)
+  (site)/layout.tsx               <SiteChrome>: Header + <main id="main-content"> + Footer (shipped)
+  (site)/page.tsx, about/, services/, process/, projects/, projects/[slug]/, skills/, experience/, contact/   (moved; URLs unchanged; shipped)
+  resume/page.tsx                 outside (site): a standalone document with its own header and <main>
   (auth)/layout.tsx               centred card, noindex
   (auth)/login, register, forgot-password, reset-password, verify-email
   dashboard/layout.tsx            requireOwner, sidebar shell, title template "%s · Dashboard", noindex
@@ -584,6 +585,8 @@ src/app/
   payment/success/page.tsx        public, read-only
   api/auth/[...all]/route.ts, api/stripe/webhook/route.ts
 ```
+
+The route group shipped early, on 2026-10-06, with the resume rework (`blueprint/history/fixes/recruiter-resume.md`). It differs from the plan as first written in three ways. `/resume` sits outside `(site)`, because a resume must not carry the marketing navigation. `MotionProvider` and `SkipLink` stayed in the root layout, so phase 1 decides whether they move; every route group must provide the `#main-content` the skip link targets either way. And `opengraph-image` files inside a group get a hashed suffix from Next (`/projects/[slug]/opengraph-image-umay0l`), so the case-study image URLs changed once; the root `/opengraph-image` did not, and `/` now attaches it through `routeMetadata` like every other route.
 
 Project pages live under `/dashboard/projects/[projectId]` because the public `/projects/[slug]` already exists. Each dashboard segment has its own `loading.tsx`, `error.tsx` and scoped `not-found.tsx`.
 
@@ -841,7 +844,7 @@ SENTRY_AUTH_TOKEN=               # build-time source maps
 | Phase | Feature | Delivers | Done when |
 |---|---|---|---|
 | 0 | **Plan amendment** (docs only, not a build-plan feature) | project-plan, build-plan (features 15-23), coding-standards and this reference; then `/overview` | The amended plans are approved and the overview is regenerated |
-| 1 (feature 15) | **Route-group restructure** | `(site)` group, extracted `SiteChrome`, root layout slimmed, not-found preserved, robots and CSP updates with tests | Public pages are pixel- and behaviour-identical, the build route table shows them static, budgets re-measured, all tests green |
+| 1 (feature 15) | **Route-group restructure** | `(site)` group, extracted `SiteChrome` and the not-found wrapper (shipped early, see §19), then robots and CSP updates with tests, and where `MotionProvider` and `SkipLink` live | Public pages are pixel- and behaviour-identical, the build route table shows them static, budgets re-measured, all tests green |
 | 2 (feature 16) | **Database and auth foundation** | Neon branches, Drizzle config, `pg` pool, lazy env, Better Auth + tables, auth pages and actions, owner-only registration, email verification and reset via Resend, dashboard shell, `requireOwner`, and the portfolio case study's "every route is statically generated" claims reworded to public routes (the first dynamic routes ship here) | Owner registers, verifies, logs in and out, resets password; second registration refused; `/dashboard` redirects when logged out; unit tests for env, sign-up guard and actions |
 | 3 (feature 17) | **Clients** | Money lib, `clients` + `activities` tables, client CRUD/archive, client pages | CRUD works; IDOR integration tests; money unit tests |
 | 4 (feature 18) | **Projects and payment plan** | `projects`, `milestones`, plan editor, presets, allocation, activation, project status machine, project page (plan table, progress pair) | 30%, 50% and fixed plans balance exactly; over-allocation blocked; activation guard tested |
