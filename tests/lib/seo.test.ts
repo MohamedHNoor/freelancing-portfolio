@@ -34,6 +34,26 @@ describe("routeMetadata", () => {
   it("repeats the site name so a route cannot drop og:site_name", () => {
     expect(routeMetadata("/about").openGraph?.siteName).toBeTruthy();
   });
+
+  it("attaches the site card so a route cannot drop og:image", () => {
+    expect(routeMetadata("/about").openGraph?.images).toEqual([
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        type: "image/png",
+        alt: expect.stringMatching(/\S/),
+      },
+    ]);
+  });
+
+  /* Even `images: undefined` would block the segment's own image file. */
+  it("leaves the images key out for a route with its own image", () => {
+    expect(
+      routeMetadata("/projects/x", { type: "article", ownImage: true })
+        .openGraph,
+    ).not.toHaveProperty("images");
+  });
 });
 
 describe("assertRoutesCoverNavigation", () => {

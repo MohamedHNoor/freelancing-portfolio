@@ -45,7 +45,7 @@ export async function generateMetadata(
   return {
     title: projectHeading(project),
     description: project.summary,
-    ...routeMetadata(`/projects/${slug}`, { type: "article" }),
+    ...routeMetadata(`/projects/${slug}`, { type: "article", ownImage: true }),
   };
 }
 

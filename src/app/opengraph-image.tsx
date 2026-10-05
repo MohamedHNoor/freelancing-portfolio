@@ -3,17 +3,17 @@ import { OgCard } from "@/components/og/OgCard";
 import { getProfile, getServices } from "@/content";
 import { headlineLines } from "@/lib/headline";
 import { OG_COLORS, OG_CONTENT_TYPE, OG_SIZE, ogFonts } from "@/lib/og";
+import { SITE_CARD_ALT } from "@/lib/seo";
 
-/* The site card. Metadata files inherit down the route tree, so this is the
-   image for every route that does not declare its own; only `/projects/[slug]`
-   does. */
+/* The site card. Only `/` picks this file up directly, because it shares the
+   segment. Every other route sets its own `openGraph`, which replaces the one
+   carrying this image, so `routeMetadata` attaches the card to each of them.
+   Case studies override it with their own. */
 
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 
-/* Describes the card, which is what a screen reader user gets instead of it.
-   Not a copy of the page title: the title is already read out beside it. */
-export const alt = `A dark title card for ${getProfile().name}, ${getProfile().role.toLowerCase()} in Wellington, New Zealand, showing the tagline "${getProfile().headline}" above the four services.`;
+export const alt = SITE_CARD_ALT;
 
 export default async function Image() {
   const profile = getProfile();

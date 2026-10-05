@@ -21,7 +21,7 @@ import { buildPersonJsonLd } from "@/lib/structured-data";
    declared here because `routeMetadata` gives the page its own `openGraph`,
    which replaces the layout's instead of merging into it: without these two
    fields the card would fall back to the search title. */
-const route = routeMetadata("/");
+const route = routeMetadata("/", { ownImage: true });
 
 export const metadata: Metadata = {
   ...route,

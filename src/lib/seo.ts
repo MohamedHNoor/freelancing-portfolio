@@ -1,5 +1,6 @@
 import type { Metadata, MetadataRoute } from "next";
 import { getProfile } from "@/content";
+import { OG_CONTENT_TYPE, OG_SIZE } from "@/lib/og";
 import {
   BACKGROUND_LINKS,
   NAV_ITEMS,
@@ -25,10 +26,28 @@ export const ROUTE_PATHS = [
   "/contact",
 ] as const;
 
+/** Describes the site card, which is what a screen reader user gets instead of
+ *  it. Not a copy of the page title: the title is already read out beside it.
+ *  The root `opengraph-image` exports this same string, so the file and the
+ *  metadata cannot describe the card differently. */
+export const SITE_CARD_ALT = `A dark title card for ${getProfile().name}, ${getProfile().role.toLowerCase()} in Wellington, New Zealand, showing the tagline "${getProfile().headline}" above the four services.`;
+
+/** The card `src/app/opengraph-image.tsx` renders, as an Open Graph image.
+ *  The path resolves against `metadataBase`, as `og:url` does. */
+export const SITE_CARD = {
+  url: "/opengraph-image",
+  ...OG_SIZE,
+  type: OG_CONTENT_TYPE,
+  alt: SITE_CARD_ALT,
+};
+
 export type RouteMetadataOptions = {
   /** `article` for a case study, which is a written piece about one project
    *  rather than a page of the site itself. */
   type?: "website" | "article";
+  /** The route's segment has its own `opengraph-image` file. The site card is
+   *  then left off, because an explicit image here would replace that file's. */
+  ownImage?: boolean;
 };
 
 /** The canonical URL and `og:url` for one route, as a path.
@@ -37,13 +56,18 @@ export type RouteMetadataOptions = {
  *  when they drift is silent. `metadataBase` on the root layout resolves the
  *  path against the configured origin, so nothing here concatenates strings.
  *
- *  `type` and `siteName` are repeated rather than inherited because a page's
- *  `openGraph` replaces the layout's object outright instead of merging into
- *  it, so a partial object here would drop `og:type` and `og:site_name` from
- *  every route that used it. */
+ *  `type`, `siteName` and the site card are repeated rather than inherited
+ *  because a page's `openGraph` replaces the layout's object outright instead
+ *  of merging into it, so a partial object here would drop `og:type`,
+ *  `og:site_name` and `og:image` from every route that used it. The root
+ *  image file only reaches `/`, which shares its segment. Next copies the
+ *  image into `twitter:image`, since no route sets one.
+ *
+ *  With `ownImage`, the `images` key is left out rather than set to
+ *  `undefined`: an explicit `undefined` blocks the segment's image file too. */
 export function routeMetadata(
   path: string,
-  { type = "website" }: RouteMetadataOptions = {},
+  { type = "website", ownImage = false }: RouteMetadataOptions = {},
 ): Pick<Metadata, "alternates" | "openGraph"> {
   return {
     alternates: { canonical: path },
@@ -51,6 +75,7 @@ export function routeMetadata(
       type,
       siteName: getProfile().name,
       url: path,
+      ...(ownImage ? {} : { images: [SITE_CARD] }),
     },
   };
 }
