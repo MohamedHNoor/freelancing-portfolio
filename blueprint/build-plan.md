@@ -72,7 +72,7 @@ machines, payment flow, and rules every item below builds on are in
     exposing authentication routes. First shipped on Drizzle with a self-hosted
     Better Auth schema; moved to Prisma, with the auth tables handed to Managed
     Better Auth, by the `fix/prisma-neon-auth` change
-  - [ ] 16b. **Owner authentication** - Managed Better Auth enabled per Neon branch
+  - [x] 16b. **Owner authentication** - Managed Better Auth enabled per Neon branch
     with sign-up closed, the owner account, verification and password-reset emails
     through Resend SMTP, sessions, auth server actions, and owner-only
     authorization tests

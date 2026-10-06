@@ -141,7 +141,31 @@ so dev hot reloads reuse one client and pool.
 
 Identity is Neon's managed Better Auth service, not a library running in this
 app. Feature 16b wires it in, following Neon's Next.js "API methods" quickstart
-(<https://neon.com/docs/auth/quick-start/nextjs-api-only>):
+(<https://neon.com/docs/auth/quick-start/nextjs-api-only>).
+
+**In the app (feature 16b):**
+
+- `src/lib/env.ts` `getAuthEnv()` validates `NEON_AUTH_BASE_URL` (https, path
+  kept), `NEON_AUTH_COOKIE_SECRET` (32+ characters) and `OWNER_EMAIL` (trimmed,
+  lowercased) on first use. Errors name the variable only.
+- `src/lib/auth/server.ts` `getAuth()` lazily builds one `createNeonAuth`
+  instance from `@neondatabase/auth` `0.5.0-beta` (pinned), with
+  `sessionDataTtl: 60` and `logLevel: "silent"`.
+- `src/app/api/auth/[...path]/route.ts` is the same-origin proxy to Neon, and
+  the app's only dynamic route. It resolves the SDK handler inside the request.
+- `src/server/auth/session.ts` holds the owner check:
+  - `getOwner()` admits only a verified session whose email is `OWNER_EMAIL`.
+  - `requireOwner()` is for pages and redirects to `/login`.
+  - `requireOwnerForAction()` is for Server Actions and returns
+    `UNAUTHENTICATED`.
+- `src/actions/auth.ts` holds the Server Actions 16c's forms call: `signIn`,
+  `signOut`, `requestPasswordReset`, `resetPassword` and `resendVerification`.
+  - A non-owner sign-in is signed straight back out.
+  - Reset and verification requests answer identically for every address, and
+    only the owner's reaches Neon.
+  - Logs carry error codes only.
+
+**On each branch (Neon settings):**
 
 - Enable Auth per branch in the Neon Console (Project → Branch → Auth), with the
   `neon neon-auth enable` CLI, or with the Neon MCP `provision_neon_auth` tool.
@@ -162,6 +186,63 @@ app. Feature 16b wires it in, following Neon's Next.js "API methods" quickstart
   Feature 23 plans it; see the architecture's phase 2b risks.
 - Safari blocks the auth cookies on plain-HTTP localhost; use
   `npm run dev -- --experimental-https` there.
+
+### Applied: `development` branch (2026-10-07, feature 16b step 7)
+
+Through the Neon MCP, with the owner's approval:
+
+| Setting | Value |
+|---|---|
+| Project | `mhnoor-portfolio` (`snowy-voice-62561189`), PostgreSQL 17, `aws-ap-southeast-2` |
+| Branch | `development` (`br-royal-darkness-a7qoz708`), created from `production` (`br-dawn-unit-a7e6kd3e`) |
+| Auth | Managed Better Auth provisioned, Auth URL `https://ep-rough-darkness-a7rwukh4.neonauth.ap-southeast-2.aws.neon.tech/neondb/auth` (public endpoint, not a secret) |
+| App name | `Mohamed Noor` |
+| Owner account | `info@mohamedhnoor.com`, created by admin (no password set through chat) |
+| Trusted domains | none yet; localhost is pre-approved (`allow_localhost: true`) |
+
+`production` was not touched beyond being the parent of the new branch.
+
+**Legacy tables removed (2026-10-07, owner's request).** Both branches carried
+eight `public` tables from an earlier, unrelated Prisma version of the
+portfolio: `ContactInquiry`, `Project`, `ProjectTag`, `Service`, `Skill`, `Tag`,
+`Testimonial` and `_prisma_migrations`. They were dropped on both branches in
+one non-cascading `DROP TABLE` per branch.
+
+- Snapshot `snap-cold-surf-a79k7mg1` (`production`) was taken first and holds
+  their data. Neon does not snapshot child branches, and `development` had been
+  copied from `production` minutes earlier.
+- `production` is now empty. `development` holds only Neon's `neon_auth` tables.
+- Feature 17's first migration starts from an empty `public` schema.
+
+**Completed 2026-10-07.** The shared Google provider was removed through the
+MCP. The owner made the remaining changes in the Console, and the config read
+back as follows:
+
+- sign-up off
+- verification required, by link
+- custom SMTP `smtp.resend.com:465` as `Mohamed Noor <auth@mohamedhnoor.com>`
+- no OAuth providers
+- trusted origin `https://www.mohamedhnoor.com`
+
+The owner account exists, unverified and with no password, until 16c's flow.
+The original task list:
+
+1. Email and password: turn **sign-up off**. Turn **email verification
+   required** on, with the verification method set to **link** (it defaults to
+   OTP codes).
+2. OAuth: remove the default **shared Google** provider. Email and password is
+   the only sign-in method.
+3. Email provider: switch from the shared sender to **custom SMTP**, with
+   Resend's relay (`smtp.resend.com`, username `resend`, password a Resend API
+   key) and a sender on `mohamedhnoor.com`.
+4. Trusted domains: add the Vercel Preview origin once it is known.
+5. Put `NEON_AUTH_BASE_URL` (above), `NEON_AUTH_COOKIE_SECRET`
+   (`openssl rand -base64 32`) and `OWNER_EMAIL` into `.env.local` and Vercel
+   Preview.
+
+Then re-read the config (`get_neon_auth_config`) to confirm. The owner sets
+their password through 16c's forgot-password flow, and verifies their email
+through the verification link if the account is not already verified.
 
 ## Named-target migration handoff
 
@@ -231,7 +312,8 @@ live/offline command split, import laziness, pool reuse/options, adapter wiring
 and failure propagation, without connecting to PostgreSQL.
 
 Feature 16b supplies the Managed Better Auth server instance, the auth route
-handler, owner authorization and auth email configuration. Feature 16c supplies
+handler, owner authorization, the auth actions, and the `development` branch's
+auth configuration (recorded below once applied). Feature 16c supplies
 auth UI and the protected dashboard shell. Parent Feature 16 remains incomplete
 until all three leaves finish.
 

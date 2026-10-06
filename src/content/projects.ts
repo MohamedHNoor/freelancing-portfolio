@@ -250,11 +250,11 @@ export const projects = [
       {
         heading: "Architecture",
         body: [
-          "Next.js App Router with server components throughout. Every route is statically generated and the only server work is the contact form's Server Action, which re-validates with the same Zod schema the browser used rather than trusting what arrived.",
+          "Next.js App Router with server components throughout. Every public route is statically generated and the public site's only server work is the contact form's Server Action, which re-validates with the same Zod schema the browser used rather than trusting what arrived.",
           "All copy lives in typed content modules with invariants checked at module scope, so a malformed entry fails the build instead of rendering an empty section. Client components are limited to the islands that genuinely need them: the theme toggle, mobile navigation, contact form, project filter, and the marquee's pause control.",
         ],
         bullets: [
-          "Static generation for every route, verified in the build output",
+          "Static generation for every public route, verified in the build output",
           "Security headers including a Content Security Policy, served without middleware so routes stay static",
           "Social images generated at build time from the content layer",
         ],

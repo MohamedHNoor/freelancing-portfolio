@@ -33,7 +33,7 @@ export const skillGroups = [
       {
         name: "Next.js",
         context:
-          "This site: App Router, server components, static generation for every route, and a Server Action for the one form. The travel platform's web app on Next.js 16. Also mostore, an e-commerce store on Prisma and Neon, and a job board with NextAuth and file uploads.",
+          "This site: App Router, server components, static generation for every public route, and a Server Action for its one public form. The travel platform's web app on Next.js 16. Also mostore, an e-commerce store on Prisma and Neon, and a job board with NextAuth and file uploads.",
         icon: "nextjs",
         featured: true,
         resume: true,
