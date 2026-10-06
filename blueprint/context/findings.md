@@ -169,4 +169,16 @@ there are, amend the project plan's rule and the two comments so they match.
 
 ## Latest independent audit
 
-Reviewed feature 15 at `fca7c7d5166733a2e19b4c6b5158ba6ccb329fd3` against `main` merge base `6877c456825267a7ffbd97e4037d4cccfdbcd18f` across quality, security, performance and tests. No new findings. F-14 closed from review of the nearby resume metadata; other carried findings were not used as the scope and remain unchanged. Verification evidence and reviewer environment limitations are recorded in `blueprint/context/review.md`.
+Reviewed the complete Feature 16a delta at
+`5acabcdcad57cf704e190ebc067ec674c2bcaf8a` against `main` merge base
+`dad3bdf805e589a2cdc4bf9187d21b901c29140a` across quality, security,
+performance and tests. Codex `gpt-6-astra`, automatic execution in a fresh
+isolated subagent. Closed F-18; no new findings. All 29 code/config/documentation
+paths were reviewed; request/findings were excluded from code scope. Existing
+carried findings remain unchanged and were not used as the review checklist.
+Tests (23 files, 421 tests), typecheck, lint, schema/snapshot consistency and
+diff whitespace checks pass. The verified spec records the user's successful
+post-repair default builds, including empty database variables, plus the
+builder/review environment's socket restriction. Those builds were not rerun
+in this child. Remaining verification limitations are explicit in the passing
+`blueprint/context/review.md` receipt.

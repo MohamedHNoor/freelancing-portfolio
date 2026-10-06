@@ -263,9 +263,16 @@ Package manager: **npm** (`package-lock.json`).
 - Production server: `npm run start`
 - Lint: `npm run lint`
 - Typecheck: `npx tsc --noEmit`
-- Tests: `npm test` (Vitest, single run)
+- Tests: `npm test` (Vitest 4, single run)
 - Tests (watch): `npm run test:watch`
 - Add a shadcn/ui component: `npx shadcn@latest add <component>`
+- Auth schema (offline): `npm run auth:generate` (pinned `auth@1.6.33`, Node 22.18+)
+- SQL generation (offline): `npm run db:generate`
+- Apply migrations (live, separate approval): `npm run db:migrate`
+- Database Studio (live, separate approval): `npm run db:studio`
+
+Database setup and the named-target migration handoff are documented in
+`blueprint/database-setup.md`. Builds never generate or apply migrations.
 
 **`npm run preflight` is the deploy gate, and it passes today.** It runs the real
 production build with `VERCEL_ENV=production`, which is what Vercel sets on a

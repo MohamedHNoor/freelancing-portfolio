@@ -66,6 +66,15 @@ machines, payment flow, and rules every item below builds on are in
 - [ ] 16. **Owner sign-in** - the Neon and Drizzle foundation, Better Auth email and
   password sign-in with verification and reset emails through Resend, registration limited
   to the owner's address, and the protected dashboard shell
+  - [x] 16a. **Database foundation** - lazy server environment validation, Neon
+    connections, Drizzle configuration, generated Better Auth schema and reviewed
+    migrations, without exposing authentication routes
+  - [ ] 16b. **Owner authentication** - owner-only registration, verification and
+    password-reset emails, sessions, database-backed rate limiting, auth server
+    actions and authorization tests
+  - [ ] 16c. **Auth screens and dashboard shell** - accessible auth forms,
+    protected dashboard navigation, loading and error states, and browser
+    verification using the existing design system
 - [ ] 17. **Clients** - create, edit, archive, and list clients with their currency and
   billing details, on exact integer money handling and an append-only activity log
 - [ ] 18. **Projects and payment plans** - projects with a total and a currency;
