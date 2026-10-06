@@ -1,9 +1,9 @@
 import { Section } from "@/components/primitives/Section";
 import { getProfile } from "@/content";
 
-/* Local relevance for New Zealand and Australian clients without implying
-   clients in any country: it says where the work can be, not where it has
-   been. */
+/* Local relevance for New Zealand and Australian clients. The owner works with
+   clients across all three regions, so the copy states it as current work; it
+   names no client or location it cannot back up. */
 export function Location() {
   const profile = getProfile();
 

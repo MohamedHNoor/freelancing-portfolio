@@ -44,21 +44,14 @@ function fail(
  *  one, and reveals nothing: the inputs are hashed, never sent. Resend expires
  *  these after 24 hours and caps them at 256 characters.
  *
- *  Every field that reaches the payload is in the hash. Keying it to `email` and
- *  `message` alone was wrong in a way that lost mail: a visitor who resent the
- *  same message after correcting the timeline, or after adding the budget they
- *  forgot, reused an existing key with a changed payload. Resend answers that
- *  with a 409 `invalid_idempotent_request`, which lands in the provider-error
- *  branch below, so the corrected enquiry was dropped and the visitor was told
- *  only that something went wrong. Keys live 24 hours, so retrying did not help.
- *  An identical retry still produces an identical key and still dedupes.
+ *  Every field that reaches the payload is in the hash. Resend rejects a reused
+ *  key with a changed payload (409 `invalid_idempotent_request`), so a corrected
+ *  resend must get a new key, while an identical retry keeps its key and dedupes.
  *
  *  `JSON.stringify` over a fixed-order array is the serialisation. It escapes
  *  embedded quotes, so no field can impersonate the boundary between two others,
- *  and it needs no separator byte. The previous version used a literal U+0000
- *  for that, which was invisible to read but made git classify this whole file
- *  as binary: `git diff` printed only "Binary files differ" and `grep` refused
- *  to match, on the most security-sensitive file in the project.
+ *  and it needs no separator byte, which would also make git treat this file as
+ *  binary.
  *
  *  `website` is excluded. It is the honeypot, always empty on a valid
  *  submission, and not part of the enquiry. */
@@ -80,6 +73,18 @@ function idempotencyKey(submission: ContactSubmission): string {
     .slice(0, 32);
 
   return `contact-enquiry/${digest}`;
+}
+
+/** The caller's first non-empty forwarded address, or null when there is none.
+ *  An unidentifiable caller skips the limiter rather than sharing one bucket
+ *  with every other unidentifiable caller, which would make a light per-visitor
+ *  limit site-wide. */
+function clientKey(forwardedFor: string | null): string | null {
+  const address = forwardedFor
+    ?.split(",")
+    .map((part) => part.trim())
+    .find((part) => part !== "");
+  return address ?? null;
 }
 
 function plainTextBody(submission: ContactSubmission): string {
@@ -143,10 +148,11 @@ export async function submitContact(
 
   const submission = parsed.data;
 
-  const forwardedFor = (await headers()).get("x-forwarded-for");
-  const key = forwardedFor?.split(",")[0]?.trim() ?? "unknown";
-  if (!checkRateLimit(submissions, key, Date.now(), RATE_LIMIT, RATE_WINDOW_MS)
-    .allowed) {
+  const key = clientKey((await headers()).get("x-forwarded-for"));
+  if (
+    key !== null &&
+    !checkRateLimit(submissions, key, Date.now(), RATE_LIMIT, RATE_WINDOW_MS).allowed
+  ) {
     return fail(
       "That is a few messages in a short time. Please try again shortly, or email me directly.",
     );

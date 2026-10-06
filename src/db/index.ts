@@ -1,9 +1,9 @@
 import "server-only";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { attachDatabasePool } from "@vercel/functions";
-import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { PrismaClient } from "@/generated/prisma/client";
 import { getDatabaseEnv } from "@/lib/env";
-import * as schema from "@/db/schema";
 
 function createDatabase() {
   const { databaseUrl } = getDatabaseEnv();
@@ -13,11 +13,18 @@ function createDatabase() {
     idleTimeoutMillis: 5000,
   });
   attachDatabasePool(pool);
-  return drizzle({ client: pool, schema, casing: "snake_case" });
+  return new PrismaClient({ adapter: new PrismaPg(pool) });
 }
 
-let database: ReturnType<typeof createDatabase> | undefined;
+/* Next's dev server re-evaluates modules on hot reload, which would build a new
+   client and pool each time. Outside production the instance also lives on
+   `globalThis`, as Prisma's Next.js guidance recommends. */
+const globalForDb = globalThis as unknown as { portfolioDb?: PrismaClient };
+
+let database: PrismaClient | undefined;
 
 export function getDb() {
-  return database ??= createDatabase();
+  database ??= globalForDb.portfolioDb ?? createDatabase();
+  if (process.env.NODE_ENV !== "production") globalForDb.portfolioDb = database;
+  return database;
 }

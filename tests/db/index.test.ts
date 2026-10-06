@@ -1,25 +1,37 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PoolConfig } from "pg";
 
+type FixtureClient = { $queryRawUnsafe: (query: string) => Promise<unknown> };
+
 const mocks = vi.hoisted(() => ({
   pool: vi.fn<(options: PoolConfig) => { query: () => Promise<unknown> }>(),
   attach: vi.fn<(pool: unknown) => void>(),
-  drizzle: vi.fn<(options: unknown) => { execute: (query: unknown) => Promise<unknown> }>(),
+  adapter: vi.fn<(pool: unknown) => object>(),
+  client: vi.fn<(options: { adapter: unknown }) => FixtureClient>(),
   env: vi.fn<() => { databaseUrl: string }>(),
 }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("pg", () => ({ Pool: mocks.pool }));
 vi.mock("@vercel/functions", () => ({ attachDatabasePool: mocks.attach }));
-vi.mock("drizzle-orm/node-postgres", () => ({ drizzle: mocks.drizzle }));
+vi.mock("@prisma/adapter-pg", () => ({ PrismaPg: mocks.adapter }));
+vi.mock("@/generated/prisma/client", () => ({ PrismaClient: mocks.client }));
 vi.mock("@/lib/env", () => ({ getDatabaseEnv: mocks.env }));
+
+function clientReturning(client: FixtureClient) {
+  return function PrismaClient() { return client; };
+}
+
+const globalForDb = globalThis as unknown as { portfolioDb?: unknown };
 
 beforeEach(() => {
   vi.resetModules();
   vi.resetAllMocks();
+  delete globalForDb.portfolioDb;
   mocks.env.mockReturnValue({ databaseUrl: "postgres://runtime:fixture@db.example/app" });
   mocks.pool.mockImplementation(function Pool() { return { query: vi.fn<() => Promise<unknown>>() }; });
-  mocks.drizzle.mockReturnValue({ execute: vi.fn<(query: unknown) => Promise<unknown>>() });
+  mocks.adapter.mockImplementation(function PrismaPg() { return {}; });
+  mocks.client.mockImplementation(clientReturning({ $queryRawUnsafe: vi.fn<(query: string) => Promise<unknown>>() }));
 });
 
 afterEach(() => vi.unstubAllEnvs());
@@ -31,7 +43,7 @@ describe("getDb", () => {
     expect(mocks.env).not.toHaveBeenCalled();
     expect(mocks.pool).not.toHaveBeenCalled();
     expect(mocks.attach).not.toHaveBeenCalled();
-    expect(mocks.drizzle).not.toHaveBeenCalled();
+    expect(mocks.client).not.toHaveBeenCalled();
 
     const first = getDb();
     expect(getDb()).toBe(first);
@@ -41,9 +53,8 @@ describe("getDb", () => {
     });
     const pool = mocks.pool.mock.results[0].value;
     expect(mocks.attach).toHaveBeenCalledExactlyOnceWith(pool);
-    expect(mocks.drizzle).toHaveBeenCalledExactlyOnceWith({
-      client: pool, schema: await import("@/db/schema"), casing: "snake_case",
-    });
+    expect(mocks.adapter).toHaveBeenCalledExactlyOnceWith(pool);
+    expect(mocks.client).toHaveBeenCalledExactlyOnceWith({ adapter: mocks.adapter.mock.results[0].value });
     expect(pool.query).not.toHaveBeenCalled();
   });
 
@@ -70,8 +81,23 @@ describe("getDb", () => {
     mocks.pool.mockImplementationOnce(function Pool() { throw failure; });
     const { getDb } = await import("@/db");
     expect(() => getDb()).toThrow(failure);
-    const query = vi.fn().mockRejectedValue(failure);
-    mocks.drizzle.mockReturnValue({ execute: query });
-    await expect(getDb().execute("fixture")).rejects.toBe(failure);
+    const query = vi.fn<(query: string) => Promise<unknown>>().mockRejectedValue(failure);
+    mocks.client.mockImplementation(clientReturning({ $queryRawUnsafe: query }));
+    await expect(getDb().$queryRawUnsafe("fixture")).rejects.toBe(failure);
+  });
+
+  it("reuses one client across module reloads outside production", async () => {
+    const first = (await import("@/db")).getDb();
+    vi.resetModules();
+    const second = (await import("@/db")).getDb();
+    expect(second).toBe(first);
+    expect(mocks.pool).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the client module-scoped in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    const { getDb } = await import("@/db");
+    expect(getDb()).toBe(getDb());
+    expect(globalForDb.portfolioDb).toBeUndefined();
   });
 });

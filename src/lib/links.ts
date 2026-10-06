@@ -63,9 +63,8 @@ function stripScheme(value: string): string {
  *  `replyTo`, which is what makes Reply work.
  *
  *  The display name is user-controlled text landing in a mail header, so it is
- *  quoted rather than trusted bare. An earlier version enumerated the dangerous
- *  characters instead and missed the one that matters most: a `From` is a
- *  `mailbox-list`, and `,` is what separates one mailbox from the next. Bare,
+ *  quoted rather than trusted bare. A `From` is a `mailbox-list`, and `,` is
+ *  what separates one mailbox from the next. Bare,
  *  `Lovelace, Ada <hi@example.com>` is two mailboxes, and so is
  *  `x@attacker.test, Ada <hi@example.com>`. The first is an ordinary person
  *  writing their surname first; the second is an attacker putting their own

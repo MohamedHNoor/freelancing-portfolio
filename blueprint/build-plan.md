@@ -63,15 +63,19 @@ machines, payment flow, and rules every item below builds on are in
   (`blueprint/history/fixes/recruiter-resume.md`): the pages are in `(site)` and `/resume`
   deliberately stays outside it. Still to do: robots, the CSP, and moving `MotionProvider`
   and `SkipLink` out of the root layout if the dashboard should not carry them
-- [ ] 16. **Owner sign-in** - the Neon and Drizzle foundation, Better Auth email and
-  password sign-in with verification and reset emails through Resend, registration limited
-  to the owner's address, and the protected dashboard shell
+- [ ] 16. **Owner sign-in** - the Neon and Prisma foundation, email and password
+  sign-in through Neon's Managed Better Auth with verification and reset emails sent
+  through Resend, sign-up closed so only the owner's account exists, and the protected
+  dashboard shell
   - [x] 16a. **Database foundation** - lazy server environment validation, Neon
-    connections, Drizzle configuration, generated Better Auth schema and reviewed
-    migrations, without exposing authentication routes
-  - [ ] 16b. **Owner authentication** - owner-only registration, verification and
-    password-reset emails, sessions, database-backed rate limiting, auth server
-    actions and authorization tests
+    connections, and Prisma configuration with offline client generation, without
+    exposing authentication routes. First shipped on Drizzle with a self-hosted
+    Better Auth schema; moved to Prisma, with the auth tables handed to Managed
+    Better Auth, by the `fix/prisma-neon-auth` change
+  - [ ] 16b. **Owner authentication** - Managed Better Auth enabled per Neon branch
+    with sign-up closed, the owner account, verification and password-reset emails
+    through Resend SMTP, sessions, auth server actions, and owner-only
+    authorization tests
   - [ ] 16c. **Auth screens and dashboard shell** - accessible auth forms,
     protected dashboard navigation, loading and error states, and browser
     verification using the existing design system

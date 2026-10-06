@@ -23,10 +23,10 @@ Each phase in §33 is one Blueprint feature (`/feature` → `/implement` → `/c
 | # | Decision | Why |
 |---|---|---|
 | R1 | Money as **integer minor units** (`bigint`, cents), percentages as **integer basis points** (3000 = 30.00%) | Exact arithmetic with no floats or decimals in JS. Stripe takes integer `unit_amount` |
-| R2 | DB driver: **`pg` (node-postgres) + `drizzle-orm/node-postgres` + `attachDatabasePool`** (from `@vercel/functions`) on Neon's pooled URL | Neon's current guidance for Vercel Fluid compute. It supports interactive transactions, which webhook idempotency needs (`neon-http` does not) |
-| R3 | **No `proxy.ts`**: every page, action and query authenticates through a Data Access Layer | Repo rule: no middleware. Next/Better Auth docs say proxy checks are only optimistic anyway |
-| R4 | Registration is **owner-only**: allowed only for `OWNER_EMAIL` and only while no user exists, with email verification required | Single-user app; a public sign-up form on a public domain would otherwise be open |
-| R5 | Auth and all forms go through **Server Actions** (Better Auth `nextCookies()` plugin) rather than the Better Auth React client | Matches the repo's `src/actions/contact.ts` pattern and keeps client JS small |
+| R2 | DB driver: **Prisma ORM 7 on `pg` (node-postgres) through `@prisma/adapter-pg`**, with the pool attached by `attachDatabasePool` (from `@vercel/functions`) on Neon's pooled URL | Neon's and Prisma's guidance for Vercel Fluid compute. It supports interactive transactions, which webhook idempotency needs (`neon-http` does not) |
+| R3 | **No `proxy.ts`**: every page, action and query authenticates through a Data Access Layer. Neon's `auth.middleware()` is not used | Repo rule: no middleware. Next and Neon docs say proxy checks are only optimistic anyway |
+| R4 | **Identity is Neon's Managed Better Auth** (`@neondatabase/auth`), and **registration is closed**: sign-up is disabled in the branch's auth settings, the owner account is created once per branch, and the app authorizes only a verified `OWNER_EMAIL` session | Managed Better Auth has no custom sign-up hooks, and its auth endpoint is public, so the app cannot gate sign-up itself. Neon runs the auth server, stores identity in the branch's `neon_auth` schema, and branches it with the data |
+| R5 | Auth and all forms go through **Server Actions** that call the server SDK (`auth.signIn.email()` and friends from `createNeonAuth`) rather than the React auth client | Matches the repo's `src/actions/contact.ts` pattern and keeps client JS small |
 | R6 | Financial totals are **derived by SQL aggregates on read** and never stored as counters | Server-derived values that cannot drift |
 | R7 | Dashboard totals are **grouped by currency**, never summed across currencies | No FX conversion in v1 |
 | R8 | Vercel Functions region **syd1** and Neon region **aws-ap-southeast-2 (Sydney)** | Closest to you and to AU/NZ clients; the DB and functions share a region |
@@ -42,7 +42,7 @@ Each phase in §33 is one Blueprint feature (`/feature` → `/implement` → `/c
  Public visitors ──▶ │ (site)/*   static marketing pages (unchanged, statically generated)                   │
  Client (no acct) ─▶ │ /pay/[token]  Review & Pay page ──server action──▶ Stripe Checkout (hosted)            │
                      │ /payment/success  read-only status page                                              │
- Owner ────────────▶ │ (auth)/*  login, register, forgot/reset ──▶ Better Auth (/api/auth/[...all])         │
+ Owner ────────────▶ │ (auth)/*  login, forgot/reset ──▶ /api/auth/[...path] ──▶ Managed Better Auth (Neon) │
                      │ /dashboard/*  RSC pages ─▶ src/server/queries (owner-scoped reads)                   │
                      │                forms ───▶ src/actions/* ─▶ src/server/services/* (transactions)       │
  Stripe ───────────▶ │ /api/stripe/webhook  verify signature ─▶ idempotent fulfilment (transaction)         │
@@ -57,18 +57,18 @@ Layers inside the app:
 - **`src/server/services/*`** (`server-only`) hold domain logic. They own DB transactions, state-machine guards and activity writes, and call Stripe and Resend through adapters.
 - **`src/server/queries/*`** (`server-only`) are owner-scoped read models and financial aggregates.
 - **`src/lib/*`** holds pure, unit-tested logic: money, allocation, progress, state machines, payment-status derivation.
-- **Adapters**: `src/lib/stripe.ts`, `src/lib/resend.ts` (mail sender), and `src/lib/auth.ts`.
+- **Adapters**: `src/lib/stripe.ts`, `src/lib/resend.ts` (mail sender), and `src/lib/auth/server.ts`.
 
-Sources of truth: business state in **Neon**, payment processing in **Stripe**, identity in **Better Auth** (same Neon DB), email delivery in **Resend**.
+Sources of truth: business state in **Neon**, payment processing in **Stripe**, identity in **Neon's Managed Better Auth** (the `neon_auth` schema of the same branch), email delivery in **Resend**.
 
 ## 2. Technology decisions
 
 | Concern | Choice | Notes |
 |---|---|---|
 | Framework | Next.js 16.3 App Router (existing), React 19.2, React Compiler on | Dashboard routes are dynamic; public routes stay static |
-| Auth | Better Auth (pin latest 1.6.x) + `drizzleAdapter(db, { provider: "pg" })` + `nextCookies()` | Email/password, verification, reset, DB-backed rate limit |
+| Auth | Neon Managed Better Auth via `@neondatabase/auth` (pinned exactly; pre-1.0 beta), `createNeonAuth` server instance | Email/password, verification, reset and rate limiting run in Neon's service; settings live per branch |
 | DB | Neon Postgres 17, `pg` Pool + `attachDatabasePool` | Pooled URL at runtime, direct URL for migrations |
-| ORM | Drizzle ORM + Drizzle Kit, `casing: "snake_case"` | SQL migrations committed under `drizzle/` |
+| ORM | Prisma ORM 7.10 (`prisma-client` generator, `@prisma/adapter-pg`), snake_case through `@map`/`@@map` | SQL migrations committed under `prisma/migrations/` |
 | Payments | `stripe` (stripe-node), API version pinned to the SDK default; the webhook endpoint uses the same version | Hosted Checkout, `mode: "payment"` |
 | Email | Resend (existing dep) + React Email (`@react-email/components`) templates | Idempotency keys, already used in `contact.ts` |
 | Validation | Zod, staying on the repo's installed 3.25 API (`import { z } from "zod"`) | Upgrading Zod is a separate decision |
@@ -78,17 +78,15 @@ Sources of truth: business state in **Neon**, payment processing in **Stripe**, 
 | Tests | Vitest unit (existing) + Vitest integration project (real Postgres) + Playwright E2E (via `/browser-tests`) | |
 | Observability | Sentry (`@sentry/nextjs`, PII scrubbing) + Vercel logs + Stripe webhook failure alerts | Phase 9 |
 
-New dependencies: `better-auth drizzle-orm pg @vercel/functions stripe @react-email/components server-only @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities`.
-New dev dependencies: `drizzle-kit @types/pg react-email`, plus `@playwright/test` (via `/browser-tests`).
+New dependencies: `@neondatabase/auth @prisma/client @prisma/adapter-pg pg @vercel/functions stripe @react-email/components server-only @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities`.
+New dev dependencies: `prisma @types/pg react-email`, plus `@playwright/test` (via `/browser-tests`).
 
 ## 3. Database ERD
 
 ```mermaid
 erDiagram
-  user ||--o{ session : has
-  user ||--o{ account : has
-  user ||--o{ clients : owns
-  user ||--o{ projects : owns
+  neon_auth_user ||--o{ clients : owns
+  neon_auth_user ||--o{ projects : owns
   clients ||--o{ projects : commissions
   projects ||--o{ milestones : "payment plan"
   milestones ||--o{ tasks : contains
@@ -100,17 +98,18 @@ erDiagram
   payment_requests |o--o{ stripe_events : "affected by"
 ```
 
-Ownership chain: `user → clients/projects (owner_id) → milestones → tasks`, `projects → payment_requests → payments`.
+Ownership chain: `neon_auth.user → clients/projects (owner_id) → milestones → tasks`, `projects → payment_requests → payments`. `neon_auth.user` belongs to Managed Better Auth; Prisma only reads it.
 
 ## 4. Complete database schema
 
 Conventions:
-- Primary keys are `uuid DEFAULT gen_random_uuid()`. The exception is the Better Auth tables, whose ids are `text` as Better Auth generates them.
-- Every table has `created_at`/`updated_at` as `timestamptz NOT NULL DEFAULT now()` (`updated_at` via Drizzle `$onUpdate`).
-- Money is `bigint` (Drizzle `mode: "number"`, validated with `Number.isSafeInteger`).
+- Primary keys are `uuid DEFAULT gen_random_uuid()` (Prisma `@default(dbgenerated("gen_random_uuid()")) @db.Uuid`).
+- Tables and columns are snake_case through `@@map`/`@map`; Prisma models and fields stay PascalCase/camelCase.
+- Every table has `created_at`/`updated_at` as `timestamptz NOT NULL DEFAULT now()` (`@db.Timestamptz`; `updated_at` also carries Prisma `@updatedAt`, which the client sets on every update).
+- Money is `bigint` (Prisma `BigInt`, which the client returns as a JS `bigint`; queries convert with `Number(value)` and reject any result that fails `Number.isSafeInteger`, since `Number.isSafeInteger` on a `bigint` itself is always false; writes convert back with `BigInt`).
 - Calendar dates are `date` (no timezone) and are interpreted in `Pacific/Auckland`.
 
-### Enums (`pgEnum`)
+### Enums (Prisma `enum` blocks, `@@map`ped to these type names)
 | Enum | Values |
 |---|---|
 | `currency` | `ZAR, NZD, AUD, USD, GBP` (add values later with `ALTER TYPE ... ADD VALUE`) |
@@ -127,23 +126,27 @@ Conventions:
 | `email_status` | `queued, sent, failed` |
 | `stripe_event_outcome` | `processed, ignored` |
 
-Sequence: `invoice_number_seq` (`pgSequence`). It formats as `INV-{YYYY}-{00042}`. It is global and monotonic, and gaps are acceptable.
+Sequence: `invoice_number_seq`, created in hand-written migration SQL because Prisma cannot declare sequences, and read with a tagged `$queryRaw` `nextval`. It formats as `INV-{YYYY}-{00042}`. It is global and monotonic, and gaps are acceptable.
 
-### Better Auth tables (generated by `npm run auth:generate` with pinned `auth@1.6.33`, committed to `src/db/schema/auth.ts`)
+### Managed Better Auth tables (`neon_auth` schema, owned by Neon)
+Neon creates and migrates these tables when Auth is enabled on a branch, and they
+branch with the data. Their columns are camelCase. This app never writes them and
+Prisma Migrate never touches them: the one model the app needs, `neon_auth.user`,
+is declared read-only (`@@schema("neon_auth")`) and listed under `tables.external` in `prisma.config.ts`, which in Prisma 7.10 needs `experimental.externalTables`, a `schemas` list and `@@schema` on every model (`blueprint/database-setup.md`, Schema layout).
+
 | Table | Key columns |
 |---|---|
-| `user` | `id text PK`, `name text`, `email text UNIQUE`, `email_verified boolean`, `image text?`, timestamps |
-| `session` | `id text PK`, `user_id → user.id ON DELETE CASCADE`, `token text UNIQUE`, `expires_at`, `ip_address`, `user_agent`, timestamps |
-| `account` | `id text PK`, `user_id → user CASCADE`, `account_id`, `provider_id`, `password` (hash), token columns, timestamps |
-| `verification` | `id text PK`, `identifier`, `value`, `expires_at`, timestamps |
-| `rate_limit` | `id`, `key UNIQUE`, `count int`, `last_request bigint` (from `rateLimit.storage: "database"`) |
-| *(phase 9)* `two_factor` | added by the `twoFactor` plugin |
+| `neon_auth.user` | `id uuid PK`, `name`, `email UNIQUE`, `emailVerified`, `image?`, `createdAt`, `updatedAt`, plus admin columns (`role`, `banned`, ...) |
+| `neon_auth.session`, `account`, `verification` | Sessions, password hashes and provider accounts, verification tokens |
+
+Rate limiting and two-factor state, if enabled, also live on Neon's side. There is
+no `rate_limit` table in the app schema.
 
 ### `clients`
 | Column | Type | Constraints |
 |---|---|---|
 | id | uuid | PK |
-| owner_id | text | NOT NULL, FK `user.id` ON DELETE RESTRICT |
+| owner_id | uuid | NOT NULL, FK `neon_auth.user(id)` ON DELETE RESTRICT |
 | name | text | NOT NULL (contact person) |
 | email | text | NOT NULL, stored lowercased |
 | phone | text | NULL |
@@ -162,7 +165,7 @@ Indexes: `(owner_id, archived_at)`, `(owner_id, name)`.
 | Column | Type | Constraints |
 |---|---|---|
 | id | uuid | PK |
-| owner_id | text | NOT NULL, FK `user.id` RESTRICT |
+| owner_id | uuid | NOT NULL, FK `neon_auth.user(id)` RESTRICT |
 | client_id | uuid | NOT NULL, FK `clients.id` RESTRICT |
 | name | text | NOT NULL |
 | description | text | NULL (scope summary) |
@@ -274,7 +277,7 @@ The full payload is not stored, because it contains PII.
 | Column | Type | Constraints |
 |---|---|---|
 | id | uuid | PK |
-| owner_id | text | NOT NULL, FK `user.id` RESTRICT |
+| owner_id | uuid | NOT NULL, FK `neon_auth.user(id)` RESTRICT |
 | client_id | uuid | NULL, FK SET NULL |
 | project_id | uuid | NULL, FK CASCADE |
 | milestone_id, task_id, payment_request_id | uuid | NULL, FK SET NULL |
@@ -290,7 +293,7 @@ Indexes: `(project_id, occurred_at DESC)`, `(owner_id, occurred_at DESC)`. No up
 | Column | Type | Constraints |
 |---|---|---|
 | id | uuid | PK |
-| owner_id | text | NOT NULL |
+| owner_id | uuid | NOT NULL |
 | kind | email_kind | NOT NULL |
 | status | email_status | NOT NULL DEFAULT `queued` |
 | to_email, subject | text | NOT NULL |
@@ -316,39 +319,44 @@ Index: `(payment_request_id, created_at DESC)`.
 - **Billable** (computed): project `active`, milestone not cancelled, `outstanding > 0`, no open request, and (`upfront` or milestone `completed`).
 - **Overdue** (computed): request `requested`/`failed` and `due_date < today` (Pacific/Auckland).
 
-## 5. Better Auth integration
+## 5. Managed Better Auth integration
 
-`src/lib/auth.ts` (`server-only`):
+Identity is Neon's managed Better Auth service (Better Auth 1.4.18 on Neon's side),
+reached through the `@neondatabase/auth` Next.js server SDK. This follows Neon's
+Next.js "API methods" quickstart, with our own forms instead of Neon's UI components.
+
+`src/lib/auth/server.ts` (`server-only`):
 ```ts
-betterAuth({
-  baseURL: env.BETTER_AUTH_URL, secret: env.BETTER_AUTH_SECRET,
-  database: drizzleAdapter(db, { provider: "pg", schema: authSchema }),
-  emailAndPassword: { enabled: true, requireEmailVerification: true, minPasswordLength: 12,
-    autoSignIn: false, revokeSessionsOnPasswordReset: true, sendResetPassword },
-  emailVerification: { sendVerificationEmail, sendOnSignUp: true, autoSignInAfterVerification: true },
-  session: { expiresIn: 7 days, updateAge: 1 day },   // no cookieCache: revocation takes effect immediately
-  rateLimit: { enabled: true, storage: "database", customRules: { sign-in / sign-up / reset: strict } },
-  databaseHooks: { user: { create: { before: ownerOnlySignUp } } }, // throws APIError unless email === OWNER_EMAIL && no user exists
-  trustedOrigins: [SITE_URL, preview origin when VERCEL_ENV=preview],
-  plugins: [nextCookies()],                            // must stay last
+createNeonAuth({
+  baseUrl: env.NEON_AUTH_BASE_URL,                 // the branch's Auth URL
+  cookies: { secret: env.NEON_AUTH_COOKIE_SECRET, sessionDataTtl: 60 },
+  logLevel: "warn",                                // 16b: inspect this output for PII before relying on it
 })
 ```
-- **Route**: `src/app/api/auth/[...all]/route.ts` → `export const { GET, POST } = toNextJsHandler(auth)`.
-- **Auth emails** (`sendResetPassword`, `sendVerificationEmail`) go through the Resend sender with `void` (not awaited), as Better Auth recommends against timing attacks. They are not logged with their URLs.
-- **Server actions** (`src/actions/auth.ts`): `signIn`, `signUp`, `signOut`, `requestPasswordReset`, `resetPassword`, `resendVerification`, each calling `auth.api.*` with `headers: await headers()`.
-- **Register page**: a server component that shows the form only while `user` has zero rows, and otherwise shows "Registration is closed". The hook enforces the rule regardless of the page.
-- **Owner of data**: `session.user.id` becomes `owner_id`. There is no separate profile table.
-- **Phase 9 hardening**: the `twoFactor` (TOTP) plugin plus a sessions list/revoke in Settings.
+- **Lazy creation**: `getAuth()` builds the instance on first use, after `src/lib/env.ts` validates both variables, so the static build never needs them. The pattern is the same as `getDb()`.
+- **Route**: `src/app/api/auth/[...path]/route.ts` exports `GET` and `POST` functions that delegate to `getAuth().handler()` inside the request, so importing the route never reads env. The browser only ever talks to this origin; the handler proxies to Neon.
+- **Branch settings, not code**: email/password on, email verification required, **sign-up disabled**, trusted domains (`https://mohamedhnoor.com` on `production`, each preview origin on `development`; localhost is pre-approved unless a project turned that off), application name, and the email provider. They are set per branch in the Neon Console, the `neon neon-auth` CLI, or the Neon MCP tools, and recorded in `blueprint/database-setup.md`.
+- **Owner account**: created once per branch while sign-up is disabled: the Neon Console, the CLI or API, or MCP `create_auth_user`. 16b fixes the exact procedure and confirms the account ends up email-verified. Branches copy the auth data of their parent, so `development` inherits the owner from `production`.
+- **Auth emails** (verification, password reset) are sent by Neon's auth service, not by the app. Neon's shared SMTP sender can deliver verification *codes* only; verification *links* and production need custom SMTP, which here is Resend's SMTP relay with the verified `mohamedhnoor.com` sender. The app sends no auth email and never sees the token URLs.
+- **Server actions** (`src/actions/auth.ts`): `signIn`, `signOut`, `requestPasswordReset`, `resetPassword`, `resendVerification`, each calling the matching server SDK method (`auth.signIn.email()`, `auth.signOut()`, ...), which reads and writes the session cookies itself. There is no sign-up action or register page.
+- **Owner of data**: `session.user.id` (a `uuid`) becomes `owner_id`. There is no separate profile table.
+- **Session cache**: the SDK caches session data in a signed cookie (`sessionDataTtl`, default 300 s). 60 s bounds how long a revoked session can still pass `getSession()`. Revocation is not immediate.
+- **Phase 9 hardening**: a sessions list/revoke in Settings. **Two-factor sign-in is not available on Managed Better Auth today** (on Neon's roadmap only). Feature 23 either waits for it or reopens the choice of self-managed Better Auth (see the risks below).
 
-## 6. Drizzle configuration
+## 6. Prisma configuration
 
-- **`drizzle.config.ts`**: PostgreSQL dialect, `schema: "./src/db/schema"`, `out: "./drizzle"`, snake_case casing, strict/verbose. Offline generation loads no private env files and needs no URL. Migration/Studio load Next-compatible env files through the directly declared `@next/env`, then require `DATABASE_URL_UNPOOLED` without runtime/test fallbacks.
+- **`prisma.config.ts`**: `schema: "prisma"` (the directory, so every `.prisma` file is combined), `migrations.path: "prisma/migrations"`, and a per-command datasource:
+  - Live tools (`migrate deploy`, `migrate status`, `migrate resolve`, `studio`) load Next-compatible env files through the directly declared `@next/env`, then require `DATABASE_URL_UNPOOLED` without runtime/test fallbacks.
+  - Every other command loads no private env file and gets the unroutable `postgresql://offline.invalid/offline`, which Prisma 7's schema engine needs even for an offline diff.
+  - From feature 17: `experimental: { externalTables: true }`, `tables.external: ["neon_auth.user"]`, `migrations.initShadowDb` (creates a `neon_auth.user (id uuid primary key)` stub in the shadow database), and a `shadowDatabaseUrl` for authoring later migrations. The datasource lists `schemas = ["public", "neon_auth"]`, and every model carries `@@schema`.
+- **`prisma/schema.prisma`** holds the `prisma-client` generator (output `src/generated/prisma`, git-ignored, regenerated by `postinstall`) and the PostgreSQL datasource. Models live in `prisma/models/[table-group].prisma`: `clients, projects, milestones, tasks, payment-requests, payments, activities, email-messages, stripe-events, enums, neon-auth`.
 - **`src/db/index.ts`** (`server-only`):
-  - `getDb()` validates the runtime URL on first access, creates `pg.Pool({ connectionString: DATABASE_URL, max: 5, idleTimeoutMillis: 5000 })`, attaches it once through `attachDatabasePool(pool)`, then caches `drizzle({ client: pool, schema, casing: "snake_case" })` for the process.
+  - `getDb()` validates the runtime URL on first access, creates `pg.Pool({ connectionString: DATABASE_URL, max: 5, idleTimeoutMillis: 5000 })`, attaches it once through `attachDatabasePool(pool)`, then caches `new PrismaClient({ adapter: new PrismaPg(pool) })` for the process.
   - **It never throws at import.** No config read, pool creation or query occurs until access. Public routes import no database runtime module.
-- **`src/db/schema/*.ts`**: one file per table group (`auth, clients, projects, milestones, tasks, payment-requests, payments, activities, email-messages, stripe-events, enums`), plus `src/db/relations.ts` for the relational query API and `src/db/schema/index.ts` re-exporting everything.
-- **Scripts**: `db:generate` (drizzle-kit generate), `db:migrate` (drizzle-kit migrate), `db:studio`, `auth:generate`.
-- Feature 16a supplies only the auth schema group; business groups/relations arrive with their features. See `blueprint/database-setup.md` for the offline generator's timestamp/default adjustments and unapplied migration handoff.
+- **Transactions**: interactive `db.$transaction(async (tx) => ...)`. Row locks (`FOR UPDATE`) and conditional status updates use tagged `tx.$queryRaw`, never `$queryRawUnsafe`.
+- **Scripts**: `db:generate` (`prisma generate`), `db:migrate` (`prisma migrate deploy`), `db:studio` (`prisma studio`), `postinstall` (`prisma generate`), and `build`/`preflight` prefixed with `prisma generate` (Vercel's dependency cache can skip `postinstall`).
+- **Dev hot reload**: outside production `getDb()` also stores its client on `globalThis`, so re-evaluated modules reuse one client and pool.
+- The database foundation (16a, moved to Prisma by `fix/prisma-neon-auth`) has no models yet. Business groups arrive with their features. See `blueprint/database-setup.md` for the offline boundary, migration authoring and the unapplied migration handoff.
 
 ## 7. Neon configuration
 
@@ -357,7 +365,8 @@ betterAuth({
   - `production` is the default branch and is protected.
   - `development` is a child of production, used locally and by Vercel Preview.
   - `test` is used by integration tests and reset before each run.
-- **Connection strings**: the pooled URL (`-pooler` host) goes in `DATABASE_URL` for runtime; the direct URL goes in `DATABASE_URL_UNPOOLED` for drizzle-kit and DDL.
+- **Connection strings**: the pooled URL (`-pooler` host) goes in `DATABASE_URL` for runtime; the direct URL goes in `DATABASE_URL_UNPOOLED` for Prisma Migrate, Studio and DDL.
+- **Auth**: Managed Better Auth is enabled on each branch that serves the app (`production`, `development`, and `test` once E2E needs it). Each branch has its own Auth URL (`NEON_AUTH_BASE_URL`), settings and users, and it runs in the database's region.
 - **Scale-to-zero** is acceptable: the cold start is under a second for the dashboard, and Stripe's webhook timeout is generous.
 - **Backups**: rely on Neon point-in-time restore (check the history window on your plan), take a manual snapshot before every production migration, and add a weekly `pg_dump` (GitHub Action to private storage) in phase 9. Stripe holds a second, independent record of every payment for reconciliation.
 
@@ -496,7 +505,7 @@ Edit rules:
 ## 15. Authorization strategy
 
 - **`src/server/auth/session.ts`**:
-  - `getOwner()` is React `cache()`d per request. It returns `{ userId }` or null via `auth.api.getSession({ headers })`.
+  - `getOwner()` is React `cache()`d per request. It calls `getAuth().getSession()` and returns `{ userId }` only when the session's user email (lowercased) equals `OWNER_EMAIL` and `emailVerified` is true, otherwise null. Any other account is treated as signed out, whatever Neon's sign-up setting is.
   - `requireOwner()` redirects to `/login` in pages and returns an `UNAUTHENTICATED` result in actions.
 - **`src/lib/permissions.ts`** holds the owner-scoped loaders used by every service. Each takes `(tx, ownerId, id)`, runs a single query with the ownership join (`... JOIN projects p ON ... WHERE x.id = $id AND p.owner_id = $owner`), and optionally adds `FOR UPDATE`:
   - `ownedClient`
@@ -530,7 +539,7 @@ A small `ownerAction(schema, handler)` helper guarantees the first two steps and
 | `src/actions/tasks.ts` | `createTask`, `updateTask`, `setTaskStatus` (covers complete, in progress, blocked, cancel), `reorderTasks`, `deleteTask` | Parent milestone editable; auto-start milestone |
 | `src/actions/payments.ts` | `createPaymentRequest`, `retryPaymentRequest`, `cancelPaymentRequest`, `sendPaymentReminder`, `syncPaymentRequest` | §25; reminder at most once per 24h unless forced |
 | `src/actions/pay.ts` (public) | `startCheckout(token)` | Token lookup, status check, session reuse or create, 303 |
-| `src/actions/auth.ts` | `signIn`, `signUp`, `signOut`, `requestPasswordReset`, `resetPassword`, `resendVerification` | Better Auth API; generic error messages |
+| `src/actions/auth.ts` | `signIn`, `signOut`, `requestPasswordReset`, `resetPassword`, `resendVerification` | Managed Better Auth server SDK; generic error messages; no sign-up |
 
 Plan presets are UI shortcuts only, never hard-coded rules:
 - "30% deposit + N equal milestones"
@@ -542,7 +551,7 @@ Each produces editable draft rows.
 ## 17. Route Handlers
 | Route | Purpose |
 |---|---|
-| `GET/POST /api/auth/[...all]` | Better Auth (sign-in, verify-email link target, reset) |
+| `GET/POST /api/auth/[...path]` | Managed Better Auth proxy (`auth.handler()`): sign-in, verify-email link target, reset |
 | `POST /api/stripe/webhook` | Stripe events (§10) |
 | *(future)* `GET /api/cron/reminders` | Vercel Cron for overdue reminders, guarded by `CRON_SECRET` |
 
@@ -575,7 +584,7 @@ src/app/
   resume/layout.tsx               standalone SkipLink; no marketing chrome or Motion
   resume/page.tsx                 outside (site): a standalone document with its own header and <main>
   (auth)/layout.tsx               centred card, noindex
-  (auth)/login, register, forgot-password, reset-password, verify-email
+  (auth)/login, forgot-password, reset-password, verify-email
   dashboard/layout.tsx            requireOwner, sidebar shell, title template "%s · Dashboard", noindex
   dashboard/page.tsx              overview
   dashboard/clients/page.tsx, new/, [clientId]/page.tsx, [clientId]/edit/
@@ -585,7 +594,7 @@ src/app/
   dashboard/settings/page.tsx     profile, password, sessions, (2FA)
   pay/[token]/page.tsx            public Review & Pay
   payment/success/page.tsx        public, read-only
-  api/auth/[...all]/route.ts, api/stripe/webhook/route.ts
+  api/auth/[...path]/route.ts, api/stripe/webhook/route.ts
 ```
 
 The route group shipped early, on 2026-10-06, with the resume rework (`blueprint/history/fixes/recruiter-resume.md`). It differs from the plan as first written in three ways. `/resume` sits outside `(site)`, because a resume must not carry the marketing navigation. `MotionProvider` and `SkipLink` initially stayed in the root layout. Feature 15 moves them into `SiteChrome`, with a separate skip link in the resume layout. Future auth, dashboard and payment layouts must own their skip links and `#main-content`; the root carries only the shared document shell. And `opengraph-image` files inside a group get a hashed suffix from Next (`/projects/[slug]/opengraph-image-umay0l`), so the case-study image URLs changed once; the root `/opengraph-image` did not, and `/` now attaches it through `routeMetadata` like every other route.
@@ -608,7 +617,7 @@ src/components/dashboard/
   payments/   RequestPaymentDialog, PaymentRequestTable, PaymentRequestRow, ReminderButton
   activity/   ActivityTimeline, ActivityItem
 src/components/pay/      PaySummary, PayButton, PaymentStatusNotice
-src/components/auth/     LoginForm, RegisterForm, ForgotPasswordForm, ResetPasswordForm
+src/components/auth/     LoginForm, ForgotPasswordForm, ResetPasswordForm
 src/emails/              React Email templates (§26)
 src/server/              auth/session.ts, queries/{dashboard,clients,projects,milestones,payments,activity,finance}.ts,
                          services/{clients,projects,payment-plan,milestones,tasks,payment-requests,checkout,stripe-webhook,activity,notifications}.ts
@@ -618,7 +627,7 @@ src/server/              auth/session.ts, queries/{dashboard,clients,projects,mi
 - The dashboard does not use Motion.
 
 ## 21. UI/UX screen list
-1. Login. 2. Register (owner-only, or "closed"). 3. Forgot password. 4. Reset password. 5. Verify-email notice.
+1. Login. 2. Forgot password. 3. Reset password. 4. Verify-email notice. (No register screen: sign-up is closed, §5.)
 6. **Dashboard overview**.
 7. Clients list. 8. Client new/edit. 9. Client detail (projects, totals per currency).
 10. Projects list (status tabs). 11. **New project** (client → details and total → payment plan preset, on one page). 12. **Project detail**. 13. **Payment plan editor**. 14. Project settings (edit, status, delete).
@@ -701,7 +710,8 @@ If step 6 or 7 fails, the request stays `pending` with `last_error_code` and the
   - `PaymentReminderEmail`, with the same link.
   - `PaymentReceivedOwnerEmail`.
   - `PaymentAlertOwnerEmail` (failed async payment, anomaly, dispute).
-  - `VerifyEmail` and `ResetPasswordEmail`.
+
+  Verification and password-reset emails are not app templates: Managed Better Auth sends them through its configured SMTP provider (§5).
 - **Client confirmation**: Stripe's paid invoice and receipt, from `invoice_creation` and Customer emails, so the client does not get a duplicate Resend email in the MVP.
 - **Notification dispatcher**: `src/server/services/notifications.ts` maps domain events to channels:
   - `payment_received` → owner email
@@ -743,7 +753,7 @@ If step 6 or 7 fails, the request stays `pending` with `last_error_code` and the
 
 ## 29. Security strategy
 - Secrets are server-only (`server-only` imports on `db`, `auth`, `stripe`, `resend`, `env`). No `NEXT_PUBLIC_` secrets. Env is validated lazily and fails closed.
-- **Better Auth**: scrypt password hashing (default), secure httpOnly SameSite=Lax cookies, DB-backed rate limiting, required email verification, owner-only sign-up, session revocation on password reset, 2FA in phase 9.
+- **Managed Better Auth**: password hashing, sessions and rate limiting run in Neon's service. Cookies are httpOnly and signed with `NEON_AUTH_COOKIE_SECRET`. Email verification is required, sign-up is disabled per branch, and the app authorizes only a verified `OWNER_EMAIL` session (§15). The session cache (`sessionDataTtl` 60 s) bounds revocation latency. 2FA is not available on the managed service today (§5).
 - **Authorization**: owner-scoped loaders on every read and write, uuid validation, uniform 404s, and two-owner IDOR tests.
 - **Stripe**:
   - Signature verification on the raw body, plus a livemode check.
@@ -753,7 +763,7 @@ If step 6 or 7 fails, the request stays `pending` with `last_error_code` and the
 - **CSP**: the existing static policy is kept, with one change: `form-action 'self' https://checkout.stripe.com`. Without it, the no-JS form POST followed by a 303 to Stripe is blocked by Chromium. `tests/lib/security-headers.test.ts` is updated to match. No `script-src`/`connect-src`/`frame-src` change is needed.
 - **Pay page**: a 256-bit token, `referrer: no-referrer`, `noindex`, a per-IP rate limit (reusing `src/lib/rate-limit.ts` after fixing open finding **F-07**, the shared `"unknown"` bucket), and it is inert after payment or cancellation.
 - **Indexing**: `robots.ts` disallows private paths; private pages set `robots: { index: false }`.
-- **DB**: `ON DELETE RESTRICT` on financial rows; append-only activities and payments (no delete paths); parameterized queries via Drizzle.
+- **DB**: `ON DELETE RESTRICT` on financial rows; append-only activities and payments (no delete paths); parameterized queries via Prisma (tagged `$queryRaw` only; `$queryRawUnsafe` is never used).
 - **Logging**: no PII or secrets in logs; Sentry with `sendDefaultPii: false`.
 
 ## 30. Testing strategy
@@ -766,7 +776,7 @@ If step 6 or 7 fails, the request stays `pending` with `last_error_code` and the
 - Webhook pure mapping (event → command), using real signatures from `stripe.webhooks.generateTestHeaderString`.
 - Env parsing, pay-token format, `ownerAction` error mapping, and the security-header changes.
 
-**Integration** (`npm run test:integration`, a Vitest `integration` project against the Neon `test` branch or a local Postgres, both on the same `pg` driver; migrations applied, tables truncated per test, files run serially):
+**Integration** (`npm run test:integration`, a Vitest `integration` project against the Neon `test` branch or a local Postgres, both through the same Prisma client and `pg` adapter; a local database first gets the `neon_auth.user` stub, while a Neon branch needs Auth enabled; migrations applied, tables truncated per test, files run serially):
 - Create client → project → plan (percentage, fixed, mixed); over-allocation rejected; activation guard.
 - Task completion → milestone ready → complete guard → reopen guard.
 - `createPaymentRequest` happy path; Stripe adapter mocked; **concurrent double-click produces exactly one request**.
@@ -781,7 +791,7 @@ If step 6 or 7 fails, the request stays `pending` with `last_error_code` and the
 - **IDOR**: owner B gets NotFound on every action and query for owner A's ids.
 
 **E2E** (Playwright, set up via `/browser-tests`, `tests/e2e/`), with `stripe listen --forward-to localhost:3000/api/stripe/webhook`, Stripe test mode, card `4242 4242 4242 4242` and Resend test recipient `delivered@resend.dev`:
-- Full flow: register owner → verify → create client → project → plan → milestone → tasks → complete tasks → complete milestone → request payment → open the pay link → pay on Stripe test Checkout → webhook → assert **Paid** and the updated totals.
+- Full flow: sign in as the owner (created per §5 on the `test` branch) → create client → project → plan → milestone → tasks → complete tasks → complete milestone → request payment → open the pay link → pay on Stripe test Checkout → webhook → assert **Paid** and the updated totals.
 - axe-core (already a dev dependency) on dashboard, pay and auth pages.
 
 **Budgets**:
@@ -798,13 +808,13 @@ If step 6 or 7 fails, the request stays `pending` with `last_error_code` and the
   2. `npm run db:migrate` with `DATABASE_URL_UNPOOLED` pointing at production.
   3. Deploy.
 
-  Never `drizzle-kit push` against shared branches, and never migrate during `next build`.
+  Never `prisma db push` or `prisma migrate dev` against shared branches, and never migrate during `next build`.
 - **Stripe**:
   - Live activation (NZ business verification) and Checkout branding.
   - Customer emails for successful payments on.
   - Webhook endpoint `https://mohamedhnoor.com/api/stripe/webhook` with the 6 events, the same API version as the SDK, and separate test and live secrets.
 - **Resend**: verify `mohamedhnoor.com`, sender `billing@mohamedhnoor.com`.
-- **Better Auth**: `BETTER_AUTH_URL=https://mohamedhnoor.com`; preview origin handled in `trustedOrigins`.
+- **Managed Better Auth**: on `production`, Auth enabled with sign-up disabled, email verification required, `mohamedhnoor.com` as a trusted domain and Resend SMTP as the email provider. `development` trusts the preview domain and `localhost`. Each environment's `NEON_AUTH_BASE_URL` points at its own branch.
 - **Monitoring**:
   - Sentry (errors, release tracking).
   - Vercel runtime logs.
@@ -824,11 +834,11 @@ CONTACT_TO_EMAIL=
 CONTACT_FROM_EMAIL=
 # Database (Neon)
 DATABASE_URL=                    # pooled (-pooler) connection string, runtime
-DATABASE_URL_UNPOOLED=           # direct connection string, drizzle-kit migrations only
-# Auth
-BETTER_AUTH_SECRET=              # 32+ random bytes (openssl rand -base64 32)
-BETTER_AUTH_URL=                 # = NEXT_PUBLIC_SITE_URL
-OWNER_EMAIL=                     # the only address allowed to register; also reply-to on billing emails
+DATABASE_URL_UNPOOLED=           # direct connection string, Prisma Migrate/Studio only
+# Auth (Neon Managed Better Auth)
+NEON_AUTH_BASE_URL=              # the branch's Auth URL (Console: Project → Branch → Auth → Configuration)
+NEON_AUTH_COOKIE_SECRET=         # 32+ characters (openssl rand -base64 32)
+OWNER_EMAIL=                     # the only account the app authorizes; also reply-to on billing emails
 # Stripe
 STRIPE_SECRET_KEY=               # restricted key rk_test_... / rk_live_...
 STRIPE_WEBHOOK_SECRET=           # whsec_... (CLI secret locally, endpoint secret in Vercel)
@@ -847,9 +857,9 @@ SENTRY_AUTH_TOKEN=               # build-time source maps
 |---|---|---|---|
 | 0 | **Plan amendment** (docs only, not a build-plan feature) | project-plan, build-plan (features 15-23), coding-standards and this reference; then `/overview` | The amended plans are approved and the overview is regenerated |
 | 1 (feature 15) | **Route-group restructure** | `(site)` group, extracted `SiteChrome` and the not-found wrapper (shipped early, see §19), robots and CSP updates with tests, `MotionProvider` and `SkipLink` in SiteChrome, standalone resume skip link | Public pages are pixel- and behaviour-identical, the build route table shows them static, budgets re-measured, all tests green |
-| 2 (feature 16) | **Database and auth foundation** | Neon branches, Drizzle config, `pg` pool, lazy env, Better Auth + tables, auth pages and actions, owner-only registration, email verification and reset via Resend, dashboard shell, `requireOwner`, and the portfolio case study's "every route is statically generated" claims reworded to public routes (the first dynamic routes ship here) | Owner registers, verifies, logs in and out, resets password; second registration refused; `/dashboard` redirects when logged out; unit tests for env, sign-up guard and actions |
-| 2a (feature 16a) | **Database foundation** | Lazy server-only pool, typed/redacted env, pinned offline auth schema generator, Drizzle scripts and reviewed initial SQL | Unit/build gates pass without DB configuration; generation is reproducible; SQL remains unapplied |
-| 2b (feature 16b) | **Owner authentication** | Live Better Auth configuration/API, atomic owner-only registration, verified email, password reset, session authorization and Resend integration | Auth/security tests and separately approved live verification pass before exposing access |
+| 2 (feature 16) | **Database and auth foundation** | Neon branches, Prisma config, `pg` pool, lazy env, Managed Better Auth on the branches, auth pages and actions, closed registration, email verification and reset through Neon's Resend SMTP provider, dashboard shell, `requireOwner`, and the portfolio case study's "every route is statically generated" claims reworded to public routes (the first dynamic routes ship here) | Owner signs in and out and resets password; a non-owner account cannot reach the dashboard; sign-up is refused; `/dashboard` redirects when logged out; unit tests for env, owner check and actions |
+| 2a (feature 16a) | **Database foundation** | Lazy server-only pool, typed/redacted env, Prisma config and scripts with an offline/live boundary (first shipped on Drizzle; moved to Prisma, with auth tables handed to Neon, by `fix/prisma-neon-auth`) | Unit/build gates pass without DB configuration; client generation is offline and reproducible; nothing is applied |
+| 2b (feature 16b) | **Owner authentication** | Managed Better Auth enabled and configured per branch (sign-up off, verification on, trusted domains, Resend SMTP), owner account, lazy `createNeonAuth` instance, auth route handler, owner-only session authorization, auth server actions | Auth/security tests and separately approved live verification pass before exposing access |
 | 2c (feature 16c) | **Auth UI and dashboard shell** | Accessible auth screens/actions, protected dashboard layouts and public-route wording updates | Owner flow and logged-out redirects pass browser verification; public routes retain their budgets |
 | 3 (feature 17) | **Clients** | Money lib, `clients` + `activities` tables, client CRUD/archive, client pages | CRUD works; IDOR integration tests; money unit tests |
 | 4 (feature 18) | **Projects and payment plan** | `projects`, `milestones`, plan editor, presets, allocation, activation, project status machine, project page (plan table, progress pair) | 30%, 50% and fixed plans balance exactly; over-allocation blocked; activation guard tested |
@@ -862,15 +872,15 @@ SENTRY_AUTH_TOKEN=               # build-time source maps
 Phases 2, 6 and 7 touch auth and payments, so the config's `independentReview: when-sensitive` will select an independent review automatically.
 
 ## 34. Database migration strategy
-- The schema changes only per phase. `npm run db:generate` writes reviewed SQL into `drizzle/`, which is committed and reviewed in the feature diff.
+- The schema changes only per phase. Each change adds a reviewed `prisma/migrations/<timestamp>_<name>/migration.sql`, committed and reviewed in the feature diff, authored as described in `blueprint/database-setup.md`: offline `migrate diff --from-empty` for the first migration, and `migrate diff --from-migrations` against a disposable shadow database afterwards.
 - **Applying migrations**:
   - Local and development: `db:migrate` against Neon `development`.
   - Test: integration setup migrates the `test` branch.
   - Production: the explicit, approved step in §31.
 - **Expand → migrate → contract** for any breaking change: add nullable or new columns, backfill, switch the code, then drop in a later release. Enums get values added and never removed.
-- `drizzle-kit push` is allowed only against a throwaway local DB.
-- Better Auth schema changes come from re-running `auth:generate`, then `db:generate`.
-- The partial unique index, composite FK, check constraints and the sequence are all expressible in the Drizzle schema, so no hand-written SQL is needed. If anything is not, use a `--custom` migration.
+- `prisma db push` and `prisma migrate dev` are allowed only against a throwaway local DB.
+- Auth schema changes are Neon's: Managed Better Auth migrates `neon_auth` itself, and Prisma Migrate never touches it (`tables.external`; the shadow database gets only the `initShadowDb` stub).
+- The composite FK is expressible in the Prisma schema. The partial unique index needs the `partialIndexes` preview feature. Check constraints and the invoice sequence are not expressible, so they go into the generated `migration.sql` as hand-written SQL, reviewed in the same diff.
 
 ## 35. MVP scope
 **In**: phases 0-9:
@@ -890,7 +900,7 @@ Phases 2, 6 and 7 touch auth and payments, so the config's `independentReview: w
 - **Documents**: a `documents` table (`owner_id, project_id, kind enum(contract, proposal, invoice, receipt, file), blob_pathname, content_type, size, uploaded_at`) on **Vercel Blob private storage**, served via signed, owner-checked routes.
 - **PDF invoices and tax invoices**: react-pdf, with NZ GST fields; exported services are generally zero-rated, so confirm with your accountant.
 - **Quotes and proposals → accepted project**, contracts with e-sign, and a client approval workflow.
-- **Client portal**: a client role in Better Auth (magic link) plus a `client_users` link table, with read-only project and plan views and pay links.
+- **Client portal**: a client role in Managed Better Auth (magic link, if the service supports it) plus a `client_users` link table, with read-only project and plan views and pay links.
 - **Reporting**: income by month and client, tax reporting. Multi-currency reporting would use Stripe balance transactions to record the settled NZD amount and fees per payment.
 - **Other**: recurring invoices, expenses, time tracking, messaging, calendar, mobile app.
 - **SaaS / multi-tenancy**: `owner_id` already scopes every aggregate, so this means adding an org table and per-tenant Stripe accounts. Stripe Connect becomes relevant only then.
@@ -915,10 +925,20 @@ Phases 2, 6 and 7 touch auth and payments, so the config's `independentReview: w
 
 ## Verification (end to end)
 1. `npm run lint && npx tsc --noEmit && npm test && npm run test:integration && npm run build` all pass. The build route table still shows every public route as static (○).
-2. `npm run dev` plus `stripe listen --forward-to localhost:3000/api/stripe/webhook`. Walk the E2E flow manually once, then via Playwright. Confirm in Drizzle Studio that one `payments` row and one `stripe_events` row exist per event, then replay the event with `stripe events resend evt_...` and confirm nothing changes.
+2. `npm run dev` plus `stripe listen --forward-to localhost:3000/api/stripe/webhook`. Walk the E2E flow manually once, then via Playwright. Confirm in Prisma Studio that one `payments` row and one `stripe_events` row exist per event, then replay the event with `stripe events resend evt_...` and confirm nothing changes.
 3. Refund in the Stripe test Dashboard → the payment shows refunded, and outstanding and payment progress update.
 4. Lighthouse and transfer-size re-measure on `/`, `/projects/travelgrid-africa`, `/contact` and `/pay/{token}` against the AGENTS.md budgets.
 5. Production: a live low-value payment and refund after approved migration and deploy.
+
+## Risks to confirm in phase 2b
+- `@neondatabase/auth` is a pre-1.0 beta and Managed Better Auth runs Better Auth 1.4.18. Pin the SDK exactly and re-check its changelog before each upgrade.
+- How the owner account is created with sign-up disabled, and whether it ends up email-verified.
+- Custom SMTP through Resend for auth emails, which needs the verified `mohamedhnoor.com` domain.
+- **Two-factor sign-in is unavailable on Managed Better Auth** (roadmap only, checked 2026-10-07), and feature 23 plans it. Before feature 23, re-check Neon's roadmap; if it is still missing, either ship feature 23 without 2FA or move to self-managed Better Auth on Neon Postgres. Session listing/revocation also needs checking.
+- `updateUser()` cannot change email or password on Managed Better Auth, which affects the Settings page's profile and password forms.
+- Prisma's external tables (needed for `owner_id` → `neon_auth.user`) are experimental in 7.10. Re-check before each Prisma upgrade.
+- What the Neon SDK logs at `warn`/`error` (for example, emails on failed sign-in or upstream bodies). If it carries PII, use `logLevel: "silent"` and app-side logging (§29).
+- Preview deployments: every preview origin must be a trusted domain on `development` (scheme included, no trailing slash), or auth redirects fail with `invalid domain`.
 
 ## Risks to confirm before phase 6
 - Stripe fees for post-payment invoices (`invoice_creation`), and NZD settlement FX on ZAR/AUD/USD/GBP charges.

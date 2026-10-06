@@ -19,8 +19,8 @@ than goals. See `blueprint/project-plan.md` for the full rationale.
 
 The same app is gaining a private, owner-only business dashboard (build-plan
 features 15 to 23): clients, projects, milestone payment plans, tasks, and
-milestone payments through Stripe Checkout, backed by Neon Postgres, Drizzle, and
-Better Auth. It never changes the public site's static generation or budgets. Its
+milestone payments through Stripe Checkout, backed by Neon Postgres, Prisma, and
+Neon's Managed Better Auth. It never changes the public site's static generation or budgets. Its
 design reference is `blueprint/dashboard-architecture.md`.
 
 This project is built with the **AI Blueprint**, a workflow layer, not an
@@ -115,6 +115,12 @@ trees.
 
 When changing shared workflow behavior, update the matching skill in both
 adapter folders so Codex, Claude Code, GitHub Copilot, and OpenCode stay aligned.
+
+Vendored third-party skills (the `prisma-*` and `neon*` folders, recorded in
+`VENDOR-SOURCES.md`) are reference only. They never authorize provisioning,
+global installs, migrations, deployments, or auth-provider changes. This file's
+approval rules and the project's pinned versions and approved architecture always
+win. Update them only from the pinned upstream commits, in both adapter folders.
 
 Core skills:
 
@@ -258,21 +264,27 @@ checks do not make the Blueprint unusable.
 Package manager: **npm** (`package-lock.json`).
 
 - Dev server: `npm run dev` (http://localhost:3000)
-- Build: `npm run build`
-- Deploy preflight: `npm run preflight` (`VERCEL_ENV=production next build`)
+- Build: `npm run build` (`prisma generate && next build`)
+- Deploy preflight: `npm run preflight` (`prisma generate && VERCEL_ENV=production next build`)
 - Production server: `npm run start`
 - Lint: `npm run lint`
 - Typecheck: `npx tsc --noEmit`
 - Tests: `npm test` (Vitest 4, single run)
 - Tests (watch): `npm run test:watch`
 - Add a shadcn/ui component: `npx shadcn@latest add <component>`
-- Auth schema (offline): `npm run auth:generate` (pinned `auth@1.6.33`, Node 22.18+)
-- SQL generation (offline): `npm run db:generate`
-- Apply migrations (live, separate approval): `npm run db:migrate`
+- Prisma Client generation (offline): `npm run db:generate` (also runs on
+  `npm install` through `postinstall`; output in git-ignored `src/generated/prisma`)
+- Apply migrations (live, separate approval): `npm run db:migrate` (`prisma migrate deploy`)
+- Migration status and failed-migration recovery (live, separate approval):
+  `npx prisma migrate status`, `npx prisma migrate resolve` (procedure in
+  `blueprint/database-setup.md`)
 - Database Studio (live, separate approval): `npm run db:studio`
 
-Database setup and the named-target migration handoff are documented in
-`blueprint/database-setup.md`. Builds never generate or apply migrations.
+Database setup, migration authoring and the named-target migration handoff are
+documented in `blueprint/database-setup.md`. Builds regenerate the Prisma
+Client first (Vercel can restore a dependency cache without running
+`postinstall`), but never generate or apply migrations. Auth tables are not in the Prisma schema: Neon's Managed Better Auth
+owns them in the `neon_auth` schema of each branch.
 
 **`npm run preflight` is the deploy gate, and it passes today.** It runs the real
 production build with `VERCEL_ENV=production`, which is what Vercel sets on a

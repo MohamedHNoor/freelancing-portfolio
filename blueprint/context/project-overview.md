@@ -19,7 +19,8 @@ completed, money requested and money received kept distinct.
 ## Users
 
 The market is New Zealand, Australia and international; state Wellington
-without implying existing clients in any country. Visitors often arrive cold on
+plainly. Working with clients across all three is true (owner, 2026-10-07), but
+never name a client or location the work cannot back up. Visitors often arrive cold on
 mobile and want direct contact with the developer.
 
 | User | Needs |
@@ -55,10 +56,12 @@ Order/progress: `blueprint/build-plan.md`. Detailed dashboard contracts:
     document/fonts/theme root, marketing Motion/skip link in SiteChrome, standalone
     resume skip link, robots exclusions and exact Stripe Checkout form-action origin.
 16. **Owner sign-in** — parent stays unchecked until three sequential leaves finish:
-    - **16a Database foundation** — lazy environment, Neon connection, Drizzle,
-      generated auth schema/reviewed migrations; no exposed auth routes.
-    - **16b Owner authentication** — owner-only registration, verification/reset
-      emails, sessions, DB-backed rate limiting, server actions and authorization tests.
+    - **16a Database foundation** — lazy environment, Neon connection, Prisma with
+      offline client generation; no exposed auth routes (moved from Drizzle by
+      `fix/prisma-neon-auth`).
+    - **16b Owner authentication** — Managed Better Auth per branch with sign-up
+      closed, owner account, verification/reset emails via Resend SMTP, sessions,
+      server actions and owner-only authorization tests.
     - **16c Auth screens and dashboard shell** — accessible forms, protected
       navigation, loading/error states and browser verification in the existing design system.
 17. **Clients** — CRUD/archive/list, integer money, activity log.
@@ -134,10 +137,11 @@ invariants checked at import fail the build rather than render wrong.
 > A production build is refused while any project has `isPlaceholder: true`
 > (seeded fiction); feature 14 cleared them all.
 
-### Dashboard: Neon Postgres through Drizzle
+### Dashboard: Neon Postgres through Prisma
 
-Better Auth owns `user`, `session`, `account` and `verification` in the same
-database; the signed-in user owns every record below. Money is integer minor
+Neon's Managed Better Auth owns `user`, `session`, `account` and `verification`
+in the same database's `neon_auth` schema; the signed-in owner (`neon_auth.user`,
+uuid ids) owns every record below. Money is integer minor
 units beside an explicit currency (ZAR | NZD | AUD | USD | GBP), percentages are
 integer basis points, and no card data is stored.
 
@@ -181,8 +185,8 @@ payment status, billable and overdue.
 ## Tech stack
 
 - **Next.js 16 (App Router)** - public routes statically generated; server work
-  is the contact action, the dashboard, sign-in and payment pages, and the Better
-  Auth and Stripe webhook route handlers
+  is the contact action, the dashboard, sign-in and payment pages, and the Managed
+  Better Auth proxy and Stripe webhook route handlers
 - **React 19 with the React Compiler** - no hand-written memoization
 - **TypeScript (strict)** - malformed content fails the build
 - **Server components by default** - client islands: theme toggle, mobile
@@ -193,19 +197,21 @@ payment status, billable and overdue.
 - **Motion** - public-site animation via LazyMotion, reduced-motion aware; the
   technology row and hero showcase entrance are CSS keyframes, from first paint
 - **react-hook-form + Zod** - forms, one schema for client and server
-- **Resend** - contact email, plus the dashboard's payment, reminder and auth
-  emails as React Email templates
-- **Neon Postgres + Drizzle ORM and Drizzle Kit** - dashboard data and migrations
-- **Better Auth** - owner email and password sign-in, Drizzle adapter
+- **Resend** - contact email, the dashboard's payment and reminder emails as React
+  Email templates, and the SMTP relay for Neon's auth emails
+- **Neon Postgres + Prisma ORM and Prisma Migrate** - dashboard data and migrations
+- **Neon Managed Better Auth** (`@neondatabase/auth`) - owner email and password
+  sign-in, sign-up closed
 - **Stripe Checkout and webhooks** - milestone payments, hosted card collection
 - **dnd-kit** - accessible reordering
 - **Vitest** - logic tests, gating since feature 5
 - **Playwright MCP** - browser verification during the build
 - **Git and GitHub** - a Verify command is still to be wired via `/ci`
 
-Current installed stack: Next.js 16.3.4, React 19.2.8, Zod 3.25, Vitest and
-Resend. DB/auth/Stripe packages remain planned. Dashboard uses `pg` Pool,
-`@vercel/functions` attachment, snake_case Drizzle and Better Auth's PG adapter.
+Current installed stack: Next.js 16.3.4, React 19.2.8, Zod 3.25, Vitest,
+Resend, and Prisma 7.10 with `pg` and `@vercel/functions`. Auth/Stripe packages
+remain planned. Dashboard uses a `pg` Pool attached by `@vercel/functions` under
+`@prisma/adapter-pg`, snake_case through `@map`, and the Managed Better Auth server SDK.
 Only active-leaf dependencies are installed. Strict TypeScript, no `any`, no
 Tailwind config, proxy/middleware or public DB/session reads.
 
@@ -249,7 +255,7 @@ technology, role, outcome, then CTA. Contact asks name/email/company, eight
 project types, description, design availability, optional budget and timeline;
 reply commitment is one business day.
 
-Planned dynamic/noindex: `(auth)` login/register/forgot/reset/verification;
+Planned dynamic/noindex: `(auth)` login/forgot/reset/verification (no register; sign-up closed);
 `/dashboard` client/project/milestone/payment/settings routes, `/pay/[token]`,
 `/payment/success`. Exact paths in architecture §19. Every protected page,
 query/action authenticates the owner; layout protection alone is insufficient.
@@ -259,14 +265,15 @@ query/action authenticates the owner; layout protection alone is insufficient.
 - Existing Vercel Next.js project, Functions `syd1`. `npm run build`,
   `npm run start`, `npm run dev`; no static export/output directory or health endpoint.
 - Public routes stay static; server work is contact and planned auth/dashboard/
-  pay routes, Better Auth handler and Stripe webhook.
+  pay routes, Managed Better Auth proxy handler and Stripe webhook.
 - One Neon Postgres in `aws-ap-southeast-2`: protected production, development
   for local/preview, isolated test branch. Runtime `DATABASE_URL` pooled;
   migration `DATABASE_URL_UNPOOLED` direct. SQL reviewed/approved separately,
-  never run in build or through shared-branch `drizzle-kit push`. No MVP buckets/workers/cron.
+  never run in build or through shared-branch `prisma db push`/`migrate dev`.
+  Managed Better Auth is enabled per branch. No MVP buckets/workers/cron.
 - Existing env: `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`,
   `NEXT_PUBLIC_SITE_URL`. Planned env: `DATABASE_URL`, `DATABASE_URL_UNPOOLED`,
-  `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `OWNER_EMAIL`, `STRIPE_SECRET_KEY`,
+  `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `OWNER_EMAIL`, `STRIPE_SECRET_KEY`,
   `STRIPE_WEBHOOK_SECRET`, `BILLING_FROM_EMAIL`, test-only `TEST_DATABASE_URL`.
   Secrets stay server-only, lazy and redacted.
 - NZ Stripe account, Checkout/refund/dispute webhook; test keys until go-live.
@@ -281,15 +288,19 @@ query/action authenticates the owner; layout protection alone is insufficient.
 ## Open questions
 
 - **Resend readiness:** previously marked unverified; confirm delivery before
-  live verification/reset in 16b. Offline 16a does not depend on mail.
+  live verification/reset in 16b, where Neon's auth emails go through Resend SMTP.
+  Offline 16a does not depend on mail.
 - **Neon readiness:** development/test connectivity has not been verified;
-  16a prepares SQL/tooling. Applying migrations requires a named target and approval.
+  16a prepares Prisma tooling. Managed Better Auth is not yet enabled on any
+  branch. Applying migrations requires a named target and approval.
 - **CI gap:** project-plan promises Verify/automatic checks and build-plan says
   CI precedes feature 13; neither exists. `/ci` is separate; fallback gates remain usable.
 - **Security headers:** shipped CSP/HSTS/other headers and feature 15's CSP
   expansion are absent from project-plan deployment text; preserve runtime behavior.
 - **Feature 23 gap:** 2FA, monitoring, backups and E2E are listed in build-plan
-  beyond project-plan's detail; confirm scope at that feature.
+  beyond project-plan's detail; confirm scope at that feature. Managed Better Auth
+  has no two-factor support yet (roadmap), so 2FA either waits for Neon or needs
+  self-managed Better Auth.
 - **Hero evidence:** showcase includes React Native and North City Islamic Youth
   Centre without corresponding case studies; confirm claims or revise the image.
 

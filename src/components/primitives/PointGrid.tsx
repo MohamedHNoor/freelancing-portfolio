@@ -10,8 +10,9 @@ type PointGridProps = {
   columns?: 2 | 3 | 4;
   /** Numbered when order carries meaning, as in a process. */
   numbered?: boolean;
-  /** One more cell after the points, such as a call to action that fills
-   *  what would otherwise be an empty slot in the last row. */
+  /** One more grid cell after the points, such as a call to action that fills
+   *  what would otherwise be an empty slot in the last row. It sits outside the
+   *  list, so a numbered list still announces only its points. */
   trailing?: ReactNode;
   /** Fade each card in on scroll. Off on content pages: `Reveal`
    *  server-renders `opacity: 0`, which would make the content depend on
@@ -40,9 +41,10 @@ export function PointGrid({
   }
 
   const List = numbered ? "ol" : "ul";
+  const grid = cn("grid gap-6 sm:grid-cols-2", COLUMNS[columns]);
 
-  return (
-    <List role="list" className={cn("grid gap-6 sm:grid-cols-2", COLUMNS[columns])}>
+  const list = (
+    <List role="list" className={trailing === undefined ? grid : "contents"}>
       {points.map((point, index) => {
         const card = (
           <PointCard point={point} position={numbered ? index + 1 : undefined} />
@@ -54,8 +56,20 @@ export function PointGrid({
           </li>
         );
       })}
-      {trailing !== undefined ? <li className="min-w-0">{trailing}</li> : null}
     </List>
+  );
+
+  if (trailing === undefined) {
+    return list;
+  }
+
+  /* The list's items stay grid cells through `display: contents`, with the
+     trailing cell beside them rather than inside the list. */
+  return (
+    <div className={grid}>
+      {list}
+      <div className="min-w-0">{trailing}</div>
+    </div>
   );
 }
 

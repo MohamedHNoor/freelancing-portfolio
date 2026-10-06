@@ -155,6 +155,10 @@ export const BACKGROUND_LINKS: readonly NavItem[] = [
   { label: "Resume", href: "/resume" },
 ];
 
+/** The reply-time commitment every call to action makes. It is a promise, so
+ *  if it stops being true, change it here and every page follows. */
+export const REPLY_TIME = "within one business day";
+
 /** The one call to action the whole site repeats. */
 export const PRIMARY_CTA: NavItem = {
   label: "Start a Project",

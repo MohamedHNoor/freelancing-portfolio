@@ -226,4 +226,35 @@ describe("submitContact, rate limiting", () => {
     expect(fourth.success).toBe(false);
     expect(sendMock).toHaveBeenCalledTimes(3);
   });
+
+  const submitFour = async () => {
+    const results = [];
+    for (let i = 0; i < 4; i++) {
+      results.push((await submitContact({ ...valid, message: `${valid.message} ${i}` })).success);
+    }
+    return results;
+  };
+
+  it("does not pool callers without a forwarded address into one shared bucket", async () => {
+    forwardedFor = null;
+    expect(await submitFour()).toEqual([true, true, true, true]);
+    forwardedFor = " , ";
+    expect(await submitFour()).toEqual([true, true, true, true]);
+  });
+
+  it("keys on the first non-empty element when the leftmost one is empty", async () => {
+    const ip = freshIp();
+    forwardedFor = `, ${ip}`;
+    expect(await submitFour()).toEqual([true, true, true, false]);
+    forwardedFor = ip;
+    expect((await submitContact({ ...valid, message: "Same caller, plain header." })).success).toBe(false);
+  });
+
+  it("keys on the client address in an appended proxy chain", async () => {
+    const ip = freshIp();
+    forwardedFor = `${ip}, 10.0.0.1, 10.0.0.2`;
+    expect(await submitFour()).toEqual([true, true, true, false]);
+    forwardedFor = `${freshIp()}, 10.0.0.1, 10.0.0.2`;
+    expect((await submitContact(valid)).success).toBe(true);
+  });
 });

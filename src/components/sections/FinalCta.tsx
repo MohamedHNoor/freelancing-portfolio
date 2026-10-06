@@ -4,13 +4,11 @@ import { Section } from "@/components/primitives/Section";
 import { Button } from "@/components/ui/button";
 import { getProfileLinks } from "@/content";
 import { toContactLink } from "@/lib/links";
+import { REPLY_TIME } from "@/lib/site";
 
 /* The last thing on the home page, and the end of the path it exists for: a
    visitor who has read this far is offered one action. The form itself is at
-   `/contact`, so it lives on one URL.
-
-   The reply time is a commitment, not a flourish, and it is repeated on
-   `/contact`. If it stops being true, change it in both places first. */
+   `/contact`, so it lives on one URL. */
 export function FinalCta() {
   const email = getProfileLinks().find((link) => link.key === "email");
   const direct = email === undefined ? undefined : toContactLink(email);
@@ -20,7 +18,7 @@ export function FinalCta() {
       id="start"
       label="Start a project"
       heading="Let's Build Something Useful"
-      lead="Whether you're launching a new business, replacing a manual process, building a SaaS product, or turning a Figma design into a production website, I can help. Every enquiry gets a reply within one business day."
+      lead={`Whether you're launching a new business, replacing a manual process, building a SaaS product, or turning a Figma design into a production website, I can help. Every enquiry gets a reply ${REPLY_TIME}.`}
       className="border-t border-border"
     >
       <div className="flex flex-wrap items-center gap-x-6 gap-y-4">

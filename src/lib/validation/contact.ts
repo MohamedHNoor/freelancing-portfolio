@@ -148,7 +148,7 @@ export const contactSchema = z.object({
 
   /* Honeypot. A human never sees this field, so a human never fails it. The
      action checks it server-side and does not rely on the client having done
-     so. It was `company` until that became a real field. */
+     so. */
   website: z.string().max(0, "This field must be left empty."),
 });
 

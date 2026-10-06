@@ -5,11 +5,7 @@ import type { Project } from "@/types/content";
    that ever stops being true, so a seeded example cannot reach a buyer.
 
    Every number names the measurement behind it, and is re-checked against the
-   project rather than carried forward. TravelGrid's figures were re-run on
-   5 October 2026 against its repository: its frontend had moved from Vite to
-   Next.js 16, its sessions to Better Auth, and its test count from 234 to 357,
-   so the earlier copy had drifted and was rewritten from the README and the
-   suites themselves.
+   project's repository and test suites rather than carried forward.
 
    Array order is the canonical order for the whole site: the home section, the
    index, the sitemap, and the previous and next links on a case study all read

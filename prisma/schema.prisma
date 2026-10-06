@@ -1,0 +1,11 @@
+// Dashboard models arrive with their features, one file per table group in
+// prisma/models/. Auth tables are not modelled here: Managed Better Auth owns
+// them in the neon_auth schema of each Neon branch.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}

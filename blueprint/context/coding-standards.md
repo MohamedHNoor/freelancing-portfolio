@@ -3,7 +3,8 @@
 > Tuned by `/onboard` to the real stack: Next.js 16 App Router, React 19,
 > TypeScript, Tailwind CSS v4, shadcn/ui, and Motion. The public site has no
 > database and no auth. The private business dashboard (build-plan features 15 to
-> 23) adds Neon Postgres through Drizzle, Better Auth, Stripe Checkout, and Resend;
+> 23) adds Neon Postgres through Prisma, Neon's Managed Better Auth, Stripe Checkout,
+> and Resend;
 > its rules are the Database and money, Auth and authorization, and Payments
 > sections below, and its design is `blueprint/dashboard-architecture.md`. Update
 > this file if the stack changes.
@@ -69,7 +70,9 @@
   `src/lib/validation/[feature].ts`
 - Dashboard components: `src/components/dashboard/[area]/`. The existing
   `src/components/projects/` belongs to the public case studies
-- Database schema: `src/db/schema/[table-group].ts`; migrations in `drizzle/`
+- Database schema: `prisma/models/[table-group].prisma` (generator and datasource
+  in `prisma/schema.prisma`); migrations in `prisma/migrations/`. The generated
+  client in `src/generated/prisma` is git-ignored and never edited
 - Server-only domain logic: `src/server/services/` (writes, transactions) and
   `src/server/queries/` (owner-scoped reads)
 - Email templates: `src/emails/`
@@ -165,8 +168,16 @@
   browser. Client components receive values already formatted
 - Format money and dates on the server only, with an explicit locale and the
   `Pacific/Auckland` timezone, so the output cannot depend on the machine
-- Schema changes go through `npm run db:generate` and reviewed SQL in `drizzle/`.
-  Never run `drizzle-kit push` against a shared Neon branch
+- Schema changes ship as reviewed SQL in `prisma/migrations/`, authored as
+  described in `blueprint/database-setup.md`, and `npm run db:generate` refreshes
+  the client. Never run `prisma db push` or `prisma migrate dev` against a shared
+  Neon branch, and never let Prisma Migrate touch the `neon_auth` schema
+- Raw SQL uses Prisma's tagged `$queryRaw`/`$executeRaw` only; never the
+  `Unsafe` variants
+- Prisma returns `BigInt` columns as JS `bigint`. Convert money at the query
+  boundary with `Number(value)` and reject any result that fails
+  `Number.isSafeInteger`. Never pass the `bigint` itself to `Number.isSafeInteger`,
+  which always returns false for it
 - A write that touches more than one row runs in one transaction. Status changes
   are conditional updates (`WHERE status IN (...)`) so a lost race fails instead
   of overwriting
@@ -186,8 +197,11 @@
   that does not exist
 - Validate every id from the browser as a uuid before use, including arguments
   bound with `.bind()`
-- Auth forms use Server Actions calling Better Auth's server API, not the Better
-  Auth browser client
+- Auth forms use Server Actions calling the Managed Better Auth server SDK
+  (`@neondatabase/auth/next/server`), not the browser auth client
+- `requireOwner()` accepts only a verified session whose email is `OWNER_EMAIL`.
+  Sign-up is closed in Neon's branch settings, and the app never relies on that
+  setting alone
 
 ## Payments
 

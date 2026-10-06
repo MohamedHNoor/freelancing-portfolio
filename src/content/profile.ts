@@ -45,7 +45,8 @@ export const profile = {
      anyone in Australia or New Zealand. */
   location: "Wellington, New Zealand",
 
-  /* Where the work can be, never a claim about where past clients were. */
+  /* Regions the owner works with clients in today. Named clients belong in
+     case studies, not here. */
   serviceArea: ["New Zealand", "Australia", "International"],
 
   /* A WebP resized from the original 1254px PNG, which was 2.1 MB. The box

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { enquiryHref } from "@/lib/links";
+import { REPLY_TIME } from "@/lib/site";
 import type { ProjectType } from "@/lib/validation/contact";
 
 type CaseStudyCtaProps = {
@@ -25,8 +26,8 @@ export function CaseStudyCta({ enquiryType }: CaseStudyCtaProps) {
       </h2>
       <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
         Tell me what you are building. You can send a brief, a Figma file or a
-        short description, and you will get a reply within one business day
-        with a practical way to approach it.
+        short description, and you will get a reply {REPLY_TIME} with a
+        practical way to approach it.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Button asChild className="h-11 gap-2 px-5 text-[0.95rem]">

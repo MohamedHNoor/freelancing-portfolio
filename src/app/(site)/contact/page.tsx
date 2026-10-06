@@ -4,11 +4,12 @@ import { PageHeader } from "@/components/primitives/PageHeader";
 import { getProfileLinks } from "@/content";
 import { toContactLink } from "@/lib/links";
 import { routeMetadata } from "@/lib/seo";
+import { REPLY_TIME } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Start a website or web application project with Mohamed Noor, a full-stack developer in Wellington, New Zealand. Every enquiry gets a reply within one business day.",
+    `Start a website or web application project with Mohamed Noor, a full-stack developer in Wellington, New Zealand. Every enquiry gets a reply ${REPLY_TIME}.`,
   ...routeMetadata("/contact"),
 };
 
@@ -26,7 +27,7 @@ export default function ContactPage() {
           id="contact-heading"
           eyebrow="Contact"
           heading="Have a Project in Mind?"
-          lead="Tell me what you're building. Send a project brief, a Figma file, an existing website or a requirements document, or simply explain the idea. I'll review it and suggest a practical way to approach the project, within one business day."
+          lead={`Tell me what you're building. Send a project brief, a Figma file, an existing website or a requirements document, or simply explain the idea. I'll review it and suggest a practical way to approach the project, ${REPLY_TIME}.`}
         />
 
         <div className="mt-12">

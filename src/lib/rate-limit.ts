@@ -28,11 +28,11 @@ export const DEFAULT_MAX_KEYS = 5_000;
 
 /** Drops entries the window has left behind, then enforces the ceiling.
  *
- *  The first loop is the actual repair: the earlier version pruned timestamps
- *  inside an entry but never removed the entry, so a key seen once stayed in the
- *  map for the life of the process. The second is the backstop, because the key
- *  is a client-supplied header: a caller can mint a fresh one per request, and
- *  those are all still inside the window, so expiry alone never catches them.
+ *  The first loop removes keys whose last hit has left the window, so a key
+ *  seen once does not stay for the life of the process. The second is the
+ *  backstop, because the key is a client-supplied header: a caller can mint a
+ *  fresh one per request, and those are all still inside the window, so expiry
+ *  alone never catches them.
  *
  *  Both are O(size), bounded by `maxKeys`, on a path that is already limited to
  *  a handful of calls per key per window. */

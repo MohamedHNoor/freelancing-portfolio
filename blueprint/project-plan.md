@@ -61,8 +61,10 @@ frontend to backend.
 a resume and a code-quality signal quickly.
 
 The market is New Zealand, Australia and international. Local relevance matters to New
-Zealand and Australian buyers, so Wellington is stated plainly, but the site never implies
-existing clients in any country.
+Zealand and Australian buyers, so Wellington is stated plainly. The site may say it works
+with clients across New Zealand, Australia and internationally, because that is true
+(confirmed by the owner on 2026-10-07). It never names a client, country count or
+location it cannot back up.
 
 All of them arrive cold, often on mobile, often from a link pasted into a message thread.
 No one is browsing. Every section has to earn the next scroll.
@@ -126,8 +128,8 @@ budget brackets in the enquiry form.
 
 ### Post-MVP: private business dashboard
 
-- Owner-only sign-in with email verification and password reset. Registration accepts only
-  the owner's address and closes after the first account
+- Owner-only sign-in with email verification and password reset. Sign-up is closed: the
+  owner's account is the only one, and the app admits no other
 - Clients with contact details, company, country, default currency, and billing address
 - Projects with a total, a currency, dates, and a status: draft, active, on hold,
   completed, or cancelled
@@ -175,7 +177,8 @@ The placeholder flag exists so seeded example projects can never be mistaken for
 client work. No project may ship to production with it set.
 
 The private business dashboard stores its data in one Neon Postgres database through
-Drizzle, alongside Better Auth's own user, session, account, and verification tables:
+Prisma. Identity is Neon's Managed Better Auth, which keeps its own user, session,
+account, and verification tables in the same database's `neon_auth` schema:
 
 - `clients`, `projects`, `milestones` (the payment plan), and `tasks`
 - `payment_requests` and `payments`, kept separate so money asked for and money received
@@ -201,9 +204,10 @@ stored; Stripe holds them.
 - Vitest for logic tests, added before the contact feature
 - Playwright MCP for browser verification during the build
 - Git and GitHub, with a Verify command wired to automatic checks
-- For the private dashboard: Neon Postgres with Drizzle ORM and Drizzle Kit migrations,
-  Better Auth (email and password, Drizzle adapter), Stripe Checkout and webhooks, React
-  Email templates sent through Resend, and dnd-kit for accessible reordering
+- For the private dashboard: Neon Postgres with Prisma ORM and Prisma Migrate,
+  Neon's Managed Better Auth (email and password, sign-up closed to all but the owner),
+  Stripe Checkout and webhooks, React Email templates sent through Resend, and dnd-kit
+  for accessible reordering
 
 Server components by default. Client components only for the theme toggle, mobile
 navigation, contact form, project filter, the technology row's pause control, the
@@ -274,10 +278,10 @@ tabular figures. The accessibility bar is the same as the public site's.
 - Build command: `npm run build`, output served by Vercel's Next.js runtime
 - All public routes statically generated. The server work is the contact Server Action
   plus the private dashboard, the sign-in and payment pages, and two route handlers:
-  Better Auth and the Stripe webhook
+  the Managed Better Auth proxy and the Stripe webhook
 - Environment variables by name: `RESEND_API_KEY`, `CONTACT_TO_EMAIL`,
   `CONTACT_FROM_EMAIL`, `NEXT_PUBLIC_SITE_URL`, and for the dashboard `DATABASE_URL`,
-  `DATABASE_URL_UNPOOLED`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `OWNER_EMAIL`,
+  `DATABASE_URL_UNPOOLED`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `OWNER_EMAIL`,
   `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `BILLING_FROM_EMAIL`
 - One Neon Postgres database in Sydney (`aws-ap-southeast-2`), with Vercel Functions in
   `syd1` beside it. No storage buckets, no workers, no cron jobs
