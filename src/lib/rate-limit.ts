@@ -86,3 +86,15 @@ export function checkRateLimit(
   sweep(store, now, windowMs, maxKeys);
   return { allowed: true, remaining: limit - fresh.length - 1 };
 }
+
+/** The caller's first non-empty forwarded address, or null when there is none.
+ *  An unidentifiable caller skips the limiter rather than sharing one bucket
+ *  with every other unidentifiable caller, which would make a light per-visitor
+ *  limit site-wide. */
+export function clientKey(forwardedFor: string | null): string | null {
+  const address = forwardedFor
+    ?.split(",")
+    .map((part) => part.trim())
+    .find((part) => part !== "");
+  return address ?? null;
+}

@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { headers } from "next/headers";
 import { Resend } from "resend";
 import { formatFromHeader } from "@/lib/links";
-import { checkRateLimit, type RateLimitStore } from "@/lib/rate-limit";
+import { checkRateLimit, clientKey, type RateLimitStore } from "@/lib/rate-limit";
 import {
   BUDGET_RANGE_LABELS,
   EXISTING_DESIGN_LABELS,
@@ -73,18 +73,6 @@ function idempotencyKey(submission: ContactSubmission): string {
     .slice(0, 32);
 
   return `contact-enquiry/${digest}`;
-}
-
-/** The caller's first non-empty forwarded address, or null when there is none.
- *  An unidentifiable caller skips the limiter rather than sharing one bucket
- *  with every other unidentifiable caller, which would make a light per-visitor
- *  limit site-wide. */
-function clientKey(forwardedFor: string | null): string | null {
-  const address = forwardedFor
-    ?.split(",")
-    .map((part) => part.trim())
-    .find((part) => part !== "");
-  return address ?? null;
 }
 
 function plainTextBody(submission: ContactSubmission): string {

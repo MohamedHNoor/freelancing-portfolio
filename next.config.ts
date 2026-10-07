@@ -3,10 +3,17 @@ import { securityHeaders } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  // Server Action arguments include passwords and email-link tokens.
+  logging: {
+    serverFunctions: false,
+    incomingRequests: {
+      ignore: [/^\/(?:api\/auth|login|forgot-password|reset-password|verify-email)(?:\/|\?|$)/],
+    },
+  },
 
   /* Applied to every path, static routes included. Deliberately here rather
      than in middleware: middleware would make every route dynamic, and this
-     site's contract is that all of them are statically generated. Vercel
+     site's public routes remain statically generated. Vercel
      translates these into its own routing config at deploy time, and
      `next start` serves them locally, so both can be verified the same way.
 
@@ -22,6 +29,13 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: headers.map(({ key, value }) => ({ key, value })),
       },
+      // Protect email-link tokens even before page metadata has been parsed.
+      ...["/login", "/forgot-password", "/reset-password", "/verify-email"].map(
+        (source) => ({
+          source,
+          headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+        }),
+      ),
     ];
   },
 };

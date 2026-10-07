@@ -7,6 +7,9 @@ export default defineConfig({
        browser instead, per the browser verification rule in the standards. */
     environment: "node",
     include: ["tests/**/*.test.ts", "tests/**/*.test.tsx"],
+    /* Processed by Vite so tests can stub the `next/headers` it imports, and
+       exercise the real SDK against a stubbed upstream. */
+    server: { deps: { inline: ["@neondatabase/auth"] } },
   },
   resolve: {
     alias: {

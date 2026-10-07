@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/lib/auth/server", () => ({ getAuth: mocks.getAuth }));
 
+const context = (...path: string[]) => ({ params: Promise.resolve({ path }) });
+
 beforeEach(() => {
   vi.resetModules();
   vi.clearAllMocks();
@@ -20,14 +22,32 @@ describe("/api/auth/[...path]", () => {
     expect(mocks.getAuth).not.toHaveBeenCalled();
   });
 
-  it("delegates GET and POST to the SDK handler, resolving it once", async () => {
+  it("delegates the allowed session read and sign-out, resolving the SDK once", async () => {
     const route = await import("@/app/api/auth/[...path]/route");
-    const context = { params: Promise.resolve({ path: ["get-session"] }) };
     const request = new Request("http://localhost/api/auth/get-session");
-    expect(await (await route.GET(request, context)).text()).toBe("get");
-    expect(await (await route.POST(request, context)).text()).toBe("post");
-    expect(mocks.GET).toHaveBeenCalledWith(request, context);
-    expect(mocks.POST).toHaveBeenCalledWith(request, context);
+    const read = context("get-session");
+    const out = context("sign-out");
+    expect(await (await route.GET(request, read)).text()).toBe("get");
+    expect(await (await route.POST(request, out)).text()).toBe("post");
+    expect(mocks.GET).toHaveBeenCalledWith(request, read);
+    expect(mocks.POST).toHaveBeenCalledWith(request, out);
     expect(mocks.getAuth).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["GET", ["sign-out"]],
+    ["POST", ["get-session"]],
+    ["POST", ["sign-up", "email"]],
+    ["POST", ["sign-in", "email"]],
+    ["POST", ["request-password-reset"]],
+    ["POST", ["send-verification-email"]],
+    ["POST", ["update-user"]],
+    ["GET", ["admin", "list-users"]],
+    ["GET", ["get-session", "extra"]],
+  ] as const)("refuses %s %j with 404 without reaching Neon", async (method, path) => {
+    const route = await import("@/app/api/auth/[...path]/route");
+    const response = await route[method](new Request("http://localhost/api/auth/x", { method }), context(...path));
+    expect(response.status).toBe(404);
+    expect(mocks.getAuth).not.toHaveBeenCalled();
   });
 });

@@ -16,6 +16,21 @@
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", monospace;
   --font-heading: var(--font-space-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
   --color-brand: var(--brand);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-neutral: var(--neutral);
+  --color-neutral-soft: var(--neutral-soft);
+  /* Scope the prototype's density to workspace utilities. Overriding text-sm
+     here would also change the public site's typography. */
+  --text-workspace-sm: 0.8125rem;
+  --text-workspace-body: 0.875rem;
+  --text-workspace-title: 1.625rem;
+  --spacing-workspace-sidebar: 14.5rem;
+  --container-workspace: 78rem;
   --color-highlight-start: var(--highlight-start);
   --color-highlight-end: var(--highlight-end);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -86,6 +101,14 @@
   /* Accent text needs a different luminance from the accent surface, so the
      violet that passes AA as a label is not the violet used as a button fill. */
   --brand: oklch(0.48 0.2 288);
+  --success: oklch(0.45 0.13 155);
+  --success-soft: oklch(0.95 0.04 155);
+  --info: oklch(0.47 0.14 250);
+  --info-soft: oklch(0.95 0.03 250);
+  --danger: oklch(0.5 0.2 25);
+  --danger-soft: oklch(0.95 0.03 25);
+  --neutral: oklch(0.46 0.02 285);
+  --neutral-soft: oklch(0.95 0.006 285);
 
   /* The hero headline's emphasised phrase: violet into magenta. Deeper than
      the dark pair, because both ends are text and must hold 4.5:1 on the
@@ -133,6 +156,14 @@
   --input: oklch(0.5 0.03 285);
   --ring: oklch(0.78 0.14 288);
   --brand: oklch(0.78 0.14 288);
+  --success: oklch(0.8 0.15 155);
+  --success-soft: oklch(0.28 0.05 155);
+  --info: oklch(0.8 0.11 245);
+  --info-soft: oklch(0.28 0.05 250);
+  --danger: oklch(0.76 0.15 25);
+  --danger-soft: oklch(0.28 0.06 25);
+  --neutral: oklch(0.76 0.015 285);
+  --neutral-soft: oklch(0.27 0.015 285);
 
   --highlight-start: oklch(0.7 0.19 292);
   --highlight-end: oklch(0.83 0.12 315);
@@ -166,6 +197,109 @@
     scroll-behavior: smooth;
     scroll-padding-top: 5.5rem;
   }
+}
+
+.workspace-ui {
+  --workspace-shadow: 0 2px 4px oklch(0.25 0.03 285 / 3%),
+    0 16px 48px -24px oklch(0.25 0.06 285 / 18%);
+  --workspace-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.dark .workspace-ui {
+  --workspace-shadow: 0 2px 4px oklch(0 0 0 / 12%),
+    0 16px 48px -24px oklch(0 0 0 / 45%);
+}
+
+.workspace-ui .workspace-surface {
+  box-shadow: var(--workspace-shadow);
+}
+
+.workspace-ui [data-slot="input"] {
+  background: color-mix(in oklch, var(--background) 70%, var(--card));
+  transition: border-color 150ms var(--workspace-ease), box-shadow 150ms var(--workspace-ease);
+}
+
+.workspace-ui [data-slot="input"][aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.workspace-ui [data-slot="button"] {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  translate: none;
+  transition: transform 150ms var(--workspace-ease), background-color 150ms var(--workspace-ease),
+    color 150ms var(--workspace-ease), border-color 150ms var(--workspace-ease),
+    box-shadow 150ms var(--workspace-ease);
+}
+
+.workspace-ui [data-slot="button"]:active:not(:focus-visible):not(:disabled) {
+  transform: scale(0.98);
+}
+
+.workspace-ui [data-slot="button"]:focus-visible {
+  transition: none;
+}
+
+/* Occasional, rarely seen states: the auth card's first paint, and form
+   feedback appearing. Feedback is cleared on every submit, so a repeated
+   error replays the reveal rather than changing silently. */
+@keyframes workspace-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes workspace-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes workspace-icon-swap {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+    filter: blur(2px);
+  }
+}
+
+.workspace-ui .workspace-enter {
+  animation: workspace-enter 280ms var(--workspace-ease) both;
+}
+
+.workspace-ui .workspace-reveal {
+  animation: workspace-reveal 200ms var(--workspace-ease) both;
+}
+
+.workspace-ui .workspace-icon-swap {
+  animation: workspace-icon-swap 150ms var(--workspace-ease) both;
+}
+
+.workspace-sheet {
+  --tw-enter-translate-x: -100%;
+  --tw-exit-translate-x: -100%;
+  transition: none;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.workspace-sheet[data-state="open"] {
+  animation-duration: 220ms;
+}
+
+.workspace-sheet[data-state="closed"] {
+  animation-duration: 160ms;
+}
+
+.workspace-sheet[data-motion="instant"],
+[data-slot="sheet-overlay"]:has(~ .workspace-sheet[data-motion="instant"]) {
+  /* Radix waits for animationend before releasing the focus trap. */
+  animation-duration: 0.01ms;
+  --tw-enter-translate-x: 0;
+  --tw-exit-translate-x: 0;
+  --tw-enter-opacity: 1;
+  --tw-exit-opacity: 1;
 }
 
 /* The hero technology row scrolls one full copy of its list, then repeats.
@@ -203,6 +337,18 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .workspace-ui [data-slot="button"]:active {
+    transform: none;
+  }
+
+  .workspace-sheet,
+  [data-slot="sheet-overlay"]:has(~ .workspace-sheet) {
+    --tw-enter-translate-x: 0;
+    --tw-exit-translate-x: 0;
+    --tw-enter-opacity: 1;
+    --tw-exit-opacity: 1;
   }
 }
 

@@ -63,7 +63,7 @@ machines, payment flow, and rules every item below builds on are in
   (`blueprint/history/fixes/recruiter-resume.md`): the pages are in `(site)` and `/resume`
   deliberately stays outside it. Still to do: robots, the CSP, and moving `MotionProvider`
   and `SkipLink` out of the root layout if the dashboard should not carry them
-- [ ] 16. **Owner sign-in** - the Neon and Prisma foundation, email and password
+- [x] 16. **Owner sign-in** - the Neon and Prisma foundation, email and password
   sign-in through Neon's Managed Better Auth with verification and reset emails sent
   through Resend, sign-up closed so only the owner's account exists, and the protected
   dashboard shell
@@ -76,7 +76,7 @@ machines, payment flow, and rules every item below builds on are in
     with sign-up closed, the owner account, verification and password-reset emails
     through Resend SMTP, sessions, auth server actions, and owner-only
     authorization tests
-  - [ ] 16c. **Auth screens and dashboard shell** - accessible auth forms,
+  - [x] 16c. **Auth screens and dashboard shell** - accessible auth forms,
     protected dashboard navigation, loading and error states, and browser
     verification using the existing design system
 - [ ] 17. **Clients** - create, edit, archive, and list clients with their currency and

@@ -151,8 +151,12 @@ app. Feature 16b wires it in, following Neon's Next.js "API methods" quickstart
 - `src/lib/auth/server.ts` `getAuth()` lazily builds one `createNeonAuth`
   instance from `@neondatabase/auth` `0.5.0-beta` (pinned), with
   `sessionDataTtl: 60` and `logLevel: "silent"`.
-- `src/app/api/auth/[...path]/route.ts` is the same-origin proxy to Neon, and
-  the app's only dynamic route. It resolves the SDK handler inside the request.
+- `src/app/api/auth/[...path]/route.ts` is the same-origin proxy to Neon. It
+  forwards only `GET get-session` and `POST sign-out` (everything else is 404)
+  and resolves the SDK handler inside the request.
+- `getSessionReader()` in the same module is a second SDK instance for page
+  renders: its request context drops cookie writes, which Next forbids while a
+  Server Component renders.
 - `src/server/auth/session.ts` holds the owner check:
   - `getOwner()` admits only a verified session whose email is `OWNER_EMAIL`.
   - `requireOwner()` is for pages and redirects to `/login`.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkRateLimit, type RateLimitStore } from "@/lib/rate-limit";
+import { checkRateLimit, clientKey, type RateLimitStore } from "@/lib/rate-limit";
 
 const LIMIT = 3;
 const WINDOW = 10 * 60 * 1000;
@@ -115,5 +115,18 @@ describe("checkRateLimit store growth", () => {
     checkRateLimit(s, "ip", 2, LIMIT, WINDOW);
     expect(checkRateLimit(s, "ip", 3, LIMIT, WINDOW).allowed).toBe(true);
     expect(checkRateLimit(s, "ip", 4, LIMIT, WINDOW).allowed).toBe(false);
+  });
+});
+
+describe("clientKey", () => {
+  it.each([
+    ["203.0.113.1", "203.0.113.1"],
+    ["203.0.113.1, 10.0.0.1", "203.0.113.1"],
+    [" , 203.0.113.2", "203.0.113.2"],
+    ["", null],
+    [" , ", null],
+    [null, null],
+  ])("reads %j as %j", (header, key) => {
+    expect(clientKey(header)).toBe(key);
   });
 });

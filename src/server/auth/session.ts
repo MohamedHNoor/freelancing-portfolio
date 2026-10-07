@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { getAuth } from "@/lib/auth/server";
+import { getSessionReader } from "@/lib/auth/server";
 import { ownerUserId } from "@/lib/auth/owner";
 import { getAuthEnv } from "@/lib/env";
 import type { ActionFailure } from "@/types/action";
@@ -18,10 +18,11 @@ export class AuthServiceError extends Error {
 }
 
 /** The verified owner for this request, or null for anyone else. A failed
- *  session lookup is an unexpected error, never a quiet "signed out". */
+ *  session lookup is an unexpected error, never a quiet "signed out". Reads
+ *  through the cookie-safe reader, because pages call this while rendering. */
 export const getOwner = cache(async (): Promise<Owner | null> => {
   const { ownerEmail } = getAuthEnv();
-  const { data, error } = await getAuth().getSession();
+  const { data, error } = await getSessionReader().getSession();
   if (error) throw new AuthServiceError(String(error.code ?? error.status ?? "unknown"));
   const userId = ownerUserId(data, ownerEmail);
   return userId === null ? null : { userId };

@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("server-only", () => ({}));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
-vi.mock("@/lib/auth/server", () => ({ getAuth: () => ({ getSession: mocks.getSession }) }));
+vi.mock("@/lib/auth/server", () => ({ getSessionReader: () => ({ getSession: mocks.getSession }) }));
 
 const OWNER_ID = "8f6c2a3e-0b1d-4e5f-9a7b-1c2d3e4f5a6b";
 const ownerSession = { user: { id: OWNER_ID, email: "Owner@Example.com", emailVerified: true } };

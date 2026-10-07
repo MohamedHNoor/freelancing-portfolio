@@ -334,7 +334,7 @@ createNeonAuth({
 })
 ```
 - **Lazy creation**: `getAuth()` builds the instance on first use, after `src/lib/env.ts` validates both variables, so the static build never needs them. The pattern is the same as `getDb()`.
-- **Route**: `src/app/api/auth/[...path]/route.ts` exports `GET` and `POST` functions that delegate to `getAuth().handler()` inside the request, so importing the route never reads env. The browser only ever talks to this origin; the handler proxies to Neon.
+- **Route**: `src/app/api/auth/[...path]/route.ts` exports `GET` and `POST` functions that delegate to `getAuth().handler()` inside the request, so importing the route never reads env. It forwards only `GET get-session` and `POST sign-out`; sign-in, reset and verification go through the Server Actions, which apply the owner rule, so every other path is 404. Pages read the session through `getSessionReader()`, whose context drops cookie writes because Next forbids them during render.
 - **Branch settings, not code**: email/password on, email verification required, **sign-up disabled**, trusted domains (`https://mohamedhnoor.com` on `production`, each preview origin on `development`; localhost is pre-approved unless a project turned that off), application name, and the email provider. They are set per branch in the Neon Console, the `neon neon-auth` CLI, or the Neon MCP tools, and recorded in `blueprint/database-setup.md`.
 - **Owner account**: created once per branch while sign-up is disabled: the Neon Console, the CLI or API, or MCP `create_auth_user`. 16b fixes the exact procedure and confirms the account ends up email-verified. Branches copy the auth data of their parent, so `development` inherits the owner from `production`.
 - **Auth emails** (verification, password reset) are sent by Neon's auth service, not by the app. Neon's shared SMTP sender can deliver verification *codes* only; verification *links* and production need custom SMTP, which here is Resend's SMTP relay with the verified `mohamedhnoor.com` sender. The app sends no auth email and never sees the token URLs.
@@ -551,7 +551,7 @@ Each produces editable draft rows.
 ## 17. Route Handlers
 | Route | Purpose |
 |---|---|
-| `GET/POST /api/auth/[...path]` | Managed Better Auth proxy (`auth.handler()`): sign-in, verify-email link target, reset |
+| `GET/POST /api/auth/[...path]` | Managed Better Auth proxy (`auth.handler()`), allowlisted to `GET get-session` and `POST sign-out` |
 | `POST /api/stripe/webhook` | Stripe events (§10) |
 | *(future)* `GET /api/cron/reminders` | Vercel Cron for overdue reminders, guarded by `CRON_SECRET` |
 
