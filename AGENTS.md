@@ -278,6 +278,9 @@ Package manager: **npm** (`package-lock.json`).
 - Add a shadcn/ui component: `npx shadcn@latest add <component>`
 - Prisma Client generation (offline): `npm run db:generate` (also runs on
   `npm install` through `postinstall`; output in git-ignored `src/generated/prisma`)
+- Author a migration (offline, local shadow database only): `npm run db:diff`
+  (`prisma migrate diff --from-migrations`; needs `SHADOW_DATABASE_URL`, see
+  `blueprint/database-setup.md`)
 - Apply migrations (live, separate approval): `npm run db:migrate` (`prisma migrate deploy`)
 - Migration status and failed-migration recovery (live, separate approval):
   `npx prisma migrate status`, `npx prisma migrate resolve` (procedure in

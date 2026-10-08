@@ -1,6 +1,6 @@
 # Freelance Portfolio - Project Overview
 
-<!-- blueprint:source-hash 141ce66beefde798813f7eb28442c448be32e057b4195be2cf126a346a8a35fd -->
+<!-- blueprint:source-hash a32f34ff40b9e8d50c46311c485600ad74786d8ca7629564edcd1ab081b32bcb -->
 
 > A Wellington full-stack developer's portfolio converts search, LinkedIn and
 > GitHub traffic into enquiries; a private dashboard runs won work and collects
@@ -67,6 +67,11 @@ Order/progress: `blueprint/build-plan.md`. Detailed dashboard contracts:
 17. **Clients** — CRUD/archive/list, integer money, activity log.
 18. **Projects/payment plans** — percentage/fixed/mixed milestones, upfront deposit,
     exact balance before activation, separate work/payment progress. **Headline dashboard feature.**
+    - **18a Foundation** — projects/milestones models and migration, allocation,
+      derivations, validation, owner-scoped loaders, project state machine, services
+      under a project row lock, presets as drafts, actions, integration tests.
+    - **18b Screens** — projects list, new project with preset, project page, plan
+      editor, settings/status/draft delete, client's projects, dev-branch migration.
 19. **Tasks/milestone completion** — statuses, reorder, computed progress, ready state,
     manual completion/reopening, activity timeline.
 20. **Payment requests/Checkout** — stable pay link, itemized request/invoice number,

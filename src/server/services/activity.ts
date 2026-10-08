@@ -9,6 +9,8 @@ export type ActivityEntry = ActivityPayload & {
   /** Rendered now, so the record still reads correctly after later renames. */
   summary: string;
   clientId?: string | null;
+  projectId?: string | null;
+  milestoneId?: string | null;
 };
 
 /**
@@ -22,6 +24,8 @@ export async function recordActivity(tx: Db, entry: ActivityEntry): Promise<void
     data: {
       ownerId: entry.ownerId,
       clientId: entry.clientId ?? null,
+      projectId: entry.projectId ?? null,
+      milestoneId: entry.milestoneId ?? null,
       type,
       actor: entry.actor,
       summary: entry.summary,

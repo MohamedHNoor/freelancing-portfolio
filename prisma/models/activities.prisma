@@ -1,17 +1,22 @@
 // Append-only: no update or delete path exists in the app.
 model Activity {
-  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ownerId    String        @map("owner_id") @db.Uuid
-  clientId   String?       @map("client_id") @db.Uuid
-  type       ActivityType
-  actor      ActivityActor
-  summary    String
-  data       Json          @default("{}")
-  occurredAt DateTime      @default(now()) @map("occurred_at") @db.Timestamptz
-  owner      NeonAuthUser  @relation(fields: [ownerId], references: [id], onDelete: Restrict)
-  client     Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerId     String        @map("owner_id") @db.Uuid
+  clientId    String?       @map("client_id") @db.Uuid
+  projectId   String?       @map("project_id") @db.Uuid
+  milestoneId String?       @map("milestone_id") @db.Uuid
+  type        ActivityType
+  actor       ActivityActor
+  summary     String
+  data        Json          @default("{}")
+  occurredAt  DateTime      @default(now()) @map("occurred_at") @db.Timestamptz
+  owner       NeonAuthUser  @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  client      Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  project     Project?      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone   Milestone?    @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
 
   @@index([ownerId, occurredAt(sort: Desc)])
+  @@index([projectId, occurredAt(sort: Desc)])
   @@map("activities")
   @@schema("public")
 }

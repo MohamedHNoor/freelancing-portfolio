@@ -36,3 +36,19 @@
 **Why it matters:** `listClientActivity` filters `owner_id` and `client_id` and orders by `occurred_at DESC, id DESC` with `LIMIT 50`, but the only activity index is `(owner_id, occurred_at DESC)` (`prisma/models/activities.prisma:14`) and `client_id` has none. For a client with fewer than 50 activities Postgres must walk every one of the owner's activities. The `ON DELETE SET NULL` foreign key on `client_id` also has no supporting index. Negligible at today's single-owner volume and unmeasured; features 18 to 21 add project, milestone, task and payment activity to the same table, so the cost grows with the log.
 **Suggested fix:** When a later migration touches `activities`, consider `(client_id, occurred_at DESC)` (and matching indexes for the per-project feeds), and confirm with `EXPLAIN` on a realistic row count.
 **Resolution:**
+
+### F-34 [P3] open - A preset whose total is too small fails as a `preset` validation error, not the Conflict the spec names, and the path is untested
+
+**File:** src/server/services/payment-plan.ts:105
+**Found:** 2026-10-08 by /audit (independent; scope: current; lens: quality, tests)
+**Why it matters:** `insertPreset` throws `ValidationError({ preset: [...] })` when a preset row would be 0 minor units (for example `fixed` with 10 milestones on a total of 0.05). The spec's plan-invariant rule says a failing preset raises Conflict, while the edited-field `ValidationError` is reserved for `amount`, `percent` and `total`. Either behaviour is defensible, but the divergence is not recorded, and no unit or integration test exercises this branch through `createProject` or `applyPlanPreset`, so 18b's form will rely on an unproven error shape (`fieldErrors.preset`, a nested object field).
+**Suggested fix:** Decide the contract (keep the `preset` field error and record it as a divergence in the spec and `dashboard-architecture.md`, or switch to `ConflictError`), then add an integration case for each caller asserting the error and that no project, milestone or activity row was written.
+**Resolution:**
+
+### F-35 [P3] unverified - Plan writes issue one UPDATE per milestone under the project lock with no cap on plan size
+
+**File:** src/server/services/payment-plan.ts:58
+**Found:** 2026-10-08 by /audit (independent; scope: current; lens: performance)
+**Why it matters:** `writeAmounts` and the reorder loop (`payment-plan.ts:229`) run a sequential `UPDATE` per changed row while holding the project row lock, and nothing bounds how many milestones a project can have (`createMilestone` only appends). A total change on a large percentage plan therefore costs N round trips inside one interactive transaction (Prisma's default 5-second timeout). Negligible at realistic plan sizes (presets cap at 11 rows) and unmeasured.
+**Suggested fix:** Consider a sensible maximum milestone count in `createMilestone`, or batch the amount/position writes into one statement (for example a tagged `$executeRaw` `UPDATE ... FROM (VALUES ...)`), if plans ever grow beyond a few dozen rows.
+**Resolution:**

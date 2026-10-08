@@ -1,11 +1,18 @@
 import { loadEnvConfig } from "@next/env";
 import { defineConfig } from "prisma/config";
-import { databaseToolDatasource, isLiveDatabaseCommand } from "./src/lib/validation/database-tooling";
+import {
+  databaseToolDatasource,
+  isLiveDatabaseCommand,
+  isShadowDiffCommand,
+  shadowDiffDatasource,
+} from "./src/lib/validation/database-tooling";
 
-const live = isLiveDatabaseCommand(process.argv.slice(2));
+const args = process.argv.slice(2);
+const live = isLiveDatabaseCommand(args);
+const shadowDiff = isShadowDiffCommand(args);
 
 // Offline generation does not load private environment files or need a real URL.
-if (live) loadEnvConfig(process.cwd(), process.env.NODE_ENV !== "production");
+if (live || shadowDiff) loadEnvConfig(process.cwd(), process.env.NODE_ENV !== "production");
 
 export default defineConfig({
   schema: "prisma",
@@ -20,5 +27,7 @@ export default defineConfig({
       CREATE TABLE IF NOT EXISTS neon_auth."user" (id uuid PRIMARY KEY);
     `,
   },
-  datasource: databaseToolDatasource(live, process.env.DATABASE_URL_UNPOOLED),
+  datasource: shadowDiff
+    ? shadowDiffDatasource(process.env.SHADOW_DATABASE_URL)
+    : databaseToolDatasource(live, process.env.DATABASE_URL_UNPOOLED),
 });

@@ -92,6 +92,19 @@ machines, payment flow, and rules every item below builds on are in
   percentage, fixed, or mixed milestone plans with the deposit as an upfront milestone;
   plans that must balance exactly before a project activates; and the project page with
   separate development and payment progress
+  - [x] 18a. **Project and payment plan foundation** - the projects and milestones
+    models and offline migration with their check and composite-key constraints,
+    largest-remainder percentage allocation, plan and progress derivations, project
+    and milestone validation, owner-scoped project and milestone loaders, the project
+    state machine, project and payment-plan services that enforce the plan invariant
+    under a project row lock, plan presets as editable drafts, project and milestone
+    Server Actions, and integration tests for percentage, fixed and mixed plans,
+    over-allocation, the activation guard and owner isolation
+  - [ ] 18b. **Project screens** - the projects list with status tabs, the new project
+    page with a client, total and plan preset, the project page with its payment plan
+    table and separate development and payment progress, the plan editor, project
+    settings with status changes and draft deletion, the client's projects on client
+    detail, the migration applied to the development branch, and browser verification
 - [ ] 19. **Tasks and milestone completion** - tasks inside each milestone with status,
   reordering, and computed progress, a ready-for-completion state, manual milestone
   completion and reopening, and the project activity timeline

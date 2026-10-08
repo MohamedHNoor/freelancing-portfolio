@@ -1,6 +1,6 @@
 import "server-only";
 import type { z } from "zod";
-import { ConflictError, NotFoundError } from "@/lib/permissions";
+import { ConflictError, NotFoundError, ValidationError } from "@/lib/permissions";
 import { idSchema } from "@/lib/validation/money";
 import { requireOwnerForAction, type Owner } from "@/server/auth/session";
 import type { ActionErrorCode, ActionFailure, ActionResult } from "@/types/action";
@@ -84,6 +84,7 @@ export async function ownerAction<S extends z.ZodTypeAny, T>(
   } catch (error) {
     if (error instanceof NotFoundError) return fail("NOT_FOUND");
     if (error instanceof ConflictError) return fail("CONFLICT");
+    if (error instanceof ValidationError) return fail("VALIDATION", error.fieldErrors);
     return logFailure(error);
   }
 }

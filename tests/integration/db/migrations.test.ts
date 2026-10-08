@@ -12,6 +12,8 @@ describe("committed migrations", () => {
       { table_schema: "neon_auth", table_name: "user" },
       { table_schema: "public", table_name: "activities" },
       { table_schema: "public", table_name: "clients" },
+      { table_schema: "public", table_name: "milestones" },
+      { table_schema: "public", table_name: "projects" },
     ]);
   });
 

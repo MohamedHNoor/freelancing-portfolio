@@ -19,6 +19,7 @@ model Client {
   updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
   owner            NeonAuthUser @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   activities       Activity[]
+  projects         Project[]
 
   @@index([ownerId, archivedAt])
   @@index([ownerId, name])

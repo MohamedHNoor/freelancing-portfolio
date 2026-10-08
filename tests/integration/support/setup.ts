@@ -7,7 +7,7 @@ process.env.DATABASE_URL = testDatabaseUrl();
 const { getDb } = await import("@/db");
 
 beforeEach(async () => {
-  await getDb().$executeRaw`TRUNCATE activities, clients`;
+  await getDb().$executeRaw`TRUNCATE activities, milestones, projects, clients`;
 });
 
 afterAll(async () => {

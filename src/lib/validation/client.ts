@@ -1,20 +1,6 @@
 import { z } from "zod";
 import { currencySchema } from "@/lib/validation/money";
-
-function maxMessage(max: number): string {
-  return `Use at most ${max.toLocaleString("en-NZ")} characters.`;
-}
-
-/** Trimmed, at most `max` characters, and null when left empty. */
-function optionalText(max: number) {
-  return z
-    .string()
-    .trim()
-    .max(max, maxMessage(max))
-    .optional()
-    .nullable()
-    .transform((value) => (value ? value : null));
-}
+import { maxMessage, optionalText } from "@/lib/validation/text";
 
 export const clientInputSchema = z.object({
   name: z

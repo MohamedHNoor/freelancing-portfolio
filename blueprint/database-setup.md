@@ -98,6 +98,16 @@ contains no `neon_auth` DDL. `activity_type` holds only the client values; later
 features add theirs with `ALTER TYPE ... ADD VALUE`, and add the project,
 milestone, task and payment-request columns to `activities` with their tables.
 
+The second migration, `20261009120000_projects_and_milestones` (feature 18a),
+adds the `project_status`, `milestone_status`, `milestone_billing_trigger` and
+`milestone_pricing_mode` enums, the `projects` and `milestones` tables, seven
+`activity_type` values, and `project_id` (CASCADE) and `milestone_id` (SET NULL)
+on `activities`. It was generated with `npm run db:diff`, and its check
+constraints are hand-written SQL at the end of the file. It runs inside a
+single transaction: nothing in it uses the new enum values. **It is not applied
+to any Neon branch;** feature 18b applies it to `development` through the
+named-target handoff below.
+
 **No Neon branch has this migration yet.** Feature 17b applies it to
 `development` through the named-target handoff below, with its own approval.
 
@@ -166,8 +176,18 @@ so dev hot reloads reuse one client and pool.
   `datasource.shadowDatabaseUrl`. Point it at a disposable, empty database (local
   PostgreSQL or a throwaway Neon branch), never at development, test or
   production. `migrations.initShadowDb` prepares the `neon_auth.user` stub in it
-  (see Schema layout). Feature 17 adds that variable and a documented script when the
-  second migration is first needed.
+  (see Schema layout). Feature 18a added it as `SHADOW_DATABASE_URL`, read only
+  by this command, and refused unless it names a local database called
+  `portfolio…_shadow` with no query string. Prisma needs the user in the URL
+  (`postgresql://<local-user>@localhost:5432/portfolio_shadow`):
+
+  ```sh
+  createdb portfolio_shadow   # once
+  npm run db:diff -- -o prisma/migrations/<YYYYMMDDHHMMSS>_<name>/migration.sql
+  ```
+
+  With no schema change the script prints `-- This is an empty migration.`,
+  which also proves the committed migrations replay to the current schema.
 - Prisma cannot express check constraints or sequences, and partial indexes need
   the `partialIndexes` preview feature. Add those as hand-written SQL in the
   generated `migration.sql`, reviewed in the same diff.

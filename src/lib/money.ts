@@ -90,3 +90,51 @@ export function minorToDb(minor: number): bigint {
   assertSafeMinor(minor);
   return BigInt(minor);
 }
+
+const BPS_PER_WHOLE = BigInt(10000);
+
+/** Hands out `extra` single units to the indexes with the largest remainders; ties go to the later index. */
+function distributeRemainder(shares: bigint[], remainders: bigint[], extra: bigint): number[] {
+  const order = remainders
+    .map((remainder, index) => ({ remainder, index }))
+    .sort((a, b) => (a.remainder === b.remainder ? b.index - a.index : a.remainder > b.remainder ? -1 : 1));
+  const result = [...shares];
+  for (let i = 0; BigInt(i) < extra; i += 1) result[order[i].index] += BigInt(1);
+  return result.map(Number);
+}
+
+/**
+ * Splits `totalMinor` by basis points with the largest-remainder method. The
+ * shares sum exactly to the total times Σbps / 10000, rounded half up; each is
+ * within one minor unit of its exact value; ties go to the later share. A share
+ * can be 0 when the total is tiny, so callers that store it must check.
+ */
+export function allocate(totalMinor: number, bpsList: readonly number[]): number[] {
+  if (!Number.isSafeInteger(totalMinor) || totalMinor <= 0) throw new RangeError("The total must be a positive safe integer.");
+  if (bpsList.length === 0) throw new RangeError("Allocate needs at least one share.");
+  if (bpsList.some((bps) => !Number.isInteger(bps) || bps < 1 || bps > 10000)) {
+    throw new RangeError("Basis points must be whole numbers from 1 to 10000.");
+  }
+  const sumBps = bpsList.reduce((sum, bps) => sum + bps, 0);
+  if (sumBps > 10000) throw new RangeError("Basis points cannot add up to more than 10000.");
+
+  const total = BigInt(totalMinor);
+  const shares = bpsList.map((bps) => (total * BigInt(bps)) / BPS_PER_WHOLE);
+  const remainders = bpsList.map((bps) => (total * BigInt(bps)) % BPS_PER_WHOLE);
+  const target = (total * BigInt(sumBps) + BPS_PER_WHOLE / BigInt(2)) / BPS_PER_WHOLE;
+  const floored = shares.reduce((sum, share) => sum + share, BigInt(0));
+  return distributeRemainder(shares, remainders, target - floored);
+}
+
+/**
+ * Splits a whole number into `parts` near-equal whole numbers that sum exactly
+ * to it, with the leftover units on the later parts: 7000 over 3 is
+ * [2333, 2333, 2334].
+ */
+export function splitEvenly(amount: number, parts: number): number[] {
+  if (!Number.isSafeInteger(amount) || amount < 0) throw new RangeError("The amount must be a non-negative safe integer.");
+  if (!Number.isInteger(parts) || parts < 1) throw new RangeError("Split into at least one part.");
+  const base = Math.floor(amount / parts);
+  const leftover = amount - base * parts;
+  return Array.from({ length: parts }, (_, index) => base + (index >= parts - leftover ? 1 : 0));
+}

@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { PRESENT, formatDate, formatDateTime, formatRoleEnd, formatYearMonth } from "@/lib/dates";
+import {
+  PRESENT,
+  calendarDateFromDb,
+  calendarDateToDb,
+  formatDate,
+  formatDateTime,
+  formatRoleEnd,
+  formatYearMonth,
+} from "@/lib/dates";
 
 /* Every expectation is a literal string. An expectation derived from `Intl` or
    `Date` would agree with whatever locale and timezone the runner happens to
@@ -114,5 +122,19 @@ describe("formatDate and formatDateTime", () => {
 
   it("rejects an invalid date", () => {
     expect(() => formatDate(new Date("nope"))).toThrow(RangeError);
+  });
+});
+
+describe("calendar dates in the database", () => {
+  it("round-trip through UTC midnight", () => {
+    const stored = calendarDateToDb("2026-10-09");
+    expect(stored?.toISOString()).toBe("2026-10-09T00:00:00.000Z");
+    expect(calendarDateFromDb(stored)).toBe("2026-10-09");
+  });
+
+  it("pass null through and refuse other formats", () => {
+    expect(calendarDateToDb(null)).toBeNull();
+    expect(calendarDateFromDb(null)).toBeNull();
+    expect(() => calendarDateToDb("9 Oct 2026")).toThrow(RangeError);
   });
 });

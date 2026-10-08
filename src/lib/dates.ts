@@ -93,3 +93,17 @@ export function formatDateTime(date: Date): string {
   const period = hour < 12 ? "am" : "pm";
   return `${day} ${MONTHS[month - 1]} ${year}, ${hour12}:${String(minute).padStart(2, "0")} ${period}`;
 }
+
+const CALENDAR_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** A `YYYY-MM-DD` calendar date as the UTC-midnight `Date` Prisma writes to a `date` column. */
+export function calendarDateToDb(value: string | null): Date | null {
+  if (value === null) return null;
+  if (!CALENDAR_DATE.test(value)) throw new RangeError("Expected a YYYY-MM-DD date.");
+  return new Date(`${value}T00:00:00Z`);
+}
+
+/** A `date` column, which Prisma reads as UTC midnight, back to `YYYY-MM-DD`. Never local time. */
+export function calendarDateFromDb(value: Date | null): string | null {
+  return value === null ? null : value.toISOString().slice(0, 10);
+}

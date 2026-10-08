@@ -606,6 +606,17 @@ The route group shipped early, on 2026-10-06, with the resume rework (`blueprint
 - An archived client is read-only, and its edit URL redirects to its detail page.
 - A not-found client page responds with HTTP 200. `clients/loading.tsx` starts streaming before `notFound()` runs, so Next can no longer change the status. The scoped not-found page still renders, and every dashboard route is noindex.
 
+**Projects and payment plan foundation shipped in feature 18a (2026-10-09), with no screens.** It differs from §16 and this plan in these ways:
+
+- There are no query modules yet. Feature 18b adds `src/server/queries/projects.ts` with its pages.
+- A project's client is fixed at creation. `projectUpdateSchema` has no `clientId`.
+- A preset applies only to a draft with no milestones, either at creation or through `applyPlanPreset`. It never replaces milestones.
+- Presets: `deposit_30` and `deposit_50` give a percentage deposit plus N percentage milestones sharing the rest; `fixed` gives N equal fixed milestones and no deposit. N is 1 to 10.
+- A project has at most one `upfront` milestone, counting cancelled ones, and it is always at position 0.
+- Restoring a milestone and reordering the plan are recorded as `payment_plan_changed` (no `milestone_restored` type). Deleting a draft project records nothing, because its activity cascades with it.
+- `ownedMilestone(..., { forUpdate })` locks the project row, not the milestone, so every plan change serializes on the project.
+- `startMilestone`, `completeMilestone` and `reopenMilestone` arrive with feature 19.
+
 Project pages live under `/dashboard/projects/[projectId]` because the public `/projects/[slug]` already exists. Each dashboard segment has its own `loading.tsx`, `error.tsx` and scoped `not-found.tsx`.
 
 ## 20. Component architecture

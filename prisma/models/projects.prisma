@@ -1,0 +1,54 @@
+model Project {
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerId          String        @map("owner_id") @db.Uuid
+  clientId         String        @map("client_id") @db.Uuid
+  name             String
+  description      String?
+  status           ProjectStatus @default(draft)
+  currency         Currency
+  totalAmountMinor BigInt        @map("total_amount_minor")
+  startDate        DateTime?     @map("start_date") @db.Date
+  expectedEndDate  DateTime?     @map("expected_end_date") @db.Date
+  activatedAt      DateTime?     @map("activated_at") @db.Timestamptz
+  completedAt      DateTime?     @map("completed_at") @db.Timestamptz
+  cancelledAt      DateTime?     @map("cancelled_at") @db.Timestamptz
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  owner            NeonAuthUser  @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  client           Client        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  milestones       Milestone[]
+  activities       Activity[]
+
+  @@index([ownerId, status])
+  @@index([clientId])
+  @@map("projects")
+  @@schema("public")
+}
+
+// The payment plan. Check constraints live in the migration SQL: Prisma cannot express them.
+model Milestone {
+  id             String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId      String                  @map("project_id") @db.Uuid
+  name           String
+  description    String?
+  position       Int
+  billingTrigger MilestoneBillingTrigger @default(on_completion) @map("billing_trigger")
+  pricingMode    MilestonePricingMode    @map("pricing_mode")
+  percentageBps  Int?                    @map("percentage_bps")
+  amountMinor    BigInt                  @map("amount_minor")
+  status         MilestoneStatus         @default(pending)
+  dueDate        DateTime?               @map("due_date") @db.Date
+  startedAt      DateTime?               @map("started_at") @db.Timestamptz
+  completedAt    DateTime?               @map("completed_at") @db.Timestamptz
+  cancelledAt    DateTime?               @map("cancelled_at") @db.Timestamptz
+  createdAt      DateTime                @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime                @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  project        Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  activities     Activity[]
+
+  // Target of the payment requests' composite foreign key (feature 20).
+  @@unique([id, projectId])
+  @@index([projectId, position])
+  @@map("milestones")
+  @@schema("public")
+}

@@ -3,6 +3,7 @@ model NeonAuthUser {
   id         String     @id @db.Uuid
   clients    Client[]
   activities Activity[]
+  projects   Project[]
 
   @@map("user")
   @@schema("neon_auth")

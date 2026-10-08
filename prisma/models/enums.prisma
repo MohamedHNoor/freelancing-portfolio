@@ -24,7 +24,53 @@ enum ActivityType {
   client_created
   client_updated
   client_archived
+  project_created
+  project_updated
+  project_status_changed
+  payment_plan_changed
+  milestone_created
+  milestone_updated
+  milestone_cancelled
 
   @@map("activity_type")
+  @@schema("public")
+}
+
+enum ProjectStatus {
+  draft
+  active
+  on_hold
+  completed
+  cancelled
+
+  @@map("project_status")
+  @@schema("public")
+}
+
+// Work only. Payment status is derived, never stored here.
+enum MilestoneStatus {
+  pending
+  in_progress
+  completed
+  cancelled
+
+  @@map("milestone_status")
+  @@schema("public")
+}
+
+// `upfront` is the deposit: billable once the project is active.
+enum MilestoneBillingTrigger {
+  upfront
+  on_completion
+
+  @@map("milestone_billing_trigger")
+  @@schema("public")
+}
+
+enum MilestonePricingMode {
+  percentage
+  fixed
+
+  @@map("milestone_pricing_mode")
   @@schema("public")
 }
