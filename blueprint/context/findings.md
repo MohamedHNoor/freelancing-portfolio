@@ -36,3 +36,19 @@
 **Why it matters:** `listClientActivity` filters `owner_id` and `client_id` and orders by `occurred_at DESC, id DESC` with `LIMIT 50`, but the only activity index is `(owner_id, occurred_at DESC)` (`prisma/models/activities.prisma:14`) and `client_id` has none. For a client with fewer than 50 activities Postgres must walk every one of the owner's activities. The `ON DELETE SET NULL` foreign key on `client_id` also has no supporting index. Negligible at today's single-owner volume and unmeasured; features 18 to 21 add project, milestone, task and payment activity to the same table, so the cost grows with the log.
 **Suggested fix:** When a later migration touches `activities`, consider `(client_id, occurred_at DESC)` (and matching indexes for the per-project feeds), and confirm with `EXPLAIN` on a realistic row count.
 **Resolution:**
+
+### F-34 [P3] open - The client detail page loads the client's ownership twice, in series
+
+**File:** src/app/dashboard/clients/[clientId]/page.tsx:32
+**Found:** 2026-10-09 by /audit (independent; scope: current; lens: performance)
+**Why it matters:** The page awaits `getClient(userId, clientId)` (one `ownedClient` lookup), then awaits `listClientActivity(userId, client.id)`, which runs `ownedClient` again (`src/server/queries/activity.ts:12`) before its `findMany`. Every detail render therefore makes three sequential Neon round trips after `requireOwner()`, one of them a repeat of a lookup the page already holds the result of. Unmeasured and small at single-owner volume, but it is the pattern features 18 to 22 will copy for project, milestone and payment detail pages.
+**Suggested fix:** Either run the two loaders with `Promise.all` (both already raise `NotFoundError` for a missing, malformed or foreign id), or give the activity query a variant that takes an already-owned client and skips the second ownership check.
+**Resolution:**
+
+### F-35 [P3] open - An empty country cell in the clients table renders a bare em dash
+
+**File:** src/components/dashboard/clients/ClientTable.tsx:49
+**Found:** 2026-10-09 by /audit (independent; scope: current; lens: quality)
+**Why it matters:** A client without a country code shows a lone U+2014 in the Country column, which screen readers read as "em dash" or skip, while the detail page says "Not provided" for the same empty value. The writing standard also rules out em dashes in generated content.
+**Suggested fix:** Render "Not provided" (or a visually short mark with sr-only "Not provided" text) so the list and detail pages describe an empty value the same way.
+**Resolution:**

@@ -1,13 +1,7 @@
 import Link from "next/link";
-import {
-  CreditCardIcon,
-  FolderKanbanIcon,
-  LayoutDashboardIcon,
-  SettingsIcon,
-  ShieldCheckIcon,
-  UsersIcon,
-} from "lucide-react";
+import { CreditCardIcon, FolderKanbanIcon, SettingsIcon, ShieldCheckIcon } from "lucide-react";
 import { Logo } from "@/components/icons/Logo";
+import { WorkspaceNav } from "@/components/dashboard/shell/WorkspaceNav";
 
 interface AppSidebarProps {
   name: string;
@@ -15,7 +9,6 @@ interface AppSidebarProps {
 }
 
 const futureDestinations = [
-  { label: "Clients", Icon: UsersIcon },
   { label: "Projects", Icon: FolderKanbanIcon },
   { label: "Payments", Icon: CreditCardIcon },
   { label: "Settings", Icon: SettingsIcon },
@@ -38,19 +31,7 @@ export function AppSidebar({
 
       <nav aria-label="Workspace navigation">
         <p className="mb-3 px-3 text-xs font-medium text-muted-foreground">Workspace</p>
-        <ul className="space-y-1.5">
-          <li>
-            <Link
-              href="/dashboard"
-              aria-current="page"
-              onClick={onNavigate}
-              className="flex min-h-11 items-center gap-3 rounded-lg bg-primary/10 px-3 text-workspace-sm font-medium text-brand ring-1 ring-inset ring-primary/15 outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <LayoutDashboardIcon className="size-4 shrink-0" aria-hidden="true" />
-              Overview
-            </Link>
-          </li>
-        </ul>
+        <WorkspaceNav onNavigate={onNavigate} />
         <p className="mb-3 mt-7 px-3 text-xs font-medium text-muted-foreground">Coming soon</p>
         <ul className="space-y-1.5">
           {futureDestinations.map(({ label, Icon }) => (

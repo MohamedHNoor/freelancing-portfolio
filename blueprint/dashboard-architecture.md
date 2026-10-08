@@ -599,6 +599,13 @@ src/app/
 
 The route group shipped early, on 2026-10-06, with the resume rework (`blueprint/history/fixes/recruiter-resume.md`). It differs from the plan as first written in three ways. `/resume` sits outside `(site)`, because a resume must not carry the marketing navigation. `MotionProvider` and `SkipLink` initially stayed in the root layout. Feature 15 moves them into `SiteChrome`, with a separate skip link in the resume layout. Future auth, dashboard and payment layouts must own their skip links and `#main-content`; the root carries only the shared document shell. And `opengraph-image` files inside a group get a hashed suffix from Next (`/projects/[slug]/opengraph-image-umay0l`), so the case-study image URLs changed once; the root `/opengraph-image` did not, and `/` now attaches it through `routeMetadata` like every other route.
 
+**Client routes shipped in feature 17b (2026-10-09).** They are `dashboard/clients/page.tsx` (`?view=archived`), `new/`, `[clientId]/page.tsx` and `[clientId]/edit/`, with `clients/loading.tsx`, `clients/error.tsx` and `[clientId]/not-found.tsx`. They differ from this plan in four ways:
+
+- There is no `deleteClient` and no unarchive. The build plan names create, edit, archive and list only.
+- Page titles are static ("Client", "Edit client"), so a client's name never reaches the tab title or a second query.
+- An archived client is read-only, and its edit URL redirects to its detail page.
+- A not-found client page responds with HTTP 200. `clients/loading.tsx` starts streaming before `notFound()` runs, so Next can no longer change the status. The scoped not-found page still renders, and every dashboard route is noindex.
+
 Project pages live under `/dashboard/projects/[projectId]` because the public `/projects/[slug]` already exists. Each dashboard segment has its own `loading.tsx`, `error.tsx` and scoped `not-found.tsx`.
 
 ## 20. Component architecture
@@ -629,7 +636,7 @@ src/server/              auth/session.ts, queries/{dashboard,clients,projects,mi
 ## 21. UI/UX screen list
 1. Login. 2. Forgot password. 3. Reset password. 4. Verify-email notice. (No register screen: sign-up is closed, §5.)
 6. **Dashboard overview**.
-7. Clients list. 8. Client new/edit. 9. Client detail (projects, totals per currency).
+7. Clients list (shipped 17b). 8. Client new/edit (shipped 17b). 9. Client detail (shipped 17b with details and activity; projects and totals per currency arrive with features 18 and 22).
 10. Projects list (status tabs). 11. **New project** (client → details and total → payment plan preset, on one page). 12. **Project detail**. 13. **Payment plan editor**. 14. Project settings (edit, status, delete).
 15. **Milestone detail**.
 16. Payments (requests and payments tabs, overdue filter).

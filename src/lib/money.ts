@@ -5,6 +5,15 @@ export const CURRENCIES = ["ZAR", "NZD", "AUD", "USD", "GBP"] as const;
 
 export type Currency = (typeof CURRENCIES)[number];
 
+/** Display names for currency pickers. */
+export const CURRENCY_NAMES: Record<Currency, string> = {
+  ZAR: "South African rand",
+  NZD: "New Zealand dollar",
+  AUD: "Australian dollar",
+  USD: "US dollar",
+  GBP: "British pound",
+};
+
 /** Minor units per major unit, as a power of ten. All five currencies use cents. */
 export const CURRENCY_EXPONENT: Record<Currency, number> = {
   ZAR: 2,

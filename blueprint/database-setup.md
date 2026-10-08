@@ -312,6 +312,31 @@ live checks. For production, confirm the restore window and take the planned
 snapshot before applying SQL; migrate before promoting the deployment. Builds,
 install scripts and unit tests never apply migrations.
 
+### Applied: first migration on `development` (2026-10-09, feature 17b step 7)
+
+Target: project `snowy-voice-62561189`, branch `development`
+(`br-royal-darkness-a7qoz708`), endpoint `ep-rough-darkness-a7rwukh4`. The
+endpoint was confirmed through the Neon MCP before anything ran.
+`DATABASE_URL_UNPOOLED` in `.env.local` is that branch's direct URL.
+
+- `npm run db:migrate` refused with **P3005**: Prisma will not deploy a first
+  migration into a non-empty database. Because the datasource lists
+  `neon_auth`, it counts Managed Better Auth's tables. Nothing was applied.
+- With the owner's approval, the committed
+  `20261008131745_clients_and_activities/migration.sql` was run once with
+  `psql --single-transaction -v ON_ERROR_STOP=1`. Then
+  `npx prisma migrate resolve --applied 20261008131745_clients_and_activities`
+  recorded it in `_prisma_migrations`.
+- `npx prisma migrate status` now reports the database schema is up to date.
+  `development` has `clients`, `activities` and `_prisma_migrations` beside its
+  `neon_auth` tables. `production` (`br-dawn-unit-a7e6kd3e`) still has no
+  tables.
+
+**Every new Neon branch with Auth enabled needs the same first step**,
+`production` included: apply the first migration's SQL, then `migrate resolve
+--applied`, each with its own approval. Once `_prisma_migrations` exists, later
+migrations go through `npm run db:migrate` normally.
+
 **If a migration fails** on a named target, `migrate deploy` stops (P3009) and
 refuses further migrations until the failed one is resolved. Recovery is a live
 operation on that same named target, and each command needs its own approval:
@@ -329,8 +354,8 @@ For production, restore from the pre-migration snapshot instead when the partial
 state is unclear. Never edit `prisma.config.ts` to reach a database another way.
 
 `npm run db:studio` also opens a live database tool and needs separate approval.
-It uses the direct URL. Neither live command has been run. No provider resource,
-integration harness or production deployment exists yet.
+It uses the direct URL. Studio has not been run, and no production deployment
+exists yet.
 
 ## Verification and next feature
 

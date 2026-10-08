@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRightIcon, FolderKanbanIcon } from "lucide-react";
+import { ArrowRightIcon, ArrowUpRightIcon, UsersIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { requireOwner } from "@/server/auth/session";
 
@@ -33,21 +33,29 @@ export default async function DashboardPage() {
             aria-hidden="true"
             className="mb-5 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-brand ring-1 ring-inset ring-primary/15"
           >
-            <FolderKanbanIcon className="size-6" />
+            <UsersIcon className="size-6" />
           </span>
           <h2 id="workspace-start-heading" className="font-heading text-xl font-semibold">
             Your work, in one place
           </h2>
           <p className="mt-3 text-workspace-body leading-relaxed text-muted-foreground">
-            Client, project and payment tools are coming soon. This will be your
-            place to follow work from the first brief to the final payment.
+            Your client records are ready. Project and payment tools are coming
+            soon, so you can follow work from the first brief to the final payment.
           </p>
-          <Button asChild variant="outline" className="mt-7 min-h-11 px-4">
-            <Link href="/" prefetch={false}>
-              View public portfolio
-              <ArrowUpRightIcon className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <Button asChild className="min-h-11 px-4">
+              <Link href="/dashboard/clients">
+                View clients
+                <ArrowRightIcon className="size-4" aria-hidden="true" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="min-h-11 px-4">
+              <Link href="/" prefetch={false}>
+                View public portfolio
+                <ArrowUpRightIcon className="size-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 

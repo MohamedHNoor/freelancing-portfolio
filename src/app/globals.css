@@ -214,12 +214,12 @@
   box-shadow: var(--workspace-shadow);
 }
 
-.workspace-ui [data-slot="input"] {
+.workspace-ui :is([data-slot="input"], [data-slot="textarea"], [data-slot="select"]) {
   background: color-mix(in oklch, var(--background) 70%, var(--card));
   transition: border-color 150ms var(--workspace-ease), box-shadow 150ms var(--workspace-ease);
 }
 
-.workspace-ui [data-slot="input"][aria-invalid="true"] {
+.workspace-ui :is([data-slot="input"], [data-slot="textarea"], [data-slot="select"])[aria-invalid="true"] {
   border-color: var(--danger);
 }
 

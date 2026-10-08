@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { MenuIcon, XIcon } from "lucide-react";
 import { AppSidebar } from "@/components/dashboard/shell/AppSidebar";
 import { SignOutButton } from "@/components/dashboard/shell/SignOutButton";
+import { workspaceSectionLabel } from "@/lib/dashboard/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +18,7 @@ import {
 } from "@/components/ui/sheet";
 
 export function Topbar({ name }: { name: string }) {
+  const pathname = usePathname();
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [navigationMotion, setNavigationMotion] = useState<"pointer" | "instant">("instant");
 
@@ -47,7 +50,7 @@ export function Topbar({ name }: { name: string }) {
             >
               <SheetTitle className="sr-only">Workspace navigation</SheetTitle>
               <SheetDescription className="sr-only">
-                Open the overview. More workspace tools are coming soon.
+                Open the overview or your clients. More workspace tools are coming soon.
               </SheetDescription>
               <SheetClose asChild>
                 <Button
@@ -65,7 +68,7 @@ export function Topbar({ name }: { name: string }) {
           </Sheet>
 
           <nav aria-label="Breadcrumb" className="min-w-0 truncate text-workspace-sm text-muted-foreground">
-            <span aria-current="page">Overview</span>
+            <span aria-current="page">{workspaceSectionLabel(pathname)}</span>
           </nav>
         </div>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">

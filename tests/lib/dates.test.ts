@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { PRESENT, formatRoleEnd, formatYearMonth } from "@/lib/dates";
+import { PRESENT, formatDate, formatDateTime, formatRoleEnd, formatYearMonth } from "@/lib/dates";
 
 /* Every expectation is a literal string. An expectation derived from `Intl` or
    `Date` would agree with whatever locale and timezone the runner happens to
@@ -88,5 +88,31 @@ describe("formatRoleEnd", () => {
 describe("PRESENT", () => {
   it("is the exact sentinel the content layer stores", () => {
     expect(PRESENT).toBe("present");
+  });
+});
+
+describe("formatDate and formatDateTime", () => {
+  /* Instants are UTC literals; New Zealand is UTC+12 (NZST) or UTC+13 (NZDT). */
+  it.each([
+    ["2026-10-09T01:05:00Z", "9 Oct 2026", "9 Oct 2026, 2:05 pm"],
+    ["2026-09-10T00:00:00Z", "10 Sep 2026", "10 Sep 2026, 12:00 pm"],
+    ["2026-01-31T11:00:00Z", "1 Feb 2026", "1 Feb 2026, 12:00 am"],
+    ["2026-12-31T23:30:00Z", "1 Jan 2027", "1 Jan 2027, 12:30 pm"],
+  ])("formats %s in New Zealand time", (iso, date, dateTime) => {
+    expect(formatDate(new Date(iso))).toBe(date);
+    expect(formatDateTime(new Date(iso))).toBe(dateTime);
+  });
+
+  it("follows daylight saving: starts 27 Sep 2026, ends 5 Apr 2026", () => {
+    // 1:59 am NZST, then the clock jumps to 3:00 am NZDT.
+    expect(formatDateTime(new Date("2026-09-26T13:59:00Z"))).toBe("27 Sep 2026, 1:59 am");
+    expect(formatDateTime(new Date("2026-09-26T14:00:00Z"))).toBe("27 Sep 2026, 3:00 am");
+    // 2:59 am NZDT, then back to 2:00 am NZST.
+    expect(formatDateTime(new Date("2026-04-04T13:59:00Z"))).toBe("5 Apr 2026, 2:59 am");
+    expect(formatDateTime(new Date("2026-04-04T14:00:00Z"))).toBe("5 Apr 2026, 2:00 am");
+  });
+
+  it("rejects an invalid date", () => {
+    expect(() => formatDate(new Date("nope"))).toThrow(RangeError);
   });
 });
