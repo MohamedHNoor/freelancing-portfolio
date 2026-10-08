@@ -21,6 +21,8 @@ const MESSAGES: Record<ActionErrorCode, string> = {
   EMAIL_NOT_VERIFIED: "Verify your email address first. Check your inbox for the link.",
   INVALID_TOKEN: "This link is invalid or has expired. Request a new one.",
   UNAUTHENTICATED: "Please sign in again.",
+  NOT_FOUND: "That record could not be found.",
+  CONFLICT: "That change is no longer possible.",
   UNEXPECTED: "Something went wrong. Please try again in a moment.",
 };
 

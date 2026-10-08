@@ -1,0 +1,27 @@
+model Client {
+  id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerId          String       @map("owner_id") @db.Uuid
+  name             String
+  email            String
+  phone            String?
+  companyName      String?      @map("company_name")
+  countryCode      String?      @map("country_code") @db.Char(2)
+  defaultCurrency  Currency     @map("default_currency")
+  addressLine1     String?      @map("address_line1")
+  addressLine2     String?      @map("address_line2")
+  city             String?
+  region           String?
+  postalCode       String?      @map("postal_code")
+  notes            String?
+  stripeCustomerId String?      @unique @map("stripe_customer_id")
+  archivedAt       DateTime?    @map("archived_at") @db.Timestamptz
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  owner            NeonAuthUser @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  activities       Activity[]
+
+  @@index([ownerId, archivedAt])
+  @@index([ownerId, name])
+  @@map("clients")
+  @@schema("public")
+}

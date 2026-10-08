@@ -20,7 +20,7 @@ Never commit, print or paste connection strings into review documents.
 |---|---|---|
 | `DATABASE_URL` | Neon pooled URL for the selected development/production branch | Lazy server-only `getDb()` |
 | `DATABASE_URL_UNPOOLED` | Direct URL for the explicitly approved migration/Studio target | Live Prisma tools only |
-| `TEST_DATABASE_URL` | Isolated test branch or local PostgreSQL | Reserved for future integration tests |
+| `TEST_DATABASE_URL` | A local PostgreSQL database named `portfolio…_test`, in `.env.test.local` | `npm run test:integration` only |
 
 Keep Neon's supplied TLS options, including `sslmode=require`. Local PostgreSQL
 URIs are supported too. Validation accepts `postgres:` and `postgresql:` with
@@ -68,8 +68,8 @@ Unit tests exercise this boundary without launching either live command.
 `verification` in the `neon_auth` schema of each Neon branch and manages that
 schema itself. Prisma Migrate must never create, alter or drop it.
 
-When feature 17 adds the first `owner_id`, reference `neon_auth.user(id)`, a
-`uuid`, from `owner_id uuid`. Prisma 7.10 needs all of the following for that,
+Every `owner_id` references `neon_auth.user(id)`, a `uuid`. Prisma 7.10 needs
+all of the following for that. Feature 17a configured them; they were first
 checked offline against the installed CLI on 2026-10-07:
 
 - **`experimental: { externalTables: true }`** in `prisma.config.ts`, alongside
@@ -90,7 +90,41 @@ DDL. Any database that applies the migrations must already have
 `neon_auth.user`. On Neon branches, enabling Auth creates it. A local
 integration database needs the same stub before `migrate deploy`.
 
-At this point the schema has no models, so there is no migration yet.
+The first migration, `20261008131745_clients_and_activities` (feature 17a), creates the
+`currency`, `activity_actor` and `activity_type` enums and the `clients` and
+`activities` tables, with their indexes and their `RESTRICT` foreign keys to
+`neon_auth.user`. It was generated offline with `migrate diff --from-empty` and
+contains no `neon_auth` DDL. `activity_type` holds only the client values; later
+features add theirs with `ALTER TYPE ... ADD VALUE`, and add the project,
+milestone, task and payment-request columns to `activities` with their tables.
+
+**No Neon branch has this migration yet.** Feature 17b applies it to
+`development` through the named-target handoff below, with its own approval.
+
+## Local integration tests
+
+`npm run test:integration` runs `tests/integration/**` against a real local
+PostgreSQL database; `npm test` excludes that folder and never needs a database.
+
+- Put `TEST_DATABASE_URL` in `.env.test.local` (git-ignored). Vitest runs with
+  `NODE_ENV=test`, and Next's env loader skips `.env.local` in that mode.
+  The local database is `portfolio_test` on Homebrew PostgreSQL
+  (`createdb portfolio_test`).
+- **Every run rebuilds that database.** Global setup drops and recreates the
+  `public` and `neon_auth` schemas, creates the `neon_auth.user (id uuid)` stub,
+  applies every committed `migration.sql` in name order, and seeds two owners.
+  Each test starts from empty `clients` and `activities` tables.
+- The harness refuses to connect unless the URL's host is `localhost`,
+  `127.0.0.1` or `::1` and the database name starts with `portfolio` and ends in
+  `_test`. Other local projects' `_test` databases are therefore out of reach.
+  The error names only the variable.
+- The workers point `DATABASE_URL` at the test URL before `getDb()` is first
+  used, and `server-only` is aliased to an empty module.
+- Local PostgreSQL is 14 and Neon runs 17. The migrations use nothing newer than
+  `gen_random_uuid()` (core since 13); recheck if a later migration does.
+
+Every service that loads a record has a test proving that a second owner gets
+`NotFoundError` and that the first owner's data is unchanged.
 
 ## Reproducible offline generation
 

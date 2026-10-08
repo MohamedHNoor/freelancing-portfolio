@@ -1,6 +1,6 @@
 # Freelance Portfolio - Project Overview
 
-<!-- blueprint:source-hash 98c115f6b3c6103ea9990d4af78ce10d4e6b98b205e6b78f960ef12e47f94e7a -->
+<!-- blueprint:source-hash 141ce66beefde798813f7eb28442c448be32e057b4195be2cf126a346a8a35fd -->
 
 > A Wellington full-stack developer's portfolio converts search, LinkedIn and
 > GitHub traffic into enquiries; a private dashboard runs won work and collects

@@ -8,6 +8,7 @@
     "preflight": "prisma generate && VERCEL_ENV=production next build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.mts",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",

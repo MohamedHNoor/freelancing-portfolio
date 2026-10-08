@@ -1,0 +1,30 @@
+enum Currency {
+  ZAR
+  NZD
+  AUD
+  USD
+  GBP
+
+  @@map("currency")
+  @@schema("public")
+}
+
+enum ActivityActor {
+  owner
+  client
+  stripe
+  system
+
+  @@map("activity_actor")
+  @@schema("public")
+}
+
+// Later features add their values with ALTER TYPE ... ADD VALUE.
+enum ActivityType {
+  client_created
+  client_updated
+  client_archived
+
+  @@map("activity_type")
+  @@schema("public")
+}

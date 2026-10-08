@@ -81,6 +81,13 @@ machines, payment flow, and rules every item below builds on are in
     verification using the existing design system
 - [ ] 17. **Clients** - create, edit, archive, and list clients with their currency and
   billing details, on exact integer money handling and an append-only activity log
+  - [x] 17a. **Client data foundation** - the first Prisma models and offline
+    migration, integer money helpers, client and activity validation, owner-scoped
+    client services with an append-only activity log, client Server Actions, and
+    a local Postgres integration test harness
+  - [ ] 17b. **Client screens** - workspace navigation, the clients list with an
+    archived view, new and edit forms, client detail with its activity, archiving,
+    the migration applied to the development branch, and browser verification
 - [ ] 18. **Projects and payment plans** - projects with a total and a currency;
   percentage, fixed, or mixed milestone plans with the deposit as an upfront milestone;
   plans that must balance exactly before a project activates; and the project page with

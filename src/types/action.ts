@@ -4,6 +4,8 @@ export type ActionErrorCode =
   | "EMAIL_NOT_VERIFIED"
   | "INVALID_TOKEN"
   | "UNAUTHENTICATED"
+  | "NOT_FOUND"
+  | "CONFLICT"
   | "UNEXPECTED";
 
 export type ActionFailure = {

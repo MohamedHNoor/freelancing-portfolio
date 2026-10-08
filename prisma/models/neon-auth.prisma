@@ -1,0 +1,9 @@
+// Read-only: Managed Better Auth owns this table. Only the columns the app reads.
+model NeonAuthUser {
+  id         String     @id @db.Uuid
+  clients    Client[]
+  activities Activity[]
+
+  @@map("user")
+  @@schema("neon_auth")
+}
