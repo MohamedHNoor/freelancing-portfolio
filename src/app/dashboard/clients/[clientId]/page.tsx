@@ -29,8 +29,11 @@ async function loadOrNotFound<T>(load: () => Promise<T>): Promise<T> {
 export default async function ClientPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { userId } = await requireOwner();
   const { clientId } = await params;
-  const client = await loadOrNotFound(() => getClient(userId, clientId));
-  const activity = await loadOrNotFound(() => listClientActivity(userId, client.id));
+  // Both loaders are owner-scoped, so they can start together; either one's
+  // NotFoundError becomes the scoped 404.
+  const [client, activity] = await loadOrNotFound(() =>
+    Promise.all([getClient(userId, clientId), listClientActivity(userId, clientId)]),
+  );
 
   const displayName = clientDisplayName(client);
   const archived = client.archivedAt !== null;

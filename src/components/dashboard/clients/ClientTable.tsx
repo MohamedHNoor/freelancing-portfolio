@@ -46,7 +46,7 @@ export function ClientTable({ rows, archived }: { rows: ClientRow[]; archived: b
                 )}
               </th>
               <td className="px-4 py-3 align-top break-all text-muted-foreground">{row.email}</td>
-              <td className="px-4 py-3 align-top">{row.countryCode ?? <span className="text-muted-foreground">—</span>}</td>
+              <td className="px-4 py-3 align-top">{row.countryCode ?? <span className="text-muted-foreground">Not provided</span>}</td>
               <td className="px-4 py-3 align-top font-mono tabular-nums">{row.currency}</td>
               {archived && (
                 <td className="px-4 py-3 align-top whitespace-nowrap">

@@ -89,6 +89,13 @@ describe("clients list page", () => {
     expect(await renderList("archived")).toContain("No archived clients");
   });
 
+  it("says Not provided for a client without a country", async () => {
+    mocks.listClients.mockResolvedValue([{ ...listItem, countryCode: null }]);
+    const markup = await renderList();
+    expect(markup).toContain(">Not provided</span>");
+    expect(markup).not.toContain("\u2014");
+  });
+
   it("renders client text as escaped text", async () => {
     mocks.listClients.mockResolvedValue([{ ...listItem, companyName: "<script>alert(1)</script>" }]);
     const markup = await renderList();
@@ -194,6 +201,24 @@ describe("client detail page", () => {
   it.each(["not-a-uuid", "11111111-1111-4111-8111-111111111111"])("shows the scoped 404 for %s", async (clientId) => {
     mocks.getClient.mockRejectedValue(new NotFoundError());
     await expect(ClientPage(params(clientId))).rejects.toThrow("NEXT_NOT_FOUND");
+    expect(mocks.notFound).toHaveBeenCalledTimes(1);
+  });
+
+  it("starts loading the activity before the client lookup finishes", async () => {
+    let resolveClient: (value: typeof stored) => void = () => {};
+    mocks.getClient.mockReturnValue(new Promise((resolve) => (resolveClient = resolve)));
+
+    const rendering = ClientPage(params());
+    await vi.waitFor(() => expect(mocks.listClientActivity).toHaveBeenCalledWith(OWNER_ID, CLIENT_ID));
+    expect(mocks.getClient).toHaveBeenCalledWith(OWNER_ID, CLIENT_ID);
+
+    resolveClient(stored);
+    expect(renderToStaticMarkup(await rendering)).toContain("Kōwhai Studio");
+  });
+
+  it("shows the scoped 404 when only the activity lookup rejects the id", async () => {
+    mocks.listClientActivity.mockRejectedValue(new NotFoundError());
+    await expect(ClientPage(params())).rejects.toThrow("NEXT_NOT_FOUND");
     expect(mocks.notFound).toHaveBeenCalledTimes(1);
   });
 
