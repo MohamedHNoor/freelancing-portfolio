@@ -51,8 +51,21 @@ export async function ownerAction<S extends z.ZodTypeAny, T>(
     error: { code, message: messages[code], ...(fieldErrors ? { fieldErrors } : {}) },
   });
 
-  const owner = await requireOwnerForAction();
-  if ("success" in owner) return owner;
+  const logFailure = (error: unknown): ActionFailure => {
+    const [scope, action] = config.label;
+    console.error(`[${scope}] ${action} failed: ${errorCode(error)}`);
+    return fail("UNEXPECTED");
+  };
+
+  let owner: Owner;
+  try {
+    const result = await requireOwnerForAction();
+    if ("success" in result) return result;
+    owner = result;
+  } catch (error) {
+    // An auth-service or configuration failure is unexpected, not "signed out".
+    return logFailure(error);
+  }
 
   let id = "";
   if ("id" in config) {
@@ -71,8 +84,6 @@ export async function ownerAction<S extends z.ZodTypeAny, T>(
   } catch (error) {
     if (error instanceof NotFoundError) return fail("NOT_FOUND");
     if (error instanceof ConflictError) return fail("CONFLICT");
-    const [scope, action] = config.label;
-    console.error(`[${scope}] ${action} failed: ${errorCode(error)}`);
-    return fail("UNEXPECTED");
+    return logFailure(error);
   }
 }

@@ -273,7 +273,8 @@ Package manager: **npm** (`package-lock.json`).
 - Tests (watch): `npm run test:watch`
 - Integration tests: `npm run test:integration` (local PostgreSQL only;
   `TEST_DATABASE_URL` in `.env.test.local` must name a local `portfolio…_test`
-  database, which every run rebuilds from the committed migrations)
+  database with no query string, which every run rebuilds from the
+  committed migrations)
 - Add a shadcn/ui component: `npx shadcn@latest add <component>`
 - Prisma Client generation (offline): `npm run db:generate` (also runs on
   `npm install` through `postinstall`; output in git-ignored `src/generated/prisma`)

@@ -29,22 +29,6 @@
 **Suggested fix:** Record the trade-off in `blueprint/dashboard-architecture.md` now. When feature 17 adds owner-guarded Server Actions, consider letting action-time owner checks use the writable `getAuth()` instance (cookie writes are allowed there), so ordinary dashboard use refreshes the session-data and session-token cookies without middleware.
 **Resolution:**
 
-### F-31 [P2] open - An auth-service failure escapes the owner action pipeline as a thrown error instead of `UNEXPECTED`
-
-**File:** src/server/owner-action.ts:54
-**Found:** 2026-10-09 by /audit (independent; scope: current; lens: quality, security, performance, tests)
-**Why it matters:** `ownerAction` awaits `requireOwnerForAction()` before its `try` block (`owner-action.ts:54`, try at `:69`). `getOwner()` throws `AuthServiceError` when Neon Auth's `get-session` returns an error, and `getAuthEnv()` throws on missing configuration (`src/server/auth/session.ts:24-26`). Either way `createClient`, `updateClient` and `archiveClient` reject instead of returning the `{ success, data, error }` result, so 17b's forms would hit an error boundary rather than the friendly message. This breaks the spec's action contract ("Anything else maps to `UNEXPECTED`") and the standard that Server Actions use try/catch; the auth actions in `src/actions/auth.ts` wrap every provider call. No data or security impact: no write happens and Next redacts thrown messages in production. `tests/actions/clients.test.ts` mocks `requireOwnerForAction` and never covers a throwing session lookup.
-**Suggested fix:** Move the owner check inside the existing try/catch (or wrap it in its own), mapping a thrown error to `UNEXPECTED` with the same code-only log line, and add an action test where the session lookup rejects.
-**Resolution:**
-
-### F-32 [P2] open - The integration database guard checks the URL hostname, but a `host` query parameter redirects the connection
-
-**File:** tests/integration/support/database.ts:31
-**Found:** 2026-10-09 by /audit (independent; scope: current; lens: quality, security, performance, tests)
-**Why it matters:** `testDatabaseUrl()` refuses non-local URLs by checking `new URL(url).hostname`, but `pg` (`pg-connection-string`) copies query parameters into the config and lets `?host=` (and `?port=`) override the URL's host. Confirmed offline without connecting: `postgresql://localhost:5432/portfolio_test?host=db.remote.example` passes the guard while `pg` resolves its host to `db.remote.example`. Global setup then runs `DROP SCHEMA public CASCADE` against that host. Exploiting it needs a remote database whose name matches `portfolio*_test`, so the practical risk is low, but the guard exists solely to prevent this data loss and the step 4 done-when requires a non-local host to be refused before connecting. The guard has no automated test.
-**Suggested fix:** Also refuse any URL whose search params contain `host`, `hostaddr` or `port` (or simply any query string other than an allow-listed `sslmode`), or validate the result of `pg-connection-string`'s `parse()` instead of the WHATWG hostname. Add a unit test for `testDatabaseUrl` covering a remote host, a `?host=` override and a name without `_test`.
-**Resolution:**
-
 ### F-33 [P3] unverified - The client activity feed has no index that serves its `client_id` filter
 
 **File:** src/server/queries/activity.ts:15

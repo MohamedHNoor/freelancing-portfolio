@@ -81,6 +81,31 @@ describe("client actions", () => {
     expect(mocks.archiveClient).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ["AuthServiceError", "Auth service failed (503)."],
+    ["Error", "NEON_AUTH_BASE_URL is missing."],
+  ])("maps a %s from the session lookup to UNEXPECTED", async (name, message) => {
+    mocks.getOwner.mockRejectedValue(Object.assign(new Error(message), { name }));
+
+    const results = [await createClient(input), await updateClient(CLIENT_ID, input), await archiveClient(CLIENT_ID)];
+    for (const result of results) {
+      expect(result).toEqual({
+        success: false,
+        data: null,
+        error: { code: "UNEXPECTED", message: "Something went wrong. Please try again in a moment." },
+      });
+    }
+    expect(errorLog.mock.calls).toEqual([
+      [`[clients] createClient failed: ${name}`],
+      [`[clients] updateClient failed: ${name}`],
+      [`[clients] archiveClient failed: ${name}`],
+    ]);
+    expect(mocks.createClient).not.toHaveBeenCalled();
+    expect(mocks.updateClient).not.toHaveBeenCalled();
+    expect(mocks.archiveClient).not.toHaveBeenCalled();
+    expect(mocks.revalidatePath).not.toHaveBeenCalled();
+  });
+
   it.each([undefined, "not-a-uuid", 42, { id: CLIENT_ID }])("reports the id %j as not found", async (clientId) => {
     expect(await updateClient(clientId, input)).toMatchObject({
       success: false,

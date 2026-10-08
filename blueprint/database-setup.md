@@ -115,9 +115,12 @@ PostgreSQL database; `npm test` excludes that folder and never needs a database.
   applies every committed `migration.sql` in name order, and seeds two owners.
   Each test starts from empty `clients` and `activities` tables.
 - The harness refuses to connect unless the URL's host is `localhost`,
-  `127.0.0.1` or `::1` and the database name starts with `portfolio` and ends in
-  `_test`. Other local projects' `_test` databases are therefore out of reach.
-  The error names only the variable.
+  `127.0.0.1` or `::1`, the database name starts with `portfolio` and ends in
+  `_test`, and the URL has no query string (`pg` lets `host`, `hostaddr` and
+  `port` parameters override the URL's host). Other local projects' `_test`
+  databases are therefore out of reach. The error names only the variable, and
+  `tests/support/integration-database.test.ts` covers the guard without a
+  database.
 - The workers point `DATABASE_URL` at the test URL before `getDb()` is first
   used, and `server-only` is aliased to an empty module.
 - Local PostgreSQL is 14 and Neon runs 17. The migrations use nothing newer than

@@ -14,24 +14,34 @@ export const OWNER_B = "00000000-0000-4000-8000-00000000000b";
 export class UnsafeTestDatabaseError extends Error {
   constructor() {
     super(
-      "TEST_DATABASE_URL must point at a local database (localhost) whose name starts with \"portfolio\" and ends in \"_test\". It is rebuilt on every run.",
+      "TEST_DATABASE_URL must point at a local database (localhost) whose name starts with \"portfolio\" and ends in \"_test\", with no query string. It is rebuilt on every run.",
     );
     this.name = "UnsafeTestDatabaseError";
   }
 }
 
 /**
+ * Accepts only a local, portfolio-specific `_test` database with no query
+ * string. `pg` lets query parameters such as `host`, `hostaddr` and `port`
+ * override the URL's own host, and a local test database needs none of them.
+ */
+export function assertSafeTestDatabaseUrl(url: string): string {
+  const { hostname, pathname, search } = new URL(url);
+  const name = decodeURIComponent(pathname.slice(1));
+  if (search !== "" || !LOCAL_HOSTS.has(hostname) || !TEST_DATABASE_NAME.test(name)) {
+    throw new UnsafeTestDatabaseError();
+  }
+  return url;
+}
+
+/**
  * Loads env files the way prisma.config.ts does, then returns TEST_DATABASE_URL
- * only when it is a local, portfolio-specific `_test` database. Every run drops
- * that database's schemas, so anything else is refused before connecting.
+ * only when it passes `assertSafeTestDatabaseUrl`. Every run drops that
+ * database's schemas, so anything else is refused before connecting.
  */
 export function testDatabaseUrl(): string {
   loadEnvConfig(process.cwd(), true);
-  const url = parseDatabaseUrl(process.env.TEST_DATABASE_URL, "TEST_DATABASE_URL");
-  const { hostname, pathname } = new URL(url);
-  const name = decodeURIComponent(pathname.slice(1));
-  if (!LOCAL_HOSTS.has(hostname) || !TEST_DATABASE_NAME.test(name)) throw new UnsafeTestDatabaseError();
-  return url;
+  return assertSafeTestDatabaseUrl(parseDatabaseUrl(process.env.TEST_DATABASE_URL, "TEST_DATABASE_URL"));
 }
 
 const MIGRATIONS = join(process.cwd(), "prisma", "migrations");
