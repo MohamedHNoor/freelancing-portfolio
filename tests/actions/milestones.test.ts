@@ -43,7 +43,7 @@ const OTHER_ID = "7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e10";
 const fixed = { name: "Build", billingTrigger: "on_completion", pricingMode: "fixed", amount: "1,500.00" };
 const milestoneResult = { projectId: PROJECT_ID, clientId: CLIENT_ID, milestoneId: MILESTONE_ID };
 const planResult = { projectId: PROJECT_ID, clientId: CLIENT_ID };
-const revalidated = [["/dashboard/projects"], [`/dashboard/projects/${PROJECT_ID}`], [`/dashboard/clients/${CLIENT_ID}`]];
+const revalidated = [["/dashboard/projects"], [`/dashboard/projects/${PROJECT_ID}`, "layout"], [`/dashboard/clients/${CLIENT_ID}`]];
 let errorLog: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {

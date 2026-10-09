@@ -52,3 +52,11 @@
 **Why it matters:** `writeAmounts` and the reorder loop (`payment-plan.ts:229`) run a sequential `UPDATE` per changed row while holding the project row lock, and nothing bounds how many milestones a project can have (`createMilestone` only appends). A total change on a large percentage plan therefore costs N round trips inside one interactive transaction (Prisma's default 5-second timeout). Negligible at realistic plan sizes (presets cap at 11 rows) and unmeasured.
 **Suggested fix:** Consider a sensible maximum milestone count in `createMilestone`, or batch the amount/position writes into one statement (for example a tagged `$executeRaw` `UPDATE ... FROM (VALUES ...)`), if plans ever grow beyond a few dozen rows.
 **Resolution:**
+
+### F-36 [P3] open - `getProjectView`'s `canComplete` is only ever tested as false
+
+**File:** tests/integration/server/queries/projects.test.ts:128
+**Found:** 2026-10-09 by /audit (independent; scope: current; lens: tests)
+**Why it matters:** The spec's Testing section names `canActivate` and `canComplete` as integration coverage, and the settings page enables "Mark project complete" from this flag alone. Every integration case asserts `canComplete: false` (a draft, and an active project with an open milestone); the true branch (`src/server/queries/projects.ts:1037-1039`, an active project whose non-cancelled milestones are all completed, reachable today when every milestone is cancelled) is never exercised, so a regression that always returns false, or that ignores cancelled rows, would pass. The page test only mocks the flag.
+**Suggested fix:** Add one integration case: activate a one-milestone fixed plan, cancel its milestone, and assert `canComplete` is true and matches `changeProjectStatus(..., "complete")` succeeding.
+**Resolution:**

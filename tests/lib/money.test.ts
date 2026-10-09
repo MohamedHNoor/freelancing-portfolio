@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CURRENCIES, allocate, formatMoney, minorFromDb, minorToDb, parseMoney, splitEvenly } from "@/lib/money";
+import { CURRENCIES, allocate, formatMoney, minorFromDb, minorToDb, minorToInput, parseMoney, splitEvenly } from "@/lib/money";
 
 describe("parseMoney", () => {
   it.each([
@@ -153,5 +153,27 @@ describe("splitEvenly", () => {
     [10, 1.5],
   ])("rejects %d into %d parts", (amount, parts) => {
     expect(() => splitEvenly(amount, parts)).toThrow(RangeError);
+  });
+});
+
+describe("minorToInput", () => {
+  it.each([
+    [1500000, "15000.00"],
+    [1500050, "15000.50"],
+    [5, "0.05"],
+    [0, "0.00"],
+    [123456700, "1234567.00"],
+  ])("writes %d as %s", (minor, text) => {
+    expect(minorToInput(minor, "NZD")).toBe(text);
+  });
+
+  it.each(CURRENCIES)("round-trips through parseMoney in %s", (currency) => {
+    for (const minor of [1, 99, 100, 1500050, Number.MAX_SAFE_INTEGER]) {
+      expect(parseMoney(minorToInput(minor, currency), currency)).toBe(minor);
+    }
+  });
+
+  it("rejects an unsafe amount", () => {
+    expect(() => minorToInput(Number.MAX_SAFE_INTEGER + 1, "USD")).toThrow(RangeError);
   });
 });

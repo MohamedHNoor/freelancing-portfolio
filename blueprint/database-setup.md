@@ -104,12 +104,9 @@ adds the `project_status`, `milestone_status`, `milestone_billing_trigger` and
 `activity_type` values, and `project_id` (CASCADE) and `milestone_id` (SET NULL)
 on `activities`. It was generated with `npm run db:diff`, and its check
 constraints are hand-written SQL at the end of the file. It runs inside a
-single transaction: nothing in it uses the new enum values. **It is not applied
-to any Neon branch;** feature 18b applies it to `development` through the
-named-target handoff below.
-
-**No Neon branch has this migration yet.** Feature 17b applies it to
-`development` through the named-target handoff below, with its own approval.
+single transaction: nothing in it uses the new enum values. Feature 18b applied
+it to `development` (see the named-target handoff below); `production` has
+neither migration.
 
 ## Local integration tests
 
@@ -376,6 +373,20 @@ state is unclear. Never edit `prisma.config.ts` to reach a database another way.
 `npm run db:studio` also opens a live database tool and needs separate approval.
 It uses the direct URL. Studio has not been run, and no production deployment
 exists yet.
+
+### Applied: second migration on `development` (2026-10-09, feature 18b step 9)
+
+Same target as above: project `snowy-voice-62561189`, branch `development`,
+endpoint `ep-rough-darkness-a7rwukh4`, confirmed from `npx prisma migrate
+status` before anything ran. With the owner's approval:
+
+- `npx prisma migrate status` listed only
+  `20261009120000_projects_and_milestones` as pending.
+- `npm run db:migrate` applied it normally, because `_prisma_migrations` already
+  existed. No `psql` or `migrate resolve` step was needed.
+- `npx prisma migrate status` then reported the database schema is up to date.
+
+`production` (`br-dawn-unit-a7e6kd3e`) is unchanged and still has no tables.
 
 ## Verification and next feature
 

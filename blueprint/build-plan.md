@@ -88,7 +88,7 @@ machines, payment flow, and rules every item below builds on are in
   - [x] 17b. **Client screens** - workspace navigation, the clients list with an
     archived view, new and edit forms, client detail with its activity, archiving,
     the migration applied to the development branch, and browser verification
-- [ ] 18. **Projects and payment plans** - projects with a total and a currency;
+- [x] 18. **Projects and payment plans** - projects with a total and a currency;
   percentage, fixed, or mixed milestone plans with the deposit as an upfront milestone;
   plans that must balance exactly before a project activates; and the project page with
   separate development and payment progress
@@ -100,7 +100,7 @@ machines, payment flow, and rules every item below builds on are in
     under a project row lock, plan presets as editable drafts, project and milestone
     Server Actions, and integration tests for percentage, fixed and mixed plans,
     over-allocation, the activation guard and owner isolation
-  - [ ] 18b. **Project screens** - the projects list with status tabs, the new project
+  - [x] 18b. **Project screens** - the projects list with status tabs, the new project
     page with a client, total and plan preset, the project page with its payment plan
     table and separate development and payment progress, the plan editor, project
     settings with status changes and draft deletion, the client's projects on client

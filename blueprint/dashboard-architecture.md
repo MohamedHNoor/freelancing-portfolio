@@ -617,6 +617,29 @@ The route group shipped early, on 2026-10-06, with the resume rework (`blueprint
 - `ownedMilestone(..., { forUpdate })` locks the project row, not the milestone, so every plan change serializes on the project.
 - `startMilestone`, `completeMilestone` and `reopenMilestone` arrive with feature 19.
 
+**Project screens shipped in feature 18b (2026-10-09).** The routes are:
+
+- `dashboard/projects/page.tsx` (`?status=` for one of the five statuses; any other value shows All)
+- `new/` (`?clientId=` preselects only one of the owner's active clients)
+- `[projectId]/page.tsx`, `[projectId]/plan/` and `[projectId]/settings/`
+- `projects/loading.tsx`, `projects/error.tsx` and `[projectId]/not-found.tsx`
+
+They differ from this plan in these ways:
+
+- **Plan reordering** uses Move up and Move down buttons. There is no drag and
+  drop.
+- **The plan table** has no "Next action" column, and its rows do not link to a
+  milestone page; both arrive with features 19 and 20. Payment status reads
+  "Unbilled", and fixed milestones show "Fixed" as their share.
+- **Page titles** are static ("Project", "Payment plan", "Project settings"),
+  as for clients.
+- **Read-only states:**
+  - A completed or cancelled project's plan URL redirects to its page.
+  - Its settings show the details as locked.
+- **Delete and cancel:**
+  - A draft's milestones are deleted.
+  - An active or on-hold project's milestones are cancelled and can be restored.
+
 Project pages live under `/dashboard/projects/[projectId]` because the public `/projects/[slug]` already exists. Each dashboard segment has its own `loading.tsx`, `error.tsx` and scoped `not-found.tsx`.
 
 ## 20. Component architecture

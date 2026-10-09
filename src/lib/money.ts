@@ -69,6 +69,15 @@ function toDecimalString(minor: number, currency: Currency): string {
 }
 
 /**
+ * An amount as form input text, with no symbol or grouping: 1500000 NZD is
+ * "15000.00". `parseMoney` reads it back to the same minor units.
+ */
+export function minorToInput(minor: number, currency: Currency): string {
+  assertSafeMinor(minor);
+  return toDecimalString(minor, currency);
+}
+
+/**
  * Formats minor units for display. Server only: the Intl output is passed to
  * client components already formatted. A decimal string keeps Intl exact.
  */

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CreditCardIcon, FolderKanbanIcon, SettingsIcon, ShieldCheckIcon } from "lucide-react";
+import { CreditCardIcon, SettingsIcon, ShieldCheckIcon } from "lucide-react";
 import { Logo } from "@/components/icons/Logo";
 import { WorkspaceNav } from "@/components/dashboard/shell/WorkspaceNav";
 
@@ -9,7 +9,6 @@ interface AppSidebarProps {
 }
 
 const futureDestinations = [
-  { label: "Projects", Icon: FolderKanbanIcon },
   { label: "Payments", Icon: CreditCardIcon },
   { label: "Settings", Icon: SettingsIcon },
 ] as const;

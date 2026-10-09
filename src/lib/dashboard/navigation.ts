@@ -1,6 +1,7 @@
 export const WORKSPACE_NAV = [
   { label: "Overview", href: "/dashboard" },
   { label: "Clients", href: "/dashboard/clients" },
+  { label: "Projects", href: "/dashboard/projects" },
 ] as const;
 
 const OVERVIEW = WORKSPACE_NAV[0];

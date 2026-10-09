@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboardIcon, UsersIcon } from "lucide-react";
+import { FolderKanbanIcon, LayoutDashboardIcon, UsersIcon } from "lucide-react";
 import { isNavItemCurrent, WORKSPACE_NAV } from "@/lib/dashboard/navigation";
 import { cn } from "@/lib/utils";
 
-const ICONS = { "/dashboard": LayoutDashboardIcon, "/dashboard/clients": UsersIcon } as const;
+const ICONS = {
+  "/dashboard": LayoutDashboardIcon,
+  "/dashboard/clients": UsersIcon,
+  "/dashboard/projects": FolderKanbanIcon,
+} as const;
 
 /* A client leaf so the sidebar itself stays a server component, as NavLink does
    for the public header. `aria-current` and the visible cue come from one test.

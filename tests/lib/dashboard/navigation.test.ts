@@ -14,6 +14,13 @@ describe("isNavItemCurrent", () => {
     expect(isNavItemCurrent("/dashboard/clientsx", "/dashboard/clients")).toBe(false);
     expect(isNavItemCurrent("/dashboard", "/dashboard/clients")).toBe(false);
   });
+
+  it("marks Projects on its page and every nested route only", () => {
+    expect(isNavItemCurrent("/dashboard/projects", "/dashboard/projects")).toBe(true);
+    expect(isNavItemCurrent("/dashboard/projects/x", "/dashboard/projects")).toBe(true);
+    expect(isNavItemCurrent("/dashboard/projects/x/plan", "/dashboard/projects")).toBe(true);
+    expect(isNavItemCurrent("/dashboard/projectsx", "/dashboard/projects")).toBe(false);
+  });
 });
 
 describe("workspaceSectionLabel", () => {
@@ -21,6 +28,8 @@ describe("workspaceSectionLabel", () => {
     ["/dashboard", "Overview"],
     ["/dashboard/clients", "Clients"],
     ["/dashboard/clients/new", "Clients"],
+    ["/dashboard/projects", "Projects"],
+    ["/dashboard/projects/x/settings", "Projects"],
     ["/dashboard/unknown", "Overview"],
   ])("labels %s as %s", (pathname, label) => {
     expect(workspaceSectionLabel(pathname)).toBe(label);

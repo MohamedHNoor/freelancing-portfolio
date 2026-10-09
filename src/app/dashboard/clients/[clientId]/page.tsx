@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeftIcon, PencilIcon } from "lucide-react";
+import { ArrowLeftIcon, PencilIcon, PlusIcon } from "lucide-react";
 import { ArchiveClientButton, CLIENT_STATUS_ID } from "@/components/dashboard/clients/ArchiveClientButton";
+import { ProjectTable } from "@/components/dashboard/projects/ProjectTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { addressLines, clientDisplayName } from "@/lib/dashboard/clients";
@@ -13,6 +14,7 @@ import { NotFoundError } from "@/lib/permissions";
 import { requireOwner } from "@/server/auth/session";
 import { CLIENT_ACTIVITY_LIMIT, listClientActivity } from "@/server/queries/activity";
 import { getClient } from "@/server/queries/clients";
+import { listClientProjects } from "@/server/queries/projects";
 
 export const metadata: Metadata = { title: "Client" };
 
@@ -29,10 +31,10 @@ async function loadOrNotFound<T>(load: () => Promise<T>): Promise<T> {
 export default async function ClientPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { userId } = await requireOwner();
   const { clientId } = await params;
-  // Both loaders are owner-scoped, so they can start together; either one's
+  // Every loader is owner-scoped, so they can start together; any one's
   // NotFoundError becomes the scoped 404.
-  const [client, activity] = await loadOrNotFound(() =>
-    Promise.all([getClient(userId, clientId), listClientActivity(userId, clientId)]),
+  const [client, activity, projects] = await loadOrNotFound(() =>
+    Promise.all([getClient(userId, clientId), listClientActivity(userId, clientId), listClientProjects(userId, clientId)]),
   );
 
   const displayName = clientDisplayName(client);
@@ -115,6 +117,25 @@ export default async function ClientPage({ params }: { params: Promise<{ clientI
             </div>
           ))}
         </dl>
+      </section>
+
+      <section aria-labelledby="client-projects-heading" className="workspace-surface space-y-5 rounded-2xl border border-border bg-card px-5 py-6 sm:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h2 id="client-projects-heading" className="font-heading text-lg font-semibold">Projects</h2>
+          {!archived && (
+            <Button asChild variant="outline" className="min-h-11 px-4">
+              <Link href={`/dashboard/projects/new?clientId=${client.id}`}>
+                <PlusIcon className="size-4" aria-hidden="true" />
+                New project
+              </Link>
+            </Button>
+          )}
+        </div>
+        {projects.length === 0 ? (
+          <p className="text-workspace-body text-muted-foreground">No projects yet.</p>
+        ) : (
+          <ProjectTable rows={projects} caption={`Projects for ${displayName}`} showClient={false} />
+        )}
       </section>
 
       <section aria-labelledby="client-activity-heading" className="workspace-surface rounded-2xl border border-border bg-card px-5 py-6 sm:px-8">

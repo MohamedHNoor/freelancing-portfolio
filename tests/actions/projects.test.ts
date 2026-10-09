@@ -37,7 +37,7 @@ const PROJECT_ID = "5a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d";
 const details = { name: "Acme website", currency: "NZD", total: "50,000.00" };
 const input = { ...details, clientId: CLIENT_ID, preset: { kind: "deposit_30", count: "3" } };
 const result = { projectId: PROJECT_ID, clientId: CLIENT_ID };
-const revalidated = [["/dashboard/projects"], [`/dashboard/projects/${PROJECT_ID}`], [`/dashboard/clients/${CLIENT_ID}`]];
+const revalidated = [["/dashboard/projects"], [`/dashboard/projects/${PROJECT_ID}`, "layout"], [`/dashboard/clients/${CLIENT_ID}`]];
 let errorLog: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {

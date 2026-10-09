@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   listClients: vi.fn(),
   getClient: vi.fn(),
   listClientActivity: vi.fn(),
+  listClientProjects: vi.fn(),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   }),
@@ -25,6 +26,7 @@ vi.mock("next/navigation", () => ({
 }));
 vi.mock("@/server/auth/session", () => ({ requireOwner: mocks.requireOwner }));
 vi.mock("@/server/queries/clients", () => ({ listClients: mocks.listClients, getClient: mocks.getClient }));
+vi.mock("@/server/queries/projects", () => ({ listClientProjects: mocks.listClientProjects }));
 vi.mock("@/server/queries/activity", () => ({
   listClientActivity: mocks.listClientActivity,
   CLIENT_ACTIVITY_LIMIT: 50,
@@ -148,6 +150,7 @@ const params = (clientId = CLIENT_ID) => ({ params: Promise.resolve({ clientId }
 describe("client detail page", () => {
   beforeEach(() => {
     mocks.getClient.mockResolvedValue(stored);
+    mocks.listClientProjects.mockResolvedValue([]);
     mocks.listClientActivity.mockResolvedValue([
       { id: "a1", type: "client_created", summary: "Created client Kōwhai Studio", occurredAt: new Date("2026-10-09T01:05:00Z") },
     ]);
@@ -176,6 +179,35 @@ describe("client detail page", () => {
     expect(markup).toContain("Archived clients can&#x27;t be edited.");
     expect(markup).not.toContain("Edit client");
     expect(markup).not.toContain("Archive client");
+  });
+
+  it("lists the client's projects and offers a new one for this client", async () => {
+    let markup = renderToStaticMarkup(await ClientPage(params()));
+    expect(mocks.listClientProjects).toHaveBeenCalledWith(OWNER_ID, CLIENT_ID);
+    expect(markup).toContain("No projects yet.");
+    expect(markup).toContain(`href="/dashboard/projects/new?clientId=${CLIENT_ID}"`);
+
+    mocks.listClientProjects.mockResolvedValue([
+      {
+        id: "22222222-2222-4222-8222-222222222222",
+        name: "Shop rebuild",
+        status: "draft",
+        currency: "NZD",
+        totalAmountMinor: 1500000,
+        client: { id: CLIENT_ID, displayName: "Kōwhai Studio" },
+        plan: { allocated: 500000, unallocated: 1000000, balanced: false },
+      },
+    ]);
+    markup = renderToStaticMarkup(await ClientPage(params()));
+    expect(markup).toContain('href="/dashboard/projects/22222222-2222-4222-8222-222222222222"');
+    expect(markup).toContain("Draft");
+    expect(markup).toContain("$15,000.00");
+    expect(markup).toContain("unallocated");
+  });
+
+  it("offers no new project for an archived client", async () => {
+    mocks.getClient.mockResolvedValue({ ...stored, archivedAt: new Date("2026-10-09T01:05:00Z") });
+    expect(renderToStaticMarkup(await ClientPage(params()))).not.toContain("/dashboard/projects/new");
   });
 
   it("notes when the activity list is capped", async () => {
